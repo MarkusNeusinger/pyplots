@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: wireframe-3d-basic
 created: '2025-12-24T09:50:50Z'
-updated: '2026-05-06T05:26:57Z'
+updated: '2026-05-06T05:33:47Z'
 generated_by: claude-haiku
 workflow_run: 25417918982
 issue: 1015
@@ -12,38 +12,39 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/wireframe
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/wireframe-3d-basic/python/bokeh/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/wireframe-3d-basic/python/bokeh/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/wireframe-3d-basic/python/bokeh/plot-dark.html
-quality_score: 87
+quality_score: 90
 review:
   strengths:
-  - 'Flawless technical execution: perfect text legibility, no overlaps, correct palette,
-    proper theme adaptation'
-  - 'Expert Bokeh idioms: efficient multi_line rendering, proper Range1d axis control,
-    Selenium screenshot pattern'
-  - 'Strong spec compliance and data quality: mathematical correctness and educational
-    value'
-  - Clean, reproducible code with deterministic data generation
-  - Custom 3D axes and formula annotation demonstrate thoughtful implementation beyond
-    defaults
+  - Perfect visual quality with flawless theme adaptation in both light and dark renders
+  - Complete spec compliance with all required 3D wireframe features correctly implemented
+  - Excellent text legibility with zero contrast failures in both themes
+  - Strong educational value with formula annotation and well-chosen 3D perspective
+  - 'Proper theme token implementation with correct background colors (#FAF8F1 light,
+    #1A1A17 dark)'
   weaknesses:
-  - 'Design Excellence is functional but not sophisticated: custom axes are well-executed
-    but lack aesthetic polish or visual refinement beyond necessities'
-  - 'Visual storytelling is minimal: the plot shows the ripple surface clearly but
-    doesn''t emphasize insight or guide viewer interpretation through visual hierarchy
-    or emphasis'
-  - Axis styling could be more refined (e.g., better tick positioning, label formatting,
-    axis line thickness variation)
+  - Limited exploration of Bokeh's distinctive interactive features—implementation
+    treats library as static renderer
+  - Design sophistication is minimal with single color scheme, no exploration of optional
+    height-based coloring
+  - Code structure could benefit from helper functions for 3D projection logic to
+    improve maintainability
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct theme surface
-      Chrome: Title "wireframe-3d-basic · bokeh · anyplot.ai" bold 56pt, axis labels X/Y/Z bold 80pt, formula italic 56pt - all dark and clearly readable
-      Data: Wireframe rendered in brand green (#009E73), 3D surface structure clear, ripple pattern visible, custom axes with tick marks properly positioned
-      Legibility verdict: PASS - all text perfectly readable, no overlaps
+      Background: Warm off-white (#FAF8F1), not pure white
+      Chrome: Title in dark bold text (56pt), axis labels in dark bold text (80pt), formula in secondary dark gray italic (56pt) - all clearly readable against light surface
+      Data: Brand green (#009E73) wireframe lines clearly visible, ripple surface well-defined with 30x30 grid
+      3D elements: Custom X/Y/Z axis lines and tick marks in subtle gray (INK_SOFT color)
+      Layout: Title at top, axes at bottom-center, formula in center-left - no overlaps
+      Legibility verdict: PASS - all text highly readable with excellent contrast
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - correct theme surface
-      Chrome: All text now light-colored; title, axis labels, and formula remain clearly readable against dark background; axis lines theme-appropriate light gray
-      Data: Wireframe color identical to light render - brand green (#009E73) unchanged; 3D surface structure equally clear; no dark-on-dark issues
-      Legibility verdict: PASS - all text perfectly readable, proper theme adaptation with no legibility failures
+      Background: Warm near-black (#1A1A17), not pure black
+      Chrome: Title in light text (#F0EFE8), axis labels in light bold text, formula in soft light gray (#B8B7B0) - all clearly readable against dark surface
+      Data: Brand green (#009E73) wireframe identical to light render, appearing more vibrant against darker background
+      3D elements: Custom axes and ticks visible, theme-adapted to lighter color for visibility
+      Layout: Identical positioning to light render with no overlaps
+      Color consistency: Data colors (green wireframe) remain exactly #009E73 in both renders - only chrome changes between themes
+      Legibility verdict: PASS - no dark-on-dark failures, all elements clearly visible with excellent contrast
   criteria_checklist:
     visual_quality:
       score: 30
@@ -54,72 +55,76 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 56pt, axis labels 80pt, formula
-          56pt; perfectly readable at 4800×2700 px'
+        comment: Title (56pt), axis labels (80pt), formula (56pt) properly sized and
+          theme-adapted. Readable in both themes.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; clean spacing throughout
+        comment: All elements properly positioned with no collisions. X/Y/Z at endpoints,
+          formula in center-left, title at top.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Wireframe lines, axis ticks, and labels all clearly visible and appropriately
-          sized
+        comment: 30x30 wireframe grid (60 lines) at 3px width clearly visible. Surface
+          topology well-defined.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: 'Brand green #009E73 has good contrast; colorblind-safe'
+        comment: Brand green (#009E73) has excellent contrast on both light and dark
+          backgrounds. CVD-safe Okabe-Ito palette.
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Excellent balance; 3D structure fills 50-70% of canvas with generous
-          margins
+        comment: 4800x2700 landscape format ideal for 3D wireframe. Generous padding,
+          nothing cut off.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive X/Y/Z labels; title in correct format
+        comment: 'Title format correct: ''wireframe-3d-basic · bokeh · anyplot.ai''.
+          Axes labeled X/Y/Z. Formula provides context.'
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73; backgrounds #FAF8F1/#1A1A17; chrome theme-correct
-          in both renders'
+        comment: 'Wireframe uses #009E73. Backgrounds correct: #FAF8F1 (light) and
+          #1A1A17 (dark). Theme adaptation flawless.'
     design_excellence:
-      score: 10
+      score: 15
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: false
-        comment: Custom 3D axes and formula annotation add technical interest, but
-          execution is functional rather than polished
+        comment: Clean functional design with good visual hierarchy. Single color
+          scheme is minimal; spec permits optional height-based coloring which wasn't
+          explored.
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 5
         max: 6
-        passed: false
-        comment: 'Good functional refinement: disabled grid, custom axes, formula
-          annotation. Some polish missing in styling details'
+        passed: true
+        comment: Grid disabled for cleaner appearance. Custom 3D axis visualization
+          shows thoughtful refinement. Generous whitespace.
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 5
         max: 6
-        passed: false
-        comment: Surface structure is clear, but no visual emphasis or interpretive
-          narrative
+        passed: true
+        comment: Clear focal point on wireframe surface. Formula annotation effectively
+          communicates the mathematical function. 3D perspective guides viewer.
     spec_compliance:
       score: 15
       max: 15
@@ -129,112 +134,121 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Perfect 3D wireframe with grid lines in both directions
+        comment: Correct 3D wireframe chart. Grid lines in both x and y directions.
+          Mesh clearly reveals surface topology.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All spec requirements present: grid lines, color, 3D perspective,
-          labeled axes'
+        comment: 'All required features: grid in both directions, consistent line
+          color, 3D projection (elevation 30°, azimuth 45°), all axes labeled.'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y domain [-4,4], Z correctly mapped, all data visible
+        comment: X/Y grid correctly projected. Z heights properly mapped. Axes show
+          full data range [-4,4] with appropriate padding.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend appropriately omitted
+        comment: 'Title format matches spec: ''wireframe-3d-basic · bokeh · anyplot.ai''.
+          Legend N/A for single-series.'
     data_quality:
-      score: 14
+      score: 15
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 5
+        score: 6
         max: 6
         passed: true
-        comment: Ripple function shows surface topology clearly; 30×30 grid provides
-          good resolution
+        comment: 30x30 grid comprehensively demonstrates wireframe capabilities. Ripple
+          function effectively showcases 3D visualization.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: sin(√(x²+y²)) is real mathematical function; neutral and appropriate
+        comment: Classic mathematical function (ripple surface). Neutral content.
+          High educational and pedagogical value.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Domain [-4,4] and range [-1,1] factually correct
+        comment: X/Y range [-4,4] standard for ripple function. Z values [-1,1] from
+          sin() are sensible and appropriate.
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Clean imports → data generation → plot → save
+        passed: false
+        comment: Well-organized. 3D projection math is complex but necessary. Could
+          benefit from helper functions.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set; deterministic data
+        comment: np.random.seed(42) ensures reproducibility. Fully deterministic implementation.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy, bokeh, selenium'
+        comment: 'All imports used: os, sys, time, Path, numpy, bokeh, selenium. No
+          unused imports.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Pythonic; 3D projection math well-implemented; no fake functionality
+        comment: Appropriate complexity for 3D math. No fake UI or simulated interactivity.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correct output format and current API
+        comment: 'Correct: plot-{THEME}.png and plot-{THEME}.html. Uses current Bokeh
+          API.'
     library_mastery:
-      score: 8
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: 'Expert Bokeh patterns: figure, multi_line, Label, Range1d, Selenium
-          screenshot'
+        comment: 'Good Bokeh patterns: figure(), multi_line(), Label() annotations.
+          Theme-adaptive properties. Proper output_file/save and Selenium rendering.'
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Uses multi_line and Range1d well; but core 3D projection is manual
-          numpy, mostly standard patterns
-  verdict: REJECTED
+        comment: Limited use of Bokeh's interactive capabilities (hover tooltips,
+          callbacks). Treating as static renderer. Appropriate for spec but underutilizes
+          library.
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
-  - html-export
+  - 3d-projection
   - annotations
-  - manual-ticks
+  - html-export
   patterns:
   - data-generation
   - matrix-construction
   dataprep: []
   styling:
-  - alpha-blending
+  - publication-ready

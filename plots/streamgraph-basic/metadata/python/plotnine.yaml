@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: streamgraph-basic
 created: 2025-12-14 19:44:18+00:00
-updated: '2026-05-05T03:37:22Z'
+updated: '2026-05-06T21:56:57Z'
 generated_by: claude-sonnet
 workflow_run: 25356129081
 issue: 856
@@ -12,50 +12,35 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/streamgra
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/streamgraph-basic/python/plotnine/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 79
+quality_score: 84
 review:
   strengths:
-  - Correct streamgraph implementation using geom_ribbon with properly centered symmetric
-    baseline (-totals/2)
-  - Realistic music streaming data with 5 genres over 24 months using sinusoidal trends
-  - All font sizes explicitly set (title 24pt, axis labels 20pt, tick labels 16pt,
-    legend 16pt) and readable in both renders
-  - KISS code structure with clear Imports → Data → Plot → Save flow
-  - Reproducible with np.random.seed(42)
-  - Clean imports — all symbols used
-  - Good canvas utilization with legend correctly positioned to the right
+  - 'Perfect visual quality: all text explicitly sized, no overlap, correct Okabe-Ito
+    palette, proper theme-adaptive chrome in both renders'
+  - Correct streamgraph with centered baseline using numpy matrix operations and geom_ribbon
+  - Realistic neutral music streaming dataset with plausible values
+  - Clean reproducible code with pd.Categorical for stacking order control
   weaknesses:
-  - 'VQ-07 FAIL: Uses non-Okabe-Ito palette (colors=["#306998", "#FFD43B", "#FF6B6B",
-    "#4ECDC4", "#9B59B6"]) — #306998 is legacy Python Blue explicitly flagged as non-compliant;
-    first series must be #009E73 brand green'
-  - 'Missing ANYPLOT_THEME support: no os.getenv("ANYPLOT_THEME", "light") reading
-    and no theme-adaptive tokens (PAGE_BG, ELEVATED_BG, INK, INK_SOFT) applied via
-    anyplot_theme; both renders likely rely on pipeline-level dark mode injection
-    rather than proper implementation'
-  - 'CQ-05: Saves to "plot.png" instead of f"plot-{THEME}.png" — must be plot-light.png
-    / plot-dark.png'
-  - 'SC-02: Spec explicitly requires smooth interpolation (spline/basis) for flowing
-    curves; implementation connects data points without any smoothing'
-  - 'Design Excellence low: no spine customization beyond theme_minimal defaults,
-    no visual hierarchy or focal emphasis on any genre trend, data displayed but not
-    interpreted'
-  - Code docstring header still says "pyplots.ai" (old branding) though rendered title
-    correctly shows anyplot.ai
+  - No spline/basis interpolation for smooth flowing curves as spec requires; linear
+    interpolation gives adequate but not canonical streamgraph curves
+  - 'Design excellence thin: no explicit spine removal, no visual hierarchy or storytelling,
+    no focal point or emphasis'
+  - Legend box uses default styling without elevation treatment matching style guide
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (~#FAF8F1) for both page and panel backgrounds. PASS.
-      Chrome: Title "streamgraph-basic · plotnine · anyplot.ai" in dark text clearly readable. X-axis label "Month" and Y-axis label "Streaming Hours" readable in dark text at appropriate sizes. Tick labels (Jan '23, Jul '23, Jan '24, Jul '24; -400 to 400) all readable. Legend positioned right with Genre title and 5 swatches (Pop, Rock, Hip-Hop, Electronic, Jazz) — all readable.
-      Data: 5 centered ribbon bands filling the plot from ~-380 to ~+380. Colors: bottom (Pop) = teal (~#306998?), Rock = orange-brown, Hip-Hop = medium blue, Electronic = pink/lavender, Jazz = yellow/gold. Note: actual hex values (#306998, #FFD43B, #FF6B6B, #4ECDC4, #9B59B6) are non-Okabe-Ito — first series is NOT #009E73.
-      Legibility verdict: PASS — all text is readable against light background.
+      Background: Warm off-white (~#FAF8F1) — correct light theme surface, not pure white
+      Chrome: Title "streamgraph-basic · plotnine · anyplot.ai" in dark text, clearly readable. Axis labels "Month" and "Streaming Hours" visible. Tick labels "Jan '23", "Jul '23", "Jan '24", "Jul '24" and Y-axis numerics (-400 to 400) all clearly readable in dark tones against the warm background. Legend on right side with dark text on light background.
+      Data: Five genre bands — Pop (teal #009E73, Okabe-Ito position 1), Rock (orange-red #D55E00), Hip-Hop (blue #0072B2), Electronic (pink #CC79A7), Jazz (gold #E69F00). Colors match Okabe-Ito canonical order. Alpha ~0.85 gives slight transparency. Centered baseline symmetric around Y=0.
+      Legibility verdict: PASS — all text readable, no light-on-light failures
 
     Dark render (plot-dark.png):
-      Background: Very dark near-black (appears close to pure #000000 rather than warm #1A1A17 — no theme tokens applied in code). FAIL on exact spec but functionally dark.
-      Chrome: Title, axis labels, and tick labels appear in white/light text — readable against dark background. No dark-on-dark failures observed for text. Legend box has dark background with light text — readable.
-      Data: Colors appear identical to light render — same teal, orange, blue, pink, yellow/gold bands. Data colors are consistent between themes (only chrome flips). However, visible black gap below the bottom green ribbon to the -400 axis mark suggests pure-black panel background bleeding through rather than #1A1A17.
-      Legibility verdict: PASS for text readability. FAIL for correct background token (#1A1A17 not implemented — theme switching handled externally by pipeline, not by code).
+      Background: Warm near-black (~#1A1A17) — correct dark theme surface, not pure black
+      Chrome: Title, axis labels, and tick labels rendered in light/near-white text, clearly readable against the dark background. Legend text in light tones, readable. No dark-on-dark failures detected — no near-black text on near-black background anywhere.
+      Data: Colors identical to light render — Pop still teal #009E73, Rock orange-red, Hip-Hop blue, Electronic pink, Jazz gold. Data colors correctly theme-independent.
+      Legibility verdict: PASS — all text readable against dark background, no dark-on-dark failures
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 30
       max: 30
       items:
       - id: VQ-01
@@ -63,53 +48,46 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 24pt, axis_title 20pt, axis_text
-          16pt, legend_text 16pt, legend_title 18pt. Readable in both light and dark
-          renders.'
+        comment: All font sizes explicitly set (title 24pt, axis 20pt, ticks 16pt,
+          legend 16pt); readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text overlap. X-axis has only 4 well-spaced labels. Legend does
-          not overlap data area.
+        comment: No overlapping text; four x-axis tick labels well-spaced
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All 5 ribbon bands clearly visible and well-sized. Alpha=0.85 provides
-          good opacity with slight transparency.
+        comment: Stream bands clearly visible, well-adapted to canvas density
       - id: VQ-04
         name: Color Accessibility
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Custom palette (#306998, #FFD43B, #FF6B6B, #4ECDC4, #9B59B6) not
-          designed for CVD safety. Reasonable luminance variation helps since layers
-          are spatially separated, but not Okabe-Ito guaranteed safe.'
+        passed: true
+        comment: Okabe-Ito palette is CVD-safe; five distinct colors with good luminance
+          contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Streamgraph fills the canvas well. Legend positioned outside plot
-          area to the right. No content cut off. Good canvas utilization (>60%).
+        comment: Plot fills canvas well; legend positioned to the right without isolation
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Y-axis: ''Streaming Hours'' (descriptive with implicit units). X-axis:
-          ''Month''. Title uses correct anyplot.ai format in rendered output.'
+        comment: Month and Streaming Hours are descriptive labels
       - id: VQ-07
         name: Palette Compliance
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: 'FAIL: Uses custom non-Okabe-Ito colors. #306998 (Python Blue) explicitly
-          flagged as non-compliant. First series must be #009E73. Dark background
-          likely not #1A1A17 (no theme tokens in code). Score: 0.'
+        passed: true
+        comment: Okabe-Ito order confirmed (Pop=#009E73 first); light bg warm off-white;
+          dark bg warm near-black; chrome adapts correctly
     design_excellence:
       score: 9
       max: 20
@@ -119,24 +97,22 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured theme_minimal() with explicit font sizes and custom
-          (non-Okabe-Ito) colors. Streamgraph form is sophisticated but design execution
-          is library-default level.
+        comment: Professional and clean but remains a well-configured library default;
+          no intentional typographic hierarchy or bespoke design touches
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: false
-        comment: theme_minimal() provides clean look with subtle grid. Explicit font
-          sizing adds polish. No explicit spine removal, no grid direction restriction,
-          no whitespace tuning beyond defaults.
+        comment: theme_minimal provides clean defaults but no explicit spine removal,
+          default legend box styling, no elevation treatment
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Data displayed without visual hierarchy. No genre highlighted, no
-          trend emphasized. Viewer must find their own story in the flowing shapes.
+        comment: Chart accurately represents trends but no visual emphasis; no genre
+          highlighted; viewer must discover insights independently
     spec_compliance:
       score: 14
       max: 15
@@ -146,32 +122,30 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct streamgraph with symmetric centered baseline (baseline =
-          -totals/2). Uses geom_ribbon to create the characteristic flowing band appearance.
+        comment: Correct streamgraph with centered baseline using geom_ribbon with
+          pre-computed ymin/ymax positions
       - id: SC-02
         name: Required Features
         score: 3
         max: 4
         passed: false
-        comment: 'Centered baseline ✓, legend ✓, distinct colors ✓, multiple categories
-          ✓. Missing: explicit smooth interpolation (spline/basis). Spec explicitly
-          requires ''smooth interpolation for flowing curves''.'
+        comment: Centered baseline, legend, distinct colors present; but spec requires
+          spline/basis smooth interpolation — implementation uses linear interpolation
+          between monthly points
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X=month (time), Y=streaming hours centered around 0. All 5 genres
-          visible. Y-axis correctly shows both positive and negative range (-400 to
-          400).
+        comment: Time on X, streaming hours on Y, genres stacked; full data range
+          shown
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: 'Rendered title: ''streamgraph-basic · plotnine · anyplot.ai'' —
-          correct format. Legend shows all 5 genres with correct labels. (Note: code
-          file still has ''pyplots.ai'' branding in labs() call and docstring.)'
+        comment: Title correctly formatted as streamgraph-basic · plotnine · anyplot.ai;
+          legend labels match genre names
     data_quality:
       score: 14
       max: 15
@@ -181,27 +155,24 @@ review:
         score: 5
         max: 6
         passed: true
-        comment: Shows 5 genres (3-8 range ✓), 24 time points (10-100 range ✓), centered
-          baseline, varying magnitudes per genre, time trends visible. Could show
-          more dramatic crossover/convergence to better demonstrate the format's storytelling
-          power.
+        comment: Multiple categories with varying magnitudes and sinusoidal trends;
+          could show more divergent trend shapes
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Music streaming hours by genre (Pop, Rock, Hip-Hop, Electronic, Jazz)
-          over two years — realistic, neutral, comprehensible scenario.
+        comment: Monthly streaming hours by music genre over two years is realistic,
+          neutral, comprehensible
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Base values 100-200 hours/month per genre are plausible streaming
-          magnitudes. Total ~600-800 hours/month across genres is reasonable. Y-axis
-          range (-400 to 400) correctly reflects the centered baseline.
+        comment: Per-genre values 20-250 hours/month with plausible variation; factually
+          reasonable for a streaming platform
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -209,39 +180,36 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: Imports → Data generation → Streamgraph position calculation
-          → Long-form DataFrame → Plot → Save. No functions or classes.'
+        comment: 'Clean linear flow: imports -> data -> computation -> plot -> save;
+          no functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set before data generation.
+        comment: np.random.seed(42) ensures deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All plotnine imports are used (aes, element_text, geom_ribbon, ggplot,
-          labs, scale_fill_manual, scale_x_continuous, theme, theme_minimal). numpy
-          and pandas used.
+        comment: All imported symbols are used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean Pythonic code. Matrix-based streamgraph position calculation
-          is appropriate. No over-engineering or fake functionality.
+        comment: Matrix operations for centered baseline are appropriately complex
+          and clearly structured
       - id: CQ-05
         name: Output & API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: 'FAIL: Saves to ''plot.png'' instead of f''plot-{THEME}.png''. No
-          ANYPLOT_THEME env var reading. Should read os.getenv(''ANYPLOT_THEME'',
-          ''light'') and save as plot-{THEME}.png.'
+        passed: true
+        comment: Both plot-light.png and plot-dark.png produced correctly with ANYPLOT_THEME
+          handling
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -249,28 +217,26 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: 'Good use of plotnine''s grammar of graphics: ggplot() + geom_ribbon()
-          + scale_fill_manual() + labs() + theme_minimal() + theme(). pd.Categorical
-          for ordered factor control is idiomatic. Minor: could use ggsave() instead
-          of plot.save().'
+        comment: Idiomatic ggplot grammar with geom_ribbon, aes(ymin/ymax), scale_fill_manual,
+          scale_x_continuous with custom breaks, theme overrides
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
-        passed: false
-        comment: geom_ribbon with fill aesthetic and the grammar-of-graphics layering
-          via + operator are distinctive to plotnine/ggplot2. However, the streamgraph
-          computation itself is library-agnostic, and geom_ribbon appears in letsplot/R
-          ggplot2 as well. No uniquely plotnine features leveraged.
-  verdict: REJECTED
+        passed: true
+        comment: Pre-computed centered baseline mapped through aes(ymin/ymax) is characteristic
+          plotnine/ggplot2 pattern; pd.Categorical with ordered levels for stacking
+          control is plotnine-specific
+  verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
-  - layer-composition
+  - manual-ticks
   patterns:
   - data-generation
   - matrix-construction
   - iteration-over-groups
-  dataprep: []
+  dataprep:
+  - cumulative-sum
   styling:
   - alpha-blending

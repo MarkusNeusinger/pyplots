@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 bar-grouped: Grouped Bar Chart
-Library: seaborn | Python 3.13
-Quality: pending | Created: 2025-12-24
+Library: seaborn 0.13.2 | Python 3.13.13
+Quality: 83/100 | Updated: 2026-05-06
 """
 
 import os

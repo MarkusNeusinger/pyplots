@@ -127,4 +127,28 @@ describe('AppDataProvider', () => {
     expect(screen.getByTestId('child')).toHaveTextContent('still renders');
     consoleSpy.mockRestore();
   });
+
+  it('falls back to setTimeout when requestIdleCallback is unavailable (iOS Safari)', async () => {
+    // Simulate Safari/iOS where requestIdleCallback is undefined by default.
+    vi.stubGlobal('requestIdleCallback', undefined);
+    vi.stubGlobal('cancelIdleCallback', undefined);
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({}),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    wrap(
+      <AppDataProvider>
+        <div data-testid="child">renders without TypeError</div>
+      </AppDataProvider>,
+    );
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+
+    expect(screen.getByTestId('child')).toHaveTextContent('renders without TypeError');
+  });
 });

@@ -1,14 +1,44 @@
-""" pyplots.ai
+"""anyplot.ai
 line-multi: Multi-Line Comparison Plot
 Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-24
+Quality: pending | Created: 2025-12-24
 """
+
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette (first series always #009E73)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7"]
+
+# Configure seaborn theme
+sns.set_theme(
+    style="ticks",
+    rc={
+        "figure.facecolor": PAGE_BG,
+        "axes.facecolor": PAGE_BG,
+        "axes.edgecolor": INK_SOFT,
+        "axes.labelcolor": INK,
+        "text.color": INK,
+        "xtick.color": INK_SOFT,
+        "ytick.color": INK_SOFT,
+        "grid.color": INK,
+        "grid.alpha": 0.10,
+        "legend.facecolor": ELEVATED_BG,
+        "legend.edgecolor": INK_SOFT,
+    },
+)
 
 # Data: Monthly sales for 4 product lines over 12 months
 np.random.seed(42)
@@ -34,15 +64,12 @@ df = pd.DataFrame(
     {
         "Month": np.tile(months, 4),
         "Sales (thousands USD)": np.concatenate([electronics, apparel, home_garden, sports]),
-        "Product Line": ["Electronics"] * 12 + ["Apparel"] * 12 + ["Home & Garden"] * 12 + ["Sports"] * 12,
+        "Product Line": (["Electronics"] * 12 + ["Apparel"] * 12 + ["Home & Garden"] * 12 + ["Sports"] * 12),
     }
 )
 
 # Plot
 fig, ax = plt.subplots(figsize=(16, 9))
-
-# Custom color palette using Python colors first
-colors = ["#306998", "#FFD43B", "#4CAF50", "#E91E63"]
 
 sns.lineplot(
     data=df,
@@ -54,25 +81,26 @@ sns.lineplot(
     dashes=False,
     linewidth=3,
     markersize=12,
-    palette=colors,
+    palette=OKABE_ITO,
     ax=ax,
 )
 
 # Styling
-ax.set_title("line-multi · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
-ax.set_xlabel("Month", fontsize=20)
-ax.set_ylabel("Sales (thousands USD)", fontsize=20)
-ax.tick_params(axis="both", labelsize=16)
+ax.set_title("line-multi · seaborn · anyplot.ai", fontsize=24, fontweight="medium", pad=20, color=INK)
+ax.set_xlabel("Month", fontsize=20, color=INK)
+ax.set_ylabel("Sales (thousands USD)", fontsize=20, color=INK)
+ax.tick_params(axis="both", labelsize=16, colors=INK_SOFT)
 
 # Set x-ticks to month names
 ax.set_xticks(months)
 ax.set_xticklabels(month_labels, fontsize=16)
 
 # Subtle grid
-ax.grid(True, alpha=0.3, linestyle="--")
+ax.yaxis.grid(True, alpha=0.15, linewidth=0.8)
+ax.xaxis.grid(False)
 
 # Legend styling
-ax.legend(title="Product Line", title_fontsize=18, fontsize=16, loc="upper left", framealpha=0.9)
+ax.legend(title="Product Line", title_fontsize=18, fontsize=16, loc="upper left", framealpha=0.95)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

@@ -410,7 +410,6 @@ describe('MapPage', () => {
     it('is a no-op when there are no nodes', () => {
       const force = outlierSquashForce(0.95, 200, 0.18);
       // initialize with empty array; force(alpha) must not throw.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (force as unknown as { initialize: (n: SimNode[]) => void }).initialize([]);
       expect(() => force(1)).not.toThrow();
     });

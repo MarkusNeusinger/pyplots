@@ -1,7 +1,7 @@
 """ anyplot.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
 Library: letsplot 4.9.0 | Python 3.13.13
-Quality: 18/100 | Updated: 2026-05-06
+Quality: 88/100 | Updated: 2026-05-06
 """
 
 import os

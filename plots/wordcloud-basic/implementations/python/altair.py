@@ -1,13 +1,32 @@
-""" pyplots.ai
+"""anyplot.ai
 wordcloud-basic: Basic Word Cloud
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: altair | Python 3.13
+Quality: pending | Created: 2025-05-06
 """
+
+import os
+import sys
+
+
+# Prevent local file from shadowing the altair package
+script_dir = os.path.dirname(os.path.abspath(__file__)) if __file__ else os.getcwd()
+if script_dir in sys.path:
+    sys.path.remove(script_dir)
 
 import altair as alt
 import numpy as np
 import pandas as pd
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette (first series always #009E73)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442"]
 
 # Data: Tech industry buzzwords with frequencies
 np.random.seed(42)
@@ -48,9 +67,6 @@ min_freq = min(word_frequencies.values())
 max_freq = max(word_frequencies.values())
 min_size = 24
 max_size = 80
-
-# Color palette using Python colors and complementary tones
-color_palette = ["#306998", "#FFD43B", "#4B8BBE", "#646464", "#3776AB", "#FFE873"]
 
 # Build data with spiral positioning
 words_list = []
@@ -115,12 +131,12 @@ for i, (word, freq) in enumerate(sorted_words):
     x_positions.append(found_x)
     y_positions.append(found_y)
     font_sizes.append(size)
-    colors.append(color_palette[i % len(color_palette)])
+    colors.append(OKABE_ITO[i % len(OKABE_ITO)])
 
 # Create DataFrame
 df = pd.DataFrame({"word": words_list, "x": x_positions, "y": y_positions, "size": font_sizes, "color": colors})
 
-# Create Altair chart
+# Create Altair chart with theme-adaptive styling
 chart = (
     alt.Chart(df)
     .mark_text(fontWeight="bold")
@@ -134,11 +150,13 @@ chart = (
     .properties(
         width=canvas_w,
         height=canvas_h,
-        title=alt.Title("wordcloud-basic · altair · pyplots.ai", fontSize=28, anchor="middle"),
+        background=PAGE_BG,
+        title=alt.Title("wordcloud-basic · altair · anyplot.ai", fontSize=28, anchor="middle", color=INK),
     )
-    .configure_view(strokeWidth=0)
+    .configure_view(strokeWidth=0, fill=PAGE_BG)
+    .configure_title(color=INK)
 )
 
 # Save outputs
-chart.save("plot.png", scale_factor=3.0)
-chart.save("plot.html")
+chart.save(f"plot-{THEME}.png", scale_factor=3.0)
+chart.save(f"plot-{THEME}.html")

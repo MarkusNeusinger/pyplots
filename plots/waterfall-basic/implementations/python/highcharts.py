@@ -1,7 +1,7 @@
 """ anyplot.ai
 waterfall-basic: Basic Waterfall Chart
 Library: highcharts unknown | Python 3.13.13
-Quality: 26/100 | Updated: 2026-05-06
+Quality: 83/100 | Updated: 2026-05-06
 """
 
 import json

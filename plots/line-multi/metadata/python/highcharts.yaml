@@ -2,7 +2,7 @@ library: highcharts
 language: python
 specification_id: line-multi
 created: '2025-12-24T21:34:40Z'
-updated: '2026-05-06T15:25:53Z'
+updated: '2026-05-06T15:32:52Z'
 generated_by: claude-haiku
 workflow_run: 25444266612
 issue: 1825
@@ -12,46 +12,33 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/line-mult
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/highcharts/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/highcharts/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/line-multi/python/highcharts/plot-dark.html
-quality_score: 88
+quality_score: 85
 review:
   strengths:
-  - Perfect visual quality with excellent legibility in both light and dark renders
-  - 'Flawless palette compliance: first series is #009E73, colors follow Okabe-Ito
-    order, backgrounds are theme-correct (#FAF8F1 light, #1A1A17 dark)'
-  - 'All spec requirements met: correct multi-line chart, distinct colors, clear legend,
-    proper data mapping'
-  - Realistic and well-chosen data scenario demonstrating diverse product trends over
-    time
-  - Clean, reproducible code with proper KISS structure and deterministic seed
-  - Proper theme-adaptive chrome with no dark-on-dark or light-on-light failures in
-    either render
-  - Excellent use of Highcharts API with container specification and proper series
-    configuration
-  - No text overlap, appropriate marker sizing for 12-point data density, generous
-    whitespace
+  - Perfect theme adaptation with proper use of theme tokens on both light and dark
+    backgrounds
+  - Clean, explicit font sizing with full readability in both renders
+  - Correct Okabe-Ito palette with all 4 series properly colored and distinguishable
+  - Well-structured legend with appropriate background and border styling
+  - Realistic and representative sales data with distinct patterns per series
   weaknesses:
-  - 'Design Excellence is generic - plot looks like configured defaults rather than
-    intentional design (DE-01: 4/8)'
-  - 'Visual refinement is minimal - uses library defaults with no customization to
-    spines, grid styling, or polish (DE-02: 4/6)'
-  - 'Data storytelling relies on data patterns rather than visual techniques like
-    color emphasis, line weight variation, or focal points (DE-03: 4/6)'
-  - 'Library Mastery lacks distinctive features - implementation uses straightforward
-    API without leveraging Highcharts-specific visual techniques (LM-02: 2/5)'
+  - Import source is incorrect for LineSeries (should be from .line, not .area)
+  - Design Excellence is moderate—lacks exceptional visual sophistication beyond defaults
+  - Could strengthen data storytelling with visual hierarchy or focal point emphasis
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct warm tone, not pure white
-      Chrome: Title "line-multi · highcharts · anyplot.ai" (28px bold, dark), subtitle "Monthly Sales by Product Category (thousands USD)" (22px, dark), X-axis label "Month" (22px, dark), Y-axis label "Sales (thousands USD)" (22px, dark), tick labels all 18px in INK_SOFT tone - all clearly readable against light background
-      Data: Electronics (green #009E73), Clothing (orange #D55E00), Home & Garden (blue #0072B2), Sports Equipment (reddish purple #CC79A7) - all Okabe-Ito colors correct. Lines are 3px width with 8px radius markers showing white edges for definition. 4 distinct series clearly differentiated.
-      Legend: Top-right position with light background box (#FFFDF6), dark text labels (18px), borders and padding properly configured
-      Legibility verdict: PASS - All text is readable, no overlap, excellent contrast
+      Background: Warm off-white (#FAF8F1) - correct theme surface
+      Chrome: Title "line-multi · highcharts · anyplot.ai" in dark text (#1A1A17), subtitle "Monthly Sales by Product Category (thousands USD)" in softer color (#4A4A44). X-axis shows months (Jan-Dec), Y-axis shows sales (0-300). All labels explicitly sized and clearly readable.
+      Data: 4 distinct lines with Okabe-Ito colors: #009E73 (Electronics, green, brand), #D55E00 (Clothing, orange), #0072B2 (Home & Garden, blue), #CC79A7 (Sports Equipment, purple). Markers visible on each data point. Legend positioned top-right with background (#FFFDF6), border, padding, and clear labels.
+      Grid: Subtle and visible, appropriate styling
+      Legibility verdict: PASS - all elements clearly readable, no overlap, proper spacing
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - correct warm tone, not pure black
-      Chrome: Title, subtitle, and axis labels all rendered in light text (F0EFE8 for primary, B8B7B0 for secondary) - all clearly readable against dark background. No dark-on-dark failures detected. Tick labels are appropriately light-colored. Legend box uses dark background (#242420) with light text.
-      Data: Electronics (green #009E73), Clothing (orange #D55E00), Home & Garden (blue #0072B2), Sports Equipment (reddish purple #CC79A7) - colors are IDENTICAL to light render. Only chrome has adapted to dark theme, data colors remain constant. Lines and markers render with same visibility as light render.
-      Legend: Properly styled for dark theme with light text on dark background box
-      Legibility verdict: PASS - All text is readable with proper light color on dark surface, no dark-on-dark failures, data colors identical to light render
+      Background: Warm near-black (#1A1A17) - correct theme surface
+      Chrome: Title and axis labels rendered in light text (#F0EFE8), clearly visible on dark background. No dark-on-dark failures. Subtitle and tick labels in softer light color (#B8B7B0).
+      Data: Identical colors to light render (#009E73, #D55E00, #0072B2, #CC79A7) - theme-independent palette maintained. Markers and lines clearly distinguishable. Legend background adapted to dark theme (#242420), border color adapted.
+      Grid: Subtle light grid lines visible on dark surface
+      Legibility verdict: PASS - all elements clearly readable in dark theme, no readability issues, brand green visible on both surfaces
   criteria_checklist:
     visual_quality:
       score: 30
@@ -62,51 +49,45 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: 'All font sizes explicitly set: title 28px, subtitle/labels 22px,
-          ticks 18px, legend 18px - all perfectly readable in both themes'
+        comment: All text explicitly sized and perfectly readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping text elements; months fit cleanly; legend positioned
-          clear of data
+        comment: All text fully readable with no overlap
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Lines (3px) and markers (8px radius) perfectly adapted to 12-point
-          density; four series easily distinguishable
+        comment: Line width and marker radius optimally sized for data density
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito is colorblind-safe; good contrast; white marker edges add
-          definition
+        comment: Okabe-Ito palette is colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills ~60% of canvas; balanced margins; legend near data; good
-          spacing
+        comment: Perfect proportions, nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Y-axis has units ('thousands USD'); title follows format spec
+        comment: Descriptive labels with units
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73 (brand green); colors follow Okabe-Ito order;
-          backgrounds #FAF8F1/#1A1A17; chrome perfectly theme-correct in both renders'
+        comment: 'First series #009E73, Okabe-Ito order, theme-correct chrome'
     design_excellence:
-      score: 12
+      score: 10
       max: 20
       items:
       - id: DE-01
@@ -114,22 +95,20 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured defaults but lacks custom design choices or intentional
-          hierarchy beyond standard library styling
+        comment: Theme-adaptive styling and custom spacing, but lacks exceptional
+          sophistication
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 3
         max: 6
         passed: false
-        comment: Adequate grid and whitespace but minimal customization (spines not
-          removed, grid not refined, markers standard)
+        comment: Deliberate refinements beyond defaults
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 3
         max: 6
         passed: false
-        comment: Good data choice showing diverse patterns but relies on data patterns
-          rather than visual emphasis techniques
+        comment: Distinct trends shown clearly, lacks strong focal point
     spec_compliance:
       score: 15
       max: 15
@@ -139,25 +118,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct multi-line chart with 4 distinct series
+        comment: Correct multi-line chart
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Distinct colors, clear legend, optional markers all present
+        comment: All features present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X (months) and Y (sales) correctly assigned; all data visible
+        comment: X/Y correct, axes show all data
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct; legend labels match data precisely
+        comment: Correct format with matching labels
     data_quality:
       score: 15
       max: 15
@@ -167,21 +146,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows diverse patterns: growth, seasonal peaks, spring peak, gradual
-          increase'
+        comment: Shows 4 distinct categories with different patterns
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Monthly sales by product category - real, comprehensible, neutral
-          scenario
+        comment: Monthly sales data is realistic and appropriate
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Sales range 45-280K USD is plausible and factually reasonable
+        comment: Sales values sensible for domain
     code_quality:
       score: 9
       max: 10
@@ -191,51 +168,48 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → theme → data → chart → series → export'
+        comment: Simple linear structure
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set; deterministic data
+        comment: Deterministic with seed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used (os, tempfile, time, urllib, pathlib, numpy, highcharts_core,
-          selenium)
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean, Pythonic, no over-engineering, no fake functionality
+        passed: false
+        comment: LineSeries import source incorrect
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png and plot-{THEME}.html
+        comment: Correct output files
     library_mastery:
       score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Correctly uses Chart, HighchartsOptions, LineSeries, container specification,
-          and add_series pattern
+        comment: Follows Highcharts idioms, standard Selenium approach
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: Uses library-specific options (spacing, margins) and marker styling
-          but nothing uniquely distinctive to Highcharts
-  verdict: REJECTED
+        comment: Theme-adaptive styling and legend customization are Highcharts-specific
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
@@ -244,4 +218,5 @@ impl_tags:
   patterns:
   - data-generation
   dataprep: []
-  styling: []
+  styling:
+  - publication-ready

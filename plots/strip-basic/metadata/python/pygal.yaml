@@ -1,169 +1,181 @@
 library: pygal
+language: python
 specification_id: strip-basic
 created: '2025-12-23T21:54:18Z'
-updated: '2025-12-23T22:00:43Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20472388296
-issue: 0
-python_version: 3.13.11
+updated: '2026-05-04T21:10:45Z'
+generated_by: claude-sonnet
+workflow_run: 25342549595
+issue: 975
+python_version: 3.13.13
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/anyplot-images/plots/strip-basic/pygal/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/strip-basic/pygal/plot.html
-quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques:
-  - manual-ticks
-  - html-export
-  patterns:
-  - data-generation
-  - iteration-over-groups
-  dataprep: []
-  styling:
-  - alpha-blending
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/pygal/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/pygal/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/pygal/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/pygal/plot-dark.html
+quality_score: 87
 review:
   strengths:
-  - Excellent implementation of strip plot using pygal XY chart with manual jitter
-  - Clean readable code following KISS principles with proper seed for reproducibility
-  - Good transparency handling for overlapping points
-  - Realistic survey score scenario with varied distributions per department
-  - Proper title format and well-balanced layout
+  - Correct Okabe-Ito palette in canonical order, properly applied to both light and
+    dark themes with no chrome failures
+  - Mean reference markers at integer x-positions add a useful visual layer — they
+    create hierarchy without cluttering the plot
+  - Per-point tooltip dict format and HTML export make excellent use of pygal's interactive
+    capabilities
+  - Data scenario (employee satisfaction by department) is realistic, neutral, and
+    shows meaningfully different distributions
+  - Clean KISS code structure with full reproducibility (seed set) and appropriate
+    opacity (0.60) for data density
   weaknesses:
-  - Color scheme uses only 2 distinct colors (blue/yellow) for 4 categories, making
-    Engineering/Sales and Marketing/Support visually indistinguishable without legend
-  - Axis labels lack units (could be Survey Score 1-10 for clarity)
-  image_description: The plot displays a strip plot with four department categories
-    (Engineering, Marketing, Sales, Support) on the x-axis and Survey Score (ranging
-    from approximately 3.5 to 10) on the y-axis. Points are scattered with horizontal
-    jitter within each category to show distribution density. Engineering and Sales
-    use blue (#306998) colored dots, while Marketing and Support use yellow/gold (#FFD43B)
-    colored dots. The title "strip-basic · pygal · pyplots.ai" is displayed at the
-    top. Y-axis gridlines are visible with subtle dotted lines. A legend at the bottom
-    shows all four categories with their respective colors. The plot has a clean white
-    background with good use of transparency (alpha ~0.65) to handle overlapping points.
+  - Design sophistication is capped by pygal's defaults — no spine removal, limited
+    grid customization; the chart looks like a configured library default rather than
+    a polished publication
+  - Mean markers use the same dot shape as data points, making them visually ambiguous
+    without reading the legend; a larger marker or distinct shape would make them
+    immediately identifiable
+  - Bottom legend occupies canvas space with five small-text items that could be formatted
+    larger or simplified
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) — correct, not pure white
+      Chrome: Title "strip-basic · pygal · anyplot.ai" in dark text at top-center, clearly readable. Y-axis label "Satisfaction Score (1–10)" in dark text on left. X-axis label "Department" at bottom. Tick labels (3.0–10.0 on Y, category names on X) all readable dark text. Bottom legend with five items readable.
+      Data: Four jittered groups — Engineering (#009E73 teal, first series correct), Marketing (#D55E00 orange), Sales (#0072B2 blue), Support (#CC79A7 pink). Mean markers in #E69F00 (Okabe position 5) at integer x-positions. 40 pts/category with opacity=0.60. Subtle horizontal y-axis grid lines visible.
+      Legibility verdict: PASS
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) — correct, not pure black
+      Chrome: All text (title, axis labels, tick labels, legend) renders in light color against the dark background. No dark-on-dark failures detected. Grid lines are subtle and visible against the dark surface.
+      Data: Data colors are identical to light render — Engineering (#009E73), Marketing (#D55E00), Sales (#0072B2), Support (#CC79A7), Mean (#E69F00). Only chrome (background, text) flipped; data palette unchanged.
+      Legibility verdict: PASS
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
-        passed: true
-        comment: Title, axis labels, and tick marks are clearly readable at full resolution.
-          Font sizes are well-scaled for the 4800x2700 canvas.
-      - id: VQ-02
-        name: No Overlap
-        score: 8
-        max: 8
-        passed: true
-        comment: No overlapping text elements. Category labels are well-spaced, legend
-          is separate from data.
-      - id: VQ-03
-        name: Element Visibility
         score: 7
         max: 8
         passed: true
-        comment: Dots are appropriately sized (dots_size=12) with good transparency
-          (0.65). Some overlap in dense regions but points remain distinguishable.
+        comment: 'All font sizes explicitly set; all text readable in both themes.
+          Minor deduction: bottom legend text slightly small in rendered output.'
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No text overlaps; jitter keeps data points spread.
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: dots_size=17 with opacity=0.60 well-adapted for 40 pts/category.
       - id: VQ-04
         name: Color Accessibility
-        score: 4
-        max: 5
-        passed: true
-        comment: Blue and yellow provide good contrast but using only 2 distinct colors
-          for 4 categories reduces clarity (Engineering/Sales both blue, Marketing/Support
-          both yellow).
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good canvas utilization, plot fills appropriate space with balanced
-          margins.
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Labels are descriptive ("Department", "Survey Score") but lack units.
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Y-axis grid is subtle with dotted lines, legend well-placed at bottom.
+        comment: Okabe-Ito is CVD-safe; 4 hues highly distinguishable.
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 3
+        max: 4
+        passed: true
+        comment: Chart fills ~60-70% of canvas; minor horizontal whitespace on sides.
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Satisfaction Score (1-10) has units; Department is descriptive.
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Okabe-Ito canonical order; backgrounds #FAF8F1 / #1A1A17 correct;
+          chrome adapts in both themes.'
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: true
+        comment: Well-configured library default; correct palette and explicit font
+          hierarchy, but not publication-grade polish.
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: true
+        comment: Y-axis-only grid is a good call; theme-adaptive chrome. Pygal's limited
+          customization caps the ceiling.
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Mean reference markers provide visual hierarchy. Data shows meaningfully
+          different spreads across departments.
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct strip plot implementation using XY scatter with jitter.
+        comment: pygal.XY with jitter correctly implements strip plot.
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories on x-axis, continuous values on y-axis as specified.
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Jitter applied (±0.25), transparency for overlapping points, multiple
-          categories shown.
-      - id: SC-04
-        name: Data Range
+        comment: Individual points, random horizontal jitter, multiple categories,
+          mean reference markers all present.
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows full range of data (approximately 3.5-10).
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories on x-axis, satisfaction score on y-axis.
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly labels all four departments.
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Correct format: "strip-basic · pygal · pyplots.ai"'
+        comment: Title matches exact format; legend labels match all series.
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows different distributions per category with varying means and
-          spreads. Support shows wider spread, Sales tighter clustering. Could benefit
-          from more visible outliers.
+        comment: 'Shows all strip plot aspects: individual observations, density,
+          jitter, and central tendency reference.'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Survey response scores by department is a realistic, relatable scenario
-          mentioned in the spec.
+        comment: Employee satisfaction by department is a real, neutral, comprehensible
+          business scenario.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: 1-10 scale is appropriate for survey scores. 40 points per category
-          is reasonable though some clipping to range limits reduces natural distribution
-          appearance.
+        comment: 1-10 survey scale correct; means 6.5-7.5 and stds 1.0-1.8 plausible
+          for workplace surveys.
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -171,41 +183,61 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports → data → style → chart → save.'
+        comment: 'Clean linear flow: imports -> tokens -> data -> style -> chart ->
+          save.'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses random.seed(42) for reproducibility.
+        comment: np.random.seed(42) set before all random calls.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (random, pygal, Style).
+        comment: Only os, numpy, pygal, pygal.style.Style — all used.
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Pythonic list comprehension for point dicts; zip with strict=True;
+          no over-engineering.
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current pygal API.
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Outputs both plot.html and plot.png but saves to current directory
-          without path specification (minor).
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html (correct for pygal interactive
+          library).
+    library_mastery:
+      score: 8
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: Expertly uses pygal.XY, Style object, per-point dict format, value_formatter
+          — all idiomatic pygal patterns.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses pygal's XY chart, custom Style, legend_at_bottom, dots_size.
-          Could leverage more pygal-specific features like tooltips or value formatters.
+        comment: Per-point tooltip dicts and interactive HTML export are distinctly
+          pygal features. Strip-plot construction itself is library-agnostic.
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - html-export
+  - hover-tooltips
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep: []
+  styling:
+  - alpha-blending

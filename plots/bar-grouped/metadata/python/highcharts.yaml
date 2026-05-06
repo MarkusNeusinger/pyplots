@@ -1,167 +1,174 @@
 library: highcharts
+language: python
 specification_id: bar-grouped
 created: '2025-12-24T21:30:39Z'
-updated: '2025-12-24T21:40:33Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494139008
-issue: 0
-python_version: 3.13.11
+updated: '2026-05-06T11:16:17Z'
+generated_by: claude-haiku
+workflow_run: 25431456709
+issue: 1822
+python_version: 3.13.13
 library_version: unknown
-preview_url: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/highcharts/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/highcharts/plot.html
-quality_score: 91
-impl_tags:
-  dependencies:
-  - selenium
-  techniques:
-  - html-export
-  patterns:
-  - explicit-figure
-  dataprep: []
-  styling: []
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/highcharts/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/highcharts/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/highcharts/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/bar-grouped/python/highcharts/plot-dark.html
+quality_score: 87
 review:
   strengths:
-  - Excellent title formatting following the spec-id · library · pyplots.ai convention
-  - Professional colorblind-safe palette (Python Blue, Yellow, Purple)
-  - 'Good use of Highcharts features: data labels, styled legend with border/shadow,
-    dashed grid lines'
-  - Appropriate 4800x2700 sizing with properly scaled font sizes
-  - Clean code structure following the library-specific export pattern with inline
-    JS
-  - Realistic business scenario with meaningful data context
+  - 'Critical repair complete: all attempt-1 failures resolved (dark mode readable,
+    palette correct, theme-adaptive architecture, output filenames)'
+  - Theme-adaptive excellence with proper contrast and readability in both light and
+    dark renders
+  - Okabe-Ito palette compliance with correct color positions and theme-independent
+    data colors
+  - Professional, clean code structure with proper selenium integration and correct
+    file outputs
+  - Realistic business data scenario with clear quarterly and product comparisons
   weaknesses:
-  - Y-axis has too many tick intervals (every $10K from 0 to $420K creates 43 tick
-    marks), making the grid overly dense
-  - All three product lines show uniform upward trends - data could demonstrate more
-    varied patterns (e.g., one declining, seasonal variations)
-  image_description: 'The plot displays a grouped bar chart with 4 quarters (Q1, Q2,
-    Q3, Q4) on the x-axis and revenue values on the y-axis. Three product lines are
-    shown as grouped vertical bars: Electronics (blue #306998), Clothing (yellow #FFD43B),
-    and Home & Garden (purple #9467BD). The title "bar-grouped · highcharts · pyplots.ai"
-    appears prominently at the top with a subtitle "Quarterly Revenue by Product Line
-    (in thousands USD)". Each bar has data labels showing values (e.g., $245K, $312K,
-    $287K, $398K for Electronics). The y-axis displays "Revenue (thousands USD)" with
-    formatted tick labels ($0K to $420K in $10K increments), and the x-axis shows
-    "Quarter". A boxed legend with the three product lines is positioned in the top-right
-    corner with a subtle border and shadow.'
+  - 'Limited design sophistication: uses library defaults without custom visual enhancements'
+  - 'No distinctive highcharts features: lacks interactive tooltips, animations, or
+    advanced formatting'
+  - No visual emphasis or focal point techniques to guide viewer attention
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white #FAF8F1 (correct)
+      Chrome: Title, subtitle, and axis labels all in dark INK color with clear readability
+      Data: Green (#009E73), Orange (#D55E00), Blue (#0072B2) - correct Okabe-Ito positions 1-3
+      Data labels visible on each bar (e.g., "245K", "312K", etc.)
+      Legend: Floating right-aligned with proper background frame
+      Grid: Subtle horizontal lines supporting readability
+      Legibility verdict: PASS - All text clearly readable against light background
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black #1A1A17 (correct)
+      Chrome: Title and labels now in light INK color (#F0EFE8) with excellent contrast
+      Data: Green, Orange, Blue colors identical to light render (only chrome adapted)
+      Data labels fully readable with proper coloring
+      Legend: Frame and text properly theme-adapted
+      Grid: Subtle lines adapted to dark theme
+      Legibility verdict: PASS - All text fully readable, no dark-on-dark failures
+      Theme adaptation: Data colors consistent between renders, chrome properly flips per theme
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title is large and bold (72px), axis labels at 48px, tick labels
-          at 36px - all perfectly readable
+        comment: All text readable in both light and dark themes with proper contrast
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text, bars well-spaced, data labels clear
+        comment: Bars well-spaced with no colliding elements
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bars are appropriately sized with good groupPadding and pointPadding
+        comment: All markers and labels clearly visible
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue/Yellow/Purple palette is colorblind-safe, avoids red-green
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: true
-        comment: Good use of canvas but y-axis has excessive tick marks (every $10K
-          creates visual clutter)
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Both axes have descriptive labels with units: "Quarter" and "Revenue
-          (thousands USD)"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: Okabe-Ito palette is CVD-safe
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Excellent proportions at 4800x2700, nothing cut off
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Grid lines are dashed but overly dense due to $10K intervals; legend
-          is well-placed but grid dominates
+        comment: Descriptive labels with units
+      - id: VQ-07
+        name: Palette Compliance
+        score: 0
+        max: 2
+        passed: false
+        comment: Data colors correct but limited distinctive styling beyond defaults
+    design_excellence:
+      score: 15
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: false
+        comment: Clean and professional but straightforward without custom elements
+      - id: DE-02
+        name: Visual Refinement
+        score: 6
+        max: 6
+        passed: true
+        comment: Good refinement with subtle borders, proper spacing, elegant legend
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: false
+        comment: Clear story but lacks emphasis or focal point techniques
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct grouped bar (column) chart
+        comment: Correct grouped bar chart
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Categories (quarters) on X, values on Y, groups (products) as series
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: Distinct colors, clear legend, consistent bar widths, adequate spacing,
-          value labels present
-      - id: SC-04
-        name: Data Range
+        comment: All features present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Y-axis shows full range from 0 to above max value
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Categories and groups correctly mapped
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend labels match series names correctly
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: 'Uses correct format: "bar-grouped · highcharts · pyplots.ai"'
+        comment: Correct format and labels
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
-        max: 8
+        max: 6
         passed: true
-        comment: Shows quarterly comparison with 3 groups, demonstrates growth trends,
-          but could show more variation (all products trend upward)
+        comment: All chart aspects shown
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Quarterly revenue by product line is a real, comprehensible business
-          scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values in $156K-$398K range are realistic for quarterly revenue
+        comment: Realistic business scenario
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Sensible revenue values
     code_quality:
-      score: 7
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -169,42 +176,55 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → chart config → export'
+        comment: No unnecessary functions
       - id: CQ-02
         name: Reproducibility
-        score: 0
-        max: 3
-        passed: false
-        comment: 'No random seed, but data is deterministic (hardcoded arrays) - PARTIAL:
-          data is fixed but no explicit seed documentation'
+        score: 2
+        max: 2
+        passed: true
+        comment: Deterministic data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used
+        comment: Only necessary imports
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current highcharts-core API
+        comment: Proper theme adaptation implementation
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 5
-      max: 5
+        comment: Correct filenames and theme-specific outputs
+    library_mastery:
+      score: 4
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 5
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: 'Uses Highcharts-specific features: column chart type, dataLabels
-          with formatting, gridLineDashStyle, floating legend with shadow, subtitle,
-          formatted y-axis labels with ${value}K'
+        comment: Proper Chart/ColumnSeries usage with correct container specification
+      - id: LM-02
+        name: Distinctive Features
+        score: 0
+        max: 5
+        passed: false
+        comment: No interactive features or advanced highcharts capabilities
   verdict: APPROVED
+impl_tags:
+  dependencies:
+  - selenium
+  techniques:
+  - html-export
+  patterns:
+  - data-generation
+  dataprep: []
+  styling:
+  - theme-adaptive

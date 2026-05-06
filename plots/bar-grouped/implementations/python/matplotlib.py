@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 bar-grouped: Grouped Bar Chart
 Library: matplotlib 3.10.9 | Python 3.13.13
 Quality: 88/100 | Updated: 2026-05-06
@@ -41,32 +41,61 @@ offsets = np.linspace(-(n_groups - 1) / 2, (n_groups - 1) / 2, n_groups) * bar_w
 fig, ax = plt.subplots(figsize=(16, 9), facecolor=PAGE_BG)
 ax.set_facecolor(PAGE_BG)
 
+# Track max value per category for emphasis
+max_values_per_category = {cat: max(sales_data[group][i] for group in groups) for i, cat in enumerate(categories)}
+
 bars = []
 for i, (group, color) in enumerate(zip(groups, OKABE_ITO, strict=True)):
     bar = ax.bar(
-        x + offsets[i],
-        sales_data[group],
-        bar_width,
-        label=group,
-        color=color,
-        edgecolor=INK_SOFT,
-        linewidth=1.0,
+        x + offsets[i], sales_data[group], bar_width, label=group, color=color, edgecolor=INK_SOFT, linewidth=1.5
     )
     bars.append(bar)
 
-# Add value labels on top of bars
+    # Add subtle drop shadows for depth
+    for rect in bar:
+        # Shadow patch (offset below and slightly to the right)
+        shadow = plt.Rectangle(
+            (rect.get_x() + 0.003, rect.get_y() - 0.02),
+            rect.get_width(),
+            rect.get_height(),
+            facecolor=INK_MUTED,
+            alpha=0.08,
+            zorder=0,
+        )
+        ax.add_patch(shadow)
+
+# Add value labels and markers on top of bars
 for bar_group in bars:
-    for bar in bar_group:
+    for j, bar in enumerate(bar_group):
         height = bar.get_height()
+        is_max = height == max_values_per_category[categories[j]]
+
+        # Marker dot at bar top
+        marker_size = 120 if is_max else 80
+        marker_alpha = 1.0 if is_max else 0.6
+        ax.scatter(
+            bar.get_x() + bar.get_width() / 2,
+            height,
+            s=marker_size,
+            color=bar.get_facecolor(),
+            edgecolors=INK_SOFT,
+            linewidth=1.2 if is_max else 0.8,
+            alpha=marker_alpha,
+            zorder=3,
+        )
+
+        # Value label
         ax.annotate(
             f"{int(height)}",
             xy=(bar.get_x() + bar.get_width() / 2, height),
-            xytext=(0, 5),
+            xytext=(0, 8),
             textcoords="offset points",
             ha="center",
             va="bottom",
             fontsize=14,
             color=INK,
+            fontweight="bold" if is_max else "normal",
+            zorder=4,
         )
 
 # Style

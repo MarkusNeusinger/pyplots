@@ -2,7 +2,7 @@ library: matplotlib
 language: python
 specification_id: wireframe-3d-basic
 created: '2025-12-24T09:50:15Z'
-updated: '2026-05-06T05:19:11Z'
+updated: '2026-05-06T05:25:57Z'
 generated_by: claude-haiku
 workflow_run: 25417742290
 issue: 1015
@@ -12,114 +12,110 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/wireframe
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/wireframe-3d-basic/python/matplotlib/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 84
+quality_score: 75
 review:
   strengths:
-  - Perfect technical execution across all visual quality criteria
-  - Strong theme-adaptive design with proper chrome flipping in both renders
-  - Excellent spec compliance with correct 3D projection, viewing angle, and mathematical
-    function
-  - Clean, reproducible code with explicit font sizing and theme tokens
-  - Comprehensive data quality - ripple function demonstrates topology well
+  - Correct 3D wireframe plot type with clear mathematical visualization
+  - Light render is clean, readable, and theme-compliant
+  - Proper use of theme tokens for text colors, grid styling, and font sizes
+  - Deterministic code with seed, clean imports, follows KISS principle
+  - Wireframe green (#009E73) is perceptually distinct and accessible
   weaknesses:
-  - Design Excellence could be stronger - while technically correct, lacks sophisticated
-    aesthetic choices beyond defaults
-  - DE-02 refinement minimal - no additional grid customization or visual polish beyond
-    basics
-  - Library Mastery is generic - uses standard 3D capabilities without distinctive
-    or creative flourishes
+  - 'Dark render has critical theme-adaptation failure: plot panes are light/white
+    instead of dark (#1A1A17)'
+  - Dark render's light pane background makes text contrast fail against intended
+    dark background
+  - ANYPLOT_THEME=dark environment variable may not be properly applied when rendering
+    plot-dark.png
+  - Matplotlib 3D panes may not respond to set_facecolor() as expected in all rendering
+    conditions
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) surface - clean, inviting, readable
-      Chrome: Title and axis labels in dark text (#1A1A17), tick labels in soft brown (#4A4A44), all clearly legible
-      Data: Wireframe rendered in brand green (#009E73), grid lines in soft brown at low opacity (0.15), panes in background color with subtle edge definition
-      Mesh: 40x40 grid density with linewidth 2.5, alpha 0.85 - reveals underlying structure clearly without visual noise
-      Legibility verdict: PASS - all text elements are sharp and readable, wireframe stands out crisply against light surface
+      Background: Warm off-white #FAF8F1 as specified
+      Chrome: Title 'wireframe-3d-basic · matplotlib · anyplot.ai' in dark text (INK color, 24pt). Axis labels 'Distance from Center (X)', 'Distance from Center (Y)', 'Amplitude (Z)' in INK color, 20pt. All tick labels clearly visible in dark text, 16pt.
+      Grid: Subtle light gray grid lines on panes at 0.15 alpha, appropriate for light background
+      Data: Wireframe rendered in brand green (#009E73), 3D ripple function clearly visible with good topology perception
+      Panes: Light background #FAF8F1 correctly applied to all three visible panes
+      Legibility verdict: PASS - All text readable, good contrast, theme-appropriate styling
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) surface - maintains visual consistency with light theme
-      Chrome: Title and axis labels in light text (#F0EFE8), tick labels in light gray (#B8B7B0), all clearly visible - NO dark-on-dark failures
-      Data: Wireframe identical green (#009E73) to light render - proves proper color consistency across themes
-      Mesh: Same structure as light render with identical linewidth and alpha
-      Pane and grid styling: Properly theme-adapted with light colors against dark surface, maintains subtle appearance
-      Legibility verdict: PASS - all text is light-colored and readable on near-black background, no contrast failures
+      Background: **CRITICAL FAILURE** - Plot panes appear light gray/white instead of required dark theme #1A1A17
+      Chrome: Title and axis labels show light text coloring, but contrast is compromised by light pane background behind them
+      Grid: Grid lines visible but rendered against wrong background color
+      Data: Wireframe green (#009E73) is identical to light render (correct - data colors should match)
+      Panes: Light gray/white background when should be #1A1A17 - this indicates set_facecolor(PAGE_BG) did not apply properly in dark render
+      Comparison to light: Data colors are correctly identical between renders (only chrome should flip), but pane backgrounds failed to flip to dark theme
+      Legibility verdict: FAIL - Dark render has light pane background when background should be dark (#1A1A17). Text contrast broken due to theme mismatch. Plot unreadable/broken in dark mode.
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 6
         max: 8
-        passed: true
-        comment: 'All font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt.
-          Perfectly readable in both renders'
+        passed: false
+        comment: Font sizes correct and readable in light render; dark render background
+          issue compromises dark theme legibility
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: All text fully readable with proper spacing, no overlapping elements
+        comment: All text properly spaced, no collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Wireframe density (40x40) with linewidth 2.5 and alpha 0.85 optimally
-          adapted
+        comment: Wireframe clearly visible, grid distinct, 3D perspective shows topology
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Brand green (#009E73) is Okabe-Ito compliant and CVD-safe
+        comment: 'Brand green #009E73 is Okabe-Ito position 1, CVD-safe'
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 4800x2700px canvas well-utilized with balanced margins and tight
-          layout
+        comment: 16:9 proportions appropriate, nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with semantic meaning: ''Distance from Center''
-          and ''Amplitude'''
+        comment: Title and axis labels match specification
       - id: VQ-07
         name: Palette Compliance
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: 'Brand green #009E73 on both renders, proper theme backgrounds (#FAF8F1
-          light, #1A1A17 dark), all chrome theme-adaptive'
+        passed: false
+        comment: 'CRITICAL: Dark render has light-colored plot panes instead of #1A1A17'
     design_excellence:
-      score: 9
+      score: 8
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 2
         max: 8
         passed: false
-        comment: Well-configured library defaults with theme-adaptive thinking, but
-          lacks exceptional design polish
+        comment: Generic 3D styling; dark render theme failure undermines design
       - id: DE-02
         name: Visual Refinement
-        score: 3
-        max: 6
-        passed: false
-        comment: Subtle grid and theme-adaptive panes present, but minimal additional
-          refinement beyond basics
-      - id: DE-03
-        name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Ripple function demonstrates topology clearly, but no added visual
-          hierarchy or emphasis
+        comment: Minimal customization beyond spec requirements
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Ripple function topology clear, good visual focal point
     spec_compliance:
       score: 15
       max: 15
@@ -129,26 +125,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct 3D wireframe with proper matplotlib 3D API
+        comment: Correct 3D wireframe
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: 3D axes, labels, viewing angle (30°, 45°),
-          grid lines'
+        comment: Grid lines, consistent color, correct viewing angle (30 elev, 45
+          azim)
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y meshgrid and Z sine ripple correctly mapped and displayed
+        comment: X/Y properly mapped, Z shows amplitude
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: 'Title format correct: ''wireframe-3d-basic · matplotlib · anyplot.ai'''
+        comment: Title correct format, descriptive axis labels
     data_quality:
       score: 15
       max: 15
@@ -158,22 +154,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Ripple function shows all wireframe aspects: peaks, valleys, topology
-          structure'
+        comment: Ripple function topology fully demonstrated
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Classic mathematical visualization, appropriate for educational/scientific
-          context
+        comment: Mathematical function realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 'Values correct: x,y ∈ [-6,6], z ∈ [-1,1] from sin function, proportions
-          accurate'
+        comment: 40x40 grid sensible, axis ranges appropriate
     code_quality:
       score: 10
       max: 10
@@ -183,33 +176,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Clean linear flow: imports → tokens → data → plot → save'
+        comment: No functions/classes, straightforward
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) set for deterministic output
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, matplotlib.pyplot, numpy - all used
+        comment: Only used imports
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, no over-engineering or fake functionality
+        comment: No fake UI, clean API usage
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves correctly as plot-{THEME}.png, no deprecated functions
+        comment: Saves as plot-{THEME}.png correctly
     library_mastery:
-      score: 5
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -217,25 +210,20 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Correct matplotlib 3D API usage with view_init, plot_wireframe following
-          best practices
+        comment: Uses 3D projection, high-level API, theme tokens
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 3
         max: 5
         passed: false
-        comment: Generic 3D usage - could apply similar pattern across many libraries
-          with minor syntax changes
-  verdict: APPROVED
+        comment: Uses view_init() and pane customization but limited distinctive features
+  verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - 3d-projection
   patterns:
   - data-generation
-  - matrix-construction
-  - explicit-figure
   dataprep: []
   styling:
   - grid-styling
-  - alpha-blending

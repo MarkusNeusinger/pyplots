@@ -260,6 +260,22 @@ async def seo_palette():
     )
 
 
+@router.get("/seo-proxy/map")
+async def seo_map():
+    """Bot-optimized network map page with correct og:tags."""
+    return HTMLResponse(
+        BOT_HTML_TEMPLATE.format(
+            title="Network Map | anyplot.ai",
+            description=(
+                "Interactive network map of plot specifications grouped by visual similarity — "
+                "explore relationships across all anyplot.ai chart types."
+            ),
+            image=DEFAULT_HOME_IMAGE,
+            url="https://anyplot.ai/map",
+        )
+    )
+
+
 @router.get("/seo-proxy/stats")
 async def seo_stats():
     """Bot-optimized stats page with correct og:tags."""

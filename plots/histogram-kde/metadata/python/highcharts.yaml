@@ -2,7 +2,7 @@ library: highcharts
 language: python
 specification_id: histogram-kde
 created: '2025-12-24T21:40:52Z'
-updated: '2026-05-06T17:09:49Z'
+updated: '2026-05-06T17:17:42Z'
 generated_by: claude-haiku
 workflow_run: 25449525435
 issue: 1823
@@ -12,35 +12,38 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/histogram
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/highcharts/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/highcharts/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/histogram-kde/python/highcharts/plot-dark.html
-quality_score: 88
+quality_score: 90
 review:
   strengths:
-  - Perfect visual quality with all text clearly legible in both themes
-  - 'Excellent spec compliance: correct histogram type with KDE overlay, proper density
-    normalization, semi-transparent bars'
-  - 'Strong data visualization: realistic stock returns data with left tail showing
-    risk distribution'
-  - Clean code structure with proper theme adaptation using environment tokens
-  - Effective use of Okabe-Ito palette with appropriate color contrast
-  - Both renders properly themed with identical data colors and readable chrome across
-    light and dark backgrounds
+  - Perfect text legibility in both light and dark themes with zero theme-adaptation
+    failures
+  - Excellent data representation with semi-transparent histogram and smooth KDE curve
+  - Full Okabe-Ito palette compliance with correct brand color (#009E73) as primary
+    series
+  - Professional KDE implementation using Scott's rule bandwidth for automatic smoothing
+  - Strong typography hierarchy with appropriately sized elements for 4800×2700 canvas
+  - Proper theme-adaptive design with correct token usage (INK, INK_SOFT, GRID, PAGE_BG)
   weaknesses:
-  - 'Design Excellence is minimal: default styling without custom palette or distinctive
-    visual refinement'
-  - Legend could be better integrated rather than as a separate box
-  - Could benefit from more sophisticated typography hierarchy beyond size variations
+  - 'No spine removal: chart shows default highcharts axes without minimizing visual
+    clutter per style guide recommendations'
+  - Library mastery could be enhanced with more distinctive highcharts-specific interactive
+    features or advanced options
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) with clean layout
-      Chrome: Title "histogram-kde · highcharts · anyplot.ai" (bold, 64px), subtitle "Simulated Daily Stock Returns (%)" (44px), axis labels "Density" and "Return (%)" (48px), and tick labels (36px) all clearly readable in dark ink on light background
-      Data: Semi-transparent teal/green histogram bars (#009E73) with distinct outlines; smooth orange/vermillion KDE curve (#D55E00) overlaid; legend visible in top-right with white background
-      Legibility verdict: PASS - All text is clearly visible with good contrast; histogram and KDE are properly distinguished
+      Background: Warm off-white (#FAF8F1) - correct
+      Chrome: Title "histogram-kde · highcharts · anyplot.ai" (64px bold), subtitle "Simulated Daily Stock Returns (%)" (44px), X-axis "Return (%)" (48px), Y-axis "Density" (48px), tick labels (36px) all in dark text (#1A1A17/#4A4A44) - all readable against light background
+      Data: Histogram bars in brand green (#009E73) with alpha 0.55 and darker borders; KDE line in orange (#D55E00) with light fill - both clearly visible and distinguishable
+      Grid: Subtle dotted Y-axis grid visible and appropriate
+      Legend: Top right corner with custom styling (rounded corners, border, semi-transparent background) - readable
+      Legibility verdict: PASS - all text is highly readable with excellent contrast
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) with proper spacing
-      Chrome: Title, subtitle, axis labels, and tick labels all clearly readable in light text on dark background; grid lines subtle but visible
-      Data: Histogram bars and KDE curve maintain identical colors from light render (#009E73 and #D55E00); legend properly visible with dark-themed background
-      Legibility verdict: PASS - All text is readable with strong contrast against dark background; no dark-on-dark failures; data colors and visual hierarchy preserved perfectly
+      Background: Warm near-black (#1A1A17) - correct
+      Chrome: Title, subtitle, axis labels, tick labels all rendered in light colors (#F0EFE8/#B8B7B0) - all readable against dark background; no dark-on-dark failures detected
+      Data: Histogram bars remain green (#009E73) and KDE line remains orange (#D55E00) - identical to light render as required; data colors are theme-independent
+      Grid: Subtle dotted Y-axis grid visible - appropriate for dark background
+      Legend: Maintains custom styling and readability
+      Legibility verdict: PASS - all text is readable; no dark-on-dark issues; both renders maintain perfect theme compliance
   criteria_checklist:
     visual_quality:
       score: 30
@@ -51,77 +54,75 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All text (title, labels, ticks) clearly readable at full size in
-          both themes with appropriate font sizes (64px title, 48px labels, 36px ticks)
+        comment: All text appropriately sized (64px title, 48px axis labels, 36px
+          ticks) and readable in both light and dark renders
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text or element collisions; histogram bars adjacent without overlap;
-          KDE curve sits cleanly above bars; legend positioned without interference
+        comment: Title, subtitle, axes, legend, and data elements are well-spaced
+          with no collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Semi-transparent bars properly show density; KDE line clearly visible
-          with 6px linewidth; all elements clearly distinguishable from background
+        comment: Histogram bars and KDE line clearly visible; semi-transparent design
+          (alpha 0.55 for bars, 0.15 for KDE fill) shows both series
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette is CVD-safe; green and orange have sufficient contrast;
-          no red-green as sole signal
+        comment: 'Okabe-Ito palette (#009E73 brand, #D55E00 secondary) is colorblind-safe
+          with strong contrast'
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 4800x2700 canvas properly utilized with good margins (300px bottom,
-          250px left, 200px top/right); nothing cut off
+        comment: 4800×2700 landscape with generous margins (300px bottom, 250px left)
+          yields excellent proportions
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: X-axis 'Return (%)' and Y-axis 'Density' are descriptive with units;
-          title correctly formatted as 'histogram-kde · highcharts · anyplot.ai'
+        comment: Title, X-axis, Y-axis all descriptive with units; format is standard
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series uses #009E73 (Okabe-Ito position 1); second series
-          uses #D55E00 (position 2); backgrounds correct (#FAF8F1 light, #1A1A17 dark);
-          data colors identical between themes'
+        comment: 'First series #009E73 (Okabe-Ito pos 1), KDE #D55E00 (pos 2); backgrounds
+          correct; both renders theme-correct'
     design_excellence:
-      score: 10
+      score: 14
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 6
         max: 8
-        passed: false
-        comment: Standard Okabe-Ito palette without custom modifications; clean but
-          conventional design without special visual polish
+        passed: true
+        comment: Typography hierarchy with large fonts, custom margins, translucent
+          legend with rounded borders, and hover styling show professional polish;
+          could emphasize tail distribution more
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: 'Minimal customization: standard spine configuration, basic grid
-          styling, no exceptional whitespace management'
+        comment: Grid is subtle and whitespace generous, but chart shows default axes
+          without spine minimization (style guide recommends removing top/right spines)
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 5
         max: 6
         passed: true
-        comment: Realistic data (daily stock returns with left tail) creates clear
-          visual narrative about risk distribution; bimodal pattern visible; KDE reveals
-          underlying shape
+        comment: Clear focal point on central distribution with KDE overlay; bimodal
+          pattern evident; color contrast guides attention well
     spec_compliance:
       score: 15
       max: 15
@@ -131,55 +132,52 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct histogram with KDE overlay plot type; shows both discrete
-          binning and continuous density estimation
+        comment: Correct histogram with KDE overlay
       - id: SC-02
         name: Required Features
-        score: 4
-        max: 4
+        score: 5
+        max: 5
         passed: true
-        comment: Semi-transparent histogram bars (alpha 0.5), density-normalized y-axis,
-          KDE curve with appropriate bandwidth (Scott's rule), 30 bins
+        comment: Semi-transparent bars, smooth KDE curve with Scott's rule bandwidth,
+          density-normalized Y-axis, contrasting colors
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis shows full data range (-9 to 10.5%); Y-axis density scaled
-          appropriately (0 to 0.17)
+        comment: X shows returns (%), Y shows density (normalized); all 500 observations
+          visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title correctly formatted; legend shows 'Histogram' and 'KDE' with
-          matching colors
+        comment: Title and legend correctly formatted
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: 'Demonstrates all aspects of histogram-KDE: discrete bin representation,
-          continuous density curve, left-tail pattern showing distribution shape'
+        comment: 'All aspects shown: binned frequencies, smooth density, tail behavior,
+          central distribution'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Simulated daily stock returns (±1-2% typical, left tail to -10% for
-          loss scenarios) is plausible and neutral; no controversial data
+        comment: 'Realistic stock returns (normal: 0.05%±2.5%; tail: -3.0%±1.5%);
+          appropriate scale and neutral domain'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Density values and return percentages are sensible; KDE bandwidth
-          calculated via Scott's rule; 50 observations in normal distribution + 100
-          in tail distribution appropriate for meaningful KDE
+        comment: 30 bins for 500 observations appropriate; Scott's rule bandwidth
+          professional; realistic return range
     code_quality:
       score: 10
       max: 10
@@ -189,61 +187,56 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No functions or classes beyond straightforward data generation and
-          chart configuration
+        comment: No unnecessary functions/classes; straightforward API usage
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Seed set to 42; all data generation is deterministic
+        comment: np.random.seed(42) ensures deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'All imports used: numpy (data), requests (CDN), highcharts_core
-          (chart), selenium (screenshot)'
+        comment: All imports used
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: No simulated interactive features; appropriate complexity; clean
-          code organization
+        comment: No fake UI; appropriate complexity for interactive library
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves both plot-{THEME}.png and plot-{THEME}.html; no bare plot.png;
-          uses current highcharts_core API
+        comment: Saves as plot-{THEME}.png/html; current API
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Proper HighchartsOptions configuration; ColumnSeries for histogram,
-          AreaSplineSeries for KDE curve; correct data formatting; proper theme token
-          application; Selenium rendering as specified
+        comment: Correct use of HighchartsOptions, Chart, ColumnSeries, AreaSplineSeries;
+          proper configuration
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: false
-        comment: Selenium headless rendering with multi-CDN fallback is library-specific
-          strength; AreaSplineSeries for smooth curves; HTML artifact generation;
-          but mostly standard highcharts usage pattern
+        comment: AreaSplineSeries for smooth curve, hover states, custom legend; could
+          explore more highcharts-specific interactivity
   verdict: APPROVED
 impl_tags:
   dependencies:
   - requests
   - selenium
   techniques:
+  - layer-composition
   - html-export
   patterns:
   - data-generation
@@ -252,3 +245,5 @@ impl_tags:
   - binning
   styling:
   - alpha-blending
+  - grid-styling
+  - edge-highlighting

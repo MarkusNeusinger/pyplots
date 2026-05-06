@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 heatmap-annotated: Annotated Heatmap
-Library: letsplot | Python 3.13
-Quality: pending | Created: 2025-12-24
+Library: letsplot 4.9.0 | Python 3.13.13
+Quality: 96/100 | Updated: 2026-05-06
 """
 
 import os

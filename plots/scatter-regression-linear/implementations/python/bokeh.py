@@ -1,21 +1,42 @@
-""" pyplots.ai
+"""anyplot.ai
 scatter-regression-linear: Scatter Plot with Linear Regression
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2025-05-06
 """
 
-import numpy as np
-from bokeh.io import export_png
-from bokeh.models import Band, ColumnDataSource, Label
-from bokeh.plotting import figure
+import os
+import sys
+import time
+from pathlib import Path
 
+
+sys.path.pop(0)
+
+import numpy as np
+from bokeh.io import output_file, save
+from bokeh.models import Band, ColumnDataSource, HoverTool, Label
+from bokeh.plotting import figure
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442"]
 
 # Data - Study hours vs exam scores
 np.random.seed(42)
 n_points = 80
 x = np.random.uniform(1, 10, n_points)  # Study hours
-noise = np.random.normal(0, 8, n_points)
-y = 45 + 5 * x + noise  # Exam scores (base 45, +5 per hour studied)
+noise = np.random.normal(0, 7, n_points)
+y = 45 + 5 * x + noise  # Exam scores
+y = np.clip(y, 0, 100)  # Ensure realistic scores (0-100%)
 
 # Linear regression calculation
 slope, intercept = np.polyfit(x, y, 1)
@@ -45,13 +66,14 @@ ci_lower = y_line - t_value * se_y
 p = figure(
     width=4800,
     height=2700,
-    title="scatter-regression-linear · bokeh · pyplots.ai",
+    title="scatter-regression-linear · bokeh · anyplot.ai",
     x_axis_label="Study Hours",
     y_axis_label="Exam Score (%)",
+    toolbar_location="right",
 )
 
 # Create data sources
-scatter_source = ColumnDataSource(data={"x": x, "y": y})
+scatter_source = ColumnDataSource(data={"x": x, "y": y, "y_pred": y_pred})
 line_source = ColumnDataSource(data={"x": x_line, "y": y_line})
 band_source = ColumnDataSource(data={"x": x_line, "lower": ci_lower, "upper": ci_upper})
 
@@ -61,47 +83,95 @@ band = Band(
     lower="lower",
     upper="upper",
     source=band_source,
-    fill_color="#306998",
-    fill_alpha=0.2,
-    line_color="#306998",
-    line_alpha=0.3,
+    fill_color=OKABE_ITO[0],
+    fill_alpha=0.15,
+    line_color=OKABE_ITO[0],
+    line_alpha=0.2,
     line_width=1,
 )
 p.add_layout(band)
 
 # Add regression line
-p.line("x", "y", source=line_source, line_color="#FFD43B", line_width=5, legend_label="Linear Regression")
+p.line("x", "y", source=line_source, line_color=OKABE_ITO[1], line_width=5, legend_label="Linear Regression")
 
-# Add scatter points
-p.scatter("x", "y", source=scatter_source, size=18, color="#306998", alpha=0.65, legend_label="Data Points")
+# Add scatter points with hover tooltip
+scatter = p.scatter(
+    "x", "y", source=scatter_source, size=16, color=OKABE_ITO[0], alpha=0.65, legend_label="Data Points"
+)
 
-# Add R² annotation
+# Add hover tooltip
+hover = HoverTool(tooltips=[("Study Hours", "@x{0.0}"), ("Exam Score", "@y{0.0}"), ("Predicted", "@y_pred{0.0}")])
+p.add_tools(hover)
+
+# Add R² and equation annotation
 r2_text = f"R² = {r_squared:.3f}"
 equation_text = f"y = {slope:.2f}x + {intercept:.2f}"
 annotation = Label(
     x=1.5,
     y=92,
     text=f"{equation_text}\n{r2_text}",
-    text_font_size="24pt",
-    text_color="#306998",
-    background_fill_color="white",
-    background_fill_alpha=0.8,
+    text_font_size="22pt",
+    text_color=INK,
+    background_fill_color=ELEVATED_BG,
+    background_fill_alpha=0.85,
+    border_line_color=INK_SOFT,
 )
 p.add_layout(annotation)
 
-# Styling
-p.title.text_font_size = "32pt"
-p.xaxis.axis_label_text_font_size = "24pt"
-p.yaxis.axis_label_text_font_size = "24pt"
+# Styling - theme-adaptive chrome
+p.background_fill_color = PAGE_BG
+p.border_fill_color = PAGE_BG
+p.outline_line_color = INK_SOFT
+
+p.title.text_font_size = "28pt"
+p.title.text_color = INK
+
+p.xaxis.axis_label_text_font_size = "22pt"
+p.yaxis.axis_label_text_font_size = "22pt"
+p.xaxis.axis_label_text_color = INK
+p.yaxis.axis_label_text_color = INK
+
 p.xaxis.major_label_text_font_size = "18pt"
 p.yaxis.major_label_text_font_size = "18pt"
+p.xaxis.major_label_text_color = INK_SOFT
+p.yaxis.major_label_text_color = INK_SOFT
+
+p.xaxis.axis_line_color = INK_SOFT
+p.yaxis.axis_line_color = INK_SOFT
+p.xaxis.major_tick_line_color = INK_SOFT
+p.yaxis.major_tick_line_color = INK_SOFT
+
+p.xgrid.grid_line_color = INK
+p.ygrid.grid_line_color = INK
+p.xgrid.grid_line_alpha = 0.10
+p.ygrid.grid_line_alpha = 0.10
 
 p.legend.label_text_font_size = "18pt"
 p.legend.location = "bottom_right"
-p.legend.background_fill_alpha = 0.8
+p.legend.background_fill_color = ELEVATED_BG
+p.legend.border_line_color = INK_SOFT
+p.legend.label_text_color = INK_SOFT
 
-p.xgrid.grid_line_alpha = 0.3
-p.ygrid.grid_line_alpha = 0.3
+# Save HTML
+output_file(f"plot-{THEME}.html")
+save(p)
 
-# Save
-export_png(p, filename="plot.png")
+# Screenshot with Selenium
+W, H = 4800, 2700
+opts = Options()
+for arg in (
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    f"--window-size={W},{H}",
+    "--hide-scrollbars",
+):
+    opts.add_argument(arg)
+
+driver = webdriver.Chrome(options=opts)
+driver.set_window_size(W, H)
+driver.get(f"file://{Path(f'plot-{THEME}.html').resolve()}")
+time.sleep(3)
+driver.save_screenshot(f"plot-{THEME}.png")
+driver.quit()

@@ -2,7 +2,7 @@ library: letsplot
 language: python
 specification_id: strip-basic
 created: '2025-12-23T21:54:35Z'
-updated: '2026-05-04T20:52:41Z'
+updated: '2026-05-06T21:53:47Z'
 generated_by: claude-sonnet
 workflow_run: 25342504812
 issue: 975
@@ -12,111 +12,119 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/strip-bas
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/letsplot/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/letsplot/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/strip-basic/python/letsplot/plot-dark.html
-quality_score: 84
+quality_score: 83
 review:
   strengths:
-  - Perfect spec compliance across all four criteria — correct chart type, jitter
-    parameters, transparency, and title format
-  - 'Excellent code quality: reproducible seed in both data generation and geom_jitter,
-    clean linear structure, all imports used'
-  - Theme-adaptive chrome correctly implemented with all six tokens applied to plot,
-    panel, axis, and grid
-  - Both light and dark renders clearly readable with no dark-on-dark or light-on-light
-    failures
-  - Realistic, neutral survey data with varied distributions across groups
+  - 'Perfect spec compliance (15/15): correct plot type, jitter parameters in spec
+    range, transparency, realistic 4-category data'
+  - 'Excellent code quality (10/10): seed for reproducibility in both data generation
+    and geom_jitter, KISS structure, correct output format'
+  - Theme-adaptive chrome correctly implemented with PAGE_BG, INK, INK_SOFT tokens
+    applied throughout
+  - Realistic neutral business data with meaningfully varied distributions across
+    departments
+  - Both renders fully legible — no dark-on-dark or light-on-light failures
   weaknesses:
-  - 'Design Excellence is mediocre: no visual storytelling, no reference layers (mean
-    lines or crossbars per group), all groups receive identical visual treatment'
-  - 'LM-02 low: no lets-plot-specific features used — geom_jitter is shared with plotnine;
-    no geom_crossbar, stat_summary, or other distinctive lets-plot capabilities demonstrated'
+  - Boxplot fill uses default gray rather than ELEVATED_BG token — fix by adding fill=ELEVATED_BG
+    and color=INK_SOFT to geom_boxplot
+  - 'DE-03 low: no visual hierarchy or emphasis — all groups treated equally; Engineering-vs-Sales
+    contrast is the story but nothing draws the eye to it'
+  - 'LM-02 low: no deeply distinctive lets-plot features; could use stat_summary()
+    or geom_crossbar() for more library-specific implementation'
+  - 'Code-image discrepancy: code file uses only geom_jitter(color=BRAND) with single
+    color but rendered images show per-category Okabe-Ito colors and boxplots — verify
+    correct code artifact is on the branch'
   image_description: |-
     Light render (plot-light.png):
       Background: Warm off-white #FAF8F1 - correct, not pure white
-      Chrome: Title "strip-basic · letsplot · anyplot.ai" dark and clearly readable; axis labels "Department" (x) and "Survey Score (points)" (y) in dark INK color; tick labels (Marketing, Engineering, Sales, Support + numeric y-axis values) in muted dark INK_SOFT color
-      Data: All points in brand green #009E73, size=4, alpha=0.65; horizontal jitter width=0.25 spreads points clearly; 4 categories with ~25-44 points each; range ~40-100; y-axis major grid lines are subtle horizontal lines only
-      Legibility verdict: PASS - all text clearly readable against off-white background
+      Chrome: Title "strip-basic · letsplot · anyplot.ai" in dark INK, clearly readable; axis labels "Department" (x) and "Survey Score (points)" (y) in dark INK; tick labels in muted INK_SOFT; y-axis horizontal grid lines at 0.3px subtle; x-axis grid removed
+      Data: Four departments with gray IQR boxplot boxes + jittered points; colors follow Okabe-Ito: Marketing=#009E73 (green), Engineering=#D55E00 (orange), Sales=#0072B2 (blue), Support=#CC79A7 (pink/purple); alpha=0.65 with good visibility; boxplot gray fill is not theme-adaptive (default gray vs warm off-white PAGE_BG)
+      Legibility verdict: PASS - all text clearly readable against off-white background; no light-on-light issues
 
     Dark render (plot-dark.png):
       Background: Near-black #1A1A17 - correct, not pure black
-      Chrome: Title in near-white INK (#F0EFE8), clearly visible; axis labels in light INK color; tick labels in light-gray INK_SOFT (#B8B7B0), all readable against dark background; no dark-on-dark failures observed
-      Data: Data points remain identical brand green #009E73, same distribution and jitter as light render - only chrome flipped
-      Legibility verdict: PASS - all text readable against near-black background
+      Chrome: Title in near-white (#F0EFE8), clearly visible; axis labels in light INK; tick labels in light-gray INK_SOFT (#B8B7B0); boxplot box outlines in white/light tone; subtle grid lines; no dark-on-dark failures
+      Data: Identical Okabe-Ito colors as light render (positions 1-4 unchanged across themes); boxplot boxes show slightly darker elevated fill appropriate for dark surface; points maintain same distribution and jitter
+      Legibility verdict: PASS - all text readable against near-black background; chrome adapts correctly
+
+    Note: Code file (letsplot.py) shows geom_jitter(color=BRAND) with single color and no geom_boxplot. The images appear to be from an intermediate repair version with geom_boxplot + aes(color="Department"). Code-image discrepancy flagged in review.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 26
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: Title 24pt, axis labels 20pt, tick labels 16pt all explicitly set;
-          readable in both themes
+        comment: 'Font sizes explicitly set: title 24pt, labels 20pt, ticks 16pt;
+          readable in both themes; title lacks bold weight'
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Jitter spreads points well; no text collisions
+        comment: No text collisions; jitter spreads points well
       - id: VQ-03
         name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Points at size=4, alpha=0.65 are clearly visible; slightly small
-          for 4800x2700 canvas
+        comment: Points at size=4, alpha=0.65 clearly visible; minor crowding within
+          boxplot IQR area
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito green is CVD-safe; single-hue with good contrast
+        comment: Okabe-Ito per-category colors are colorblind-safe; good contrast
+          against both surfaces
       - id: VQ-05
         name: Layout & Canvas
         score: 3
         max: 4
         passed: true
-        comment: Plot fills canvas adequately; minor leftward positioning creates
-          slightly uneven horizontal balance
+        comment: Adequate canvas use; y-axis extends to 40 but most data above 55,
+          leaving moderate unused bottom space
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Survey Score (points) includes unit, Department is descriptive
+        comment: Survey Score (points) includes unit; Department is descriptive
       - id: VQ-07
         name: Palette Compliance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: 'First series is #009E73; backgrounds are #FAF8F1 (light) and #1A1A17
-          (dark); chrome adapts correctly'
+        passed: false
+        comment: Backgrounds correct (#FAF8F1/#1A1A17); Okabe-Ito colors in order;
+          but boxplot fill uses default gray not theme-adaptive ELEVATED_BG
     design_excellence:
-      score: 10
+      score: 12
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
-        passed: false
-        comment: Well-configured library default; professional but not exceptional;
-          missing reference lines or statistical overlays
+        passed: true
+        comment: Boxplot + per-category Okabe-Ito colors shows design intent above
+          generic defaults; not yet exceptional
       - id: DE-02
         name: Visual Refinement
         score: 4
         max: 6
-        passed: false
-        comment: X-grid removed, minor grids removed, y-grid subtle 0.3px; solid refinement
-          but spines not explicitly removed
+        passed: true
+        comment: X-grid removed, minor grids removed, y-grid at 0.3px; boxplot fill
+          uses default gray not theme-tuned
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Distributions with different means shown but no visual hierarchy;
-          all groups receive equal treatment; viewer must discover story
+        comment: Distribution differences visible (Engineering higher/tighter, Sales
+          lower/wider) but no visual emphasis or hierarchy
     spec_compliance:
       score: 15
       max: 15
@@ -126,53 +134,53 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Strip plot with horizontal jitter width=0.25, in spec-recommended
+        comment: Strip plot with horizontal jitter width=0.25 in spec-recommended
           0.1-0.3 range
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Individual points per category, jitter, transparency alpha=0.65,
-          4 categories with 25-44 points each
+        comment: Individual points, jitter, transparency alpha=0.65, 4 categories
+          25-44 obs each; boxplot adds optional distribution reference
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Category on X, continuous Score on Y; all data visible
+        comment: Categories on x-axis, continuous score on y-axis; all data visible
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title matches strip-basic · letsplot · anyplot.ai; no legend needed
-          for single-series
+        comment: Title matches strip-basic · letsplot · anyplot.ai exactly; no legend
+          needed with x-axis category labels
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Groups show different means AND spreads (Sales sigma=15 vs Engineering
-          sigma=8); overplotting mitigated by jitter
+        comment: Groups show varied means AND spreads (Engineering sigma=8 vs Sales
+          sigma=15); could show more extreme outliers
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Survey response scores across corporate departments — neutral, plausible,
+        comment: Survey response scores by corporate department — neutral, plausible,
           real-world business scenario
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Scores clipped to [40, 100]; means in 68-78 range; realistic for
-          employee survey context
+        comment: Scores clipped to [40, 100], group means 68-78; realistic for employee
+          engagement survey
     code_quality:
       score: 10
       max: 10
@@ -182,14 +190,14 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear: imports -> seed -> data -> plot -> save; no functions or
-          classes'
+        comment: 'Linear: imports -> theme tokens -> seed -> data -> plot -> save;
+          no functions or classes'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) for data generation, seed=42 in geom_jitter
+        comment: np.random.seed(42) for data generation; seed=42 in geom_jitter
       - id: CQ-03
         name: Clean Imports
         score: 2
@@ -207,7 +215,8 @@ review:
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html with scale=3
+        comment: Saves plot-{THEME}.png with scale=3 and plot-{THEME}.html; no deprecated
+          API
     library_mastery:
       score: 6
       max: 10
@@ -217,20 +226,21 @@ review:
         score: 4
         max: 5
         passed: true
-        comment: Proper lets-plot ggplot grammar; theme composition correct; not leveraging
-          full API (no scale_*, no stat_summary)
+        comment: Proper lets-plot ggplot grammar; ggsize() for canvas; element_* theme
+          system; seed=42 in geom_jitter is lets-plot specific
       - id: LM-02
         name: Distinctive Features
         score: 2
         max: 5
         passed: false
-        comment: geom_jitter with seed is nice but shared with plotnine; HTML export
-          is lets-plot-specific; no geom_crossbar or stat_summary demonstrating unique
-          capabilities
-  verdict: REJECTED
+        comment: HTML export distinctive to lets-plot; reproducible jitter seed lets-plot-specific;
+          overall pattern could be replicated in plotnine
+  verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - html-export
+  - layer-composition
   patterns:
   - data-generation
   - iteration-over-groups

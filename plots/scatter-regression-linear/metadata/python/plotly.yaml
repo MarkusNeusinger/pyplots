@@ -1,172 +1,186 @@
 library: plotly
+language: python
 specification_id: scatter-regression-linear
 created: '2025-12-24T21:29:35Z'
-updated: '2025-12-24T21:35:24Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494135872
-issue: 0
-python_version: 3.13.11
-library_version: 6.5.0
-preview_url: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/plotly/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/plotly/plot.html
+updated: '2026-05-06T22:35:16Z'
+generated_by: claude-haiku
+workflow_run: 25464730973
+issue: 1821
+python_version: 3.13.13
+library_version: 6.7.0
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/plotly/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/plotly/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/plotly/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/plotly/plot-dark.html
 quality_score: 94
-impl_tags:
-  dependencies: []
-  techniques:
-    - annotations
-    - html-export
-  patterns:
-    - data-generation
-  dataprep:
-    - regression
-  styling:
-    - alpha-blending
 review:
   strengths:
-  - Excellent implementation of confidence interval band using polygon fill technique
-  - Clear statistical annotations showing equation, R², and r values in a well-styled
-    box
-  - Perfect title format and axis labeling with units
-  - Manual calculation of regression and CI demonstrates understanding
-  - Good color contrast between scatter points (blue) and regression line (yellow)
-  - Appropriate marker sizing and transparency for the data density
+  - 'Perfect Visual Quality (30/30): Typography, contrast, and element visibility
+    excel in both themes'
+  - 'Comprehensive Spec Compliance: All required features present (regression line,
+    confidence interval, R², equation, proper title format)'
+  - 'Professional Design Excellence: Thoughtful use of elevated backgrounds, bordered
+    annotation boxes, and Okabe-Ito palette shows design maturity'
+  - 'Clean, Reproducible Code: Deterministic implementation with proper seed, all
+    imports used, no unnecessary abstractions'
+  - 'Strong Data Storytelling: Visual hierarchy guides viewer from background confidence
+    band → scatter points → regression line focal point'
+  - 'Theme Correctness: Both light (#FAF8F1) and dark (#1A1A17) renders fully legible
+    with identical data colors and appropriate text contrast'
+  - 'Ideal Palette & Accessibility: Brand green (#009E73) and orange (#D55E00) from
+    Okabe-Ito are colorblind-safe with excellent contrast'
   weaknesses:
-  - Does not use plotly express trendline features (px.scatter with trendline="ols")
-    which would be more idiomatic
-  - Legend positioned in lower-right could overlap with data in some scenarios
-  image_description: 'The plot displays a scatter chart showing the relationship between
-    Advertising Spend (x-axis, in thousands $, ranging from ~5 to 105) and Sales Revenue
-    (y-axis, in thousands $, ranging from ~50 to 300). Blue circular markers with
-    a dark blue outline represent 80 data points with moderate transparency (~0.65
-    alpha). A prominent yellow/gold regression line runs through the data showing
-    a strong positive linear relationship. A light blue semi-transparent confidence
-    interval band surrounds the regression line. The title "scatter-regression-linear
-    · plotly · pyplots.ai" is centered at the top. An annotation box in the upper-left
-    corner displays the regression equation (y = 2.56x + 26.77), R² = 0.974, and r
-    = 0.987. A legend in the lower-right corner shows three items: 95% CI, Data points,
-    and Regression (R² = 0.974). The plot uses a clean white template with subtle
-    gray gridlines.'
+  - 'LM-02 LOW: Could showcase more distinctive plotly features (range sliders, buttons,
+    or interactive selection) beyond standard scatter/line usage'
+  - 'DE-02 MINOR: Visual refinement could be elevated further (subtle shadows on boxes,
+    or typography micro-adjustments for premium feel)'
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1), correctly applied
+      Chrome: Title "scatter-regression-linear · plotly · anyplot.ai" in dark text (28px) is clearly visible. X-axis label "Study Hours per Day" and Y-axis label "Exam Score (%)" are rendered in dark text (22px) with excellent contrast. Tick labels (2, 3, 4... 10 on x-axis and 140, 130... 60 on y-axis) in soft ink (#4A4A44) are fully readable. Grid lines are subtle and provide proper reference without dominating. Legend positioned top-left with light elevated background (#FFFDF6) and border, clearly visible. Equation box bottom-right with background and border shows "y = 8.04x + 47.6" and "R² = 0.875" in dark text, fully legible.
+      Data: Green data points (#009E73) with 0.65 opacity clearly visible against light background. Orange regression line (#D55E00) at 4px width is visually distinct and prominent. Semi-transparent green confidence interval band (0.15 alpha) provides background context without overwhelming the data.
+      Legibility verdict: PASS - all text is readable, all elements are visible, excellent contrast throughout.
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17), correctly applied
+      Chrome: Title in light text is clearly visible against dark background. X and Y axis labels in light text (22px) have excellent contrast. Tick labels in soft ink (#B8B7B0) are fully readable, no dark-on-dark issues. Grid lines remain subtle and visible. Legend top-left with dark elevated background (#242420) and border, light text fully legible. Equation box bottom-right with light text on dark elevated background is completely readable.
+      Data: Green data points (#009E73) identical to light render, clearly visible against dark background. Orange regression line (#D55E00) maintains visual prominence. Semi-transparent green confidence interval band provides proper background context.
+      Legibility verdict: PASS - all chrome elements readable with proper contrast, no dark-on-dark failures, data colors identical to light render, full legibility in both light and dark themes.
   criteria_checklist:
     visual_quality:
-      score: 38
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 28pt, axis labels at 22pt, tick labels at 18pt, annotation
-          at 20pt - all perfectly readable
+        comment: All fonts explicitly sized (title 28px, axis labels 22px, ticks 18px).
+          Readable in both light and dark themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, annotation and legend positioned clearly
+        comment: No overlapping text or elements. Legend top-left, equation box bottom-right
+          positioned clearly
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Markers size 14 with 0.65 alpha is well-suited for 80 data points,
-          regression line clearly visible at width 4
+        comment: 100 scatter points visible, regression line prominent (4px), CI band
+          semi-transparent and visible
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue (#306998) and yellow (#FFD43B) provide excellent contrast, colorblind-safe
-          combination
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills canvas well with balanced margins (l=80, r=60, t=100,
-          b=80)
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Advertising Spend (thousands $)"
-          and "Sales Revenue (thousands $)"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: 'Okabe-Ito palette (#009E73, #D55E00) colorblind-safe, adequate contrast
+          throughout'
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: 4800×2700px landscape format, balanced margins (l=80, r=60, t=100,
+          b=80), nothing cut off
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
-        passed: false
-        comment: Grid is subtle (alpha 0.1), but legend placement in lower-right creates
-          slight visual imbalance; could be better positioned
+        passed: true
+        comment: Title 'scatter-regression-linear · plotly · anyplot.ai' correct.
+          X/Y labels descriptive with units
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Data points #009E73 (brand), line #D55E00 (position 2). Backgrounds
+          #FAF8F1/#1A1A17 theme-correct'
+    design_excellence:
+      score: 17
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 7
+        max: 8
+        passed: true
+        comment: Professional color choices, intentional hierarchy, elevated backgrounds
+          for legend and annotation box show polish
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Subtle grid, spines handled well, generous whitespace, bordered boxes
+          refined. Could add micro-details
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: 'Clear visual hierarchy: confidence band → scatter → regression line.
+          R² and equation prominent. Strong focal point'
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct scatter plot with linear regression line
+        comment: Correct scatter + regression implementation matching spec
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X (advertising spend) and Y (sales revenue) correctly assigned as
-          independent/dependent variables
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: R² displayed, regression line distinct,
-          95% CI band with transparency, point transparency, regression equation annotation'
-      - id: SC-04
-        name: Data Range
+        comment: Scatter points, regression line, 95% CI band, R², equation, axis
+          labels all present
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes show all data with appropriate padding
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X (2-10 hours), Y (55-140 score) appropriate. All data visible, axes
+          properly scaled
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend labels correctly identify 95% CI, Data points, and Regression
-          with R² value
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Uses exact format "scatter-regression-linear · plotly · pyplots.ai"
+        comment: Title format correct. Legend labels match data (95% CI, Data points,
+          Linear Regression with R²)
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows linear relationship with noise, demonstrates regression fit,
-          confidence interval widens appropriately at edges
+        comment: 'Shows all scatter regression aspects: points, trend, uncertainty,
+          statistical summary'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Advertising spend vs sales revenue is a classic, realistic business
-          scenario
+        comment: Study hours vs exam scores is real-world plausible and neutral. Educational
+          context appropriate
       - id: DQ-03
         name: Appropriate Scale
-        score: 3
-        max: 5
-        passed: false
-        comment: Values are reasonable but the very high R² (0.974) represents an
-          unusually clean relationship; real-world data typically has more scatter
+        score: 4
+        max: 4
+        passed: true
+        comment: Study hours 2-10 sensible. Exam scores 55-140 realistic. R²=0.875
+          shows strong realistic relationship
     code_quality:
       score: 10
       max: 10
@@ -176,40 +190,58 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script: imports → data → calculations → figure → save'
+        comment: Simple procedural code, no unnecessary functions/classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) ensures deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only numpy and plotly.graph_objects imported, both used
+        comment: Only os, numpy, plotly imported. All used, none unnecessary
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current plotly API
+        comment: No fake UI. Appropriate complexity. Uses native plotly features correctly
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png (and plot.html for interactivity)
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot-{THEME}.png and plot-{THEME}.html. Current API
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: go.Figure() + add_trace() idiomatic. update_layout() for config.
+          Manual regression valid
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
-        passed: false
-        comment: Uses plotly's graph_objects and annotations well, but doesn't leverage
-          plotly's trendline capabilities via px.scatter(trendline) or hover customization
+        passed: true
+        comment: Uses interactive HTML, hovertemplate, annotations. Could explore
+          range sliders or buttons
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - annotations
+  - html-export
+  patterns:
+  - data-generation
+  dataprep:
+  - regression
+  styling:
+  - alpha-blending

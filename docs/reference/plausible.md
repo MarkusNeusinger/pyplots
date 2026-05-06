@@ -197,6 +197,8 @@ carry `spec`, `library`, or `value` for richer breakdowns.
 | `LCP` | `value`, `rating` | reportWebVitals.ts | Largest Contentful Paint (rounded to nearest 100ms) |
 | `CLS` | `value`, `rating` | reportWebVitals.ts | Cumulative Layout Shift (2 decimal places) |
 | `INP` | `value`, `rating` | reportWebVitals.ts | Interaction to Next Paint (rounded to nearest 50ms) |
+| `FCP` | `value`, `rating` | reportWebVitals.ts | First Contentful Paint (rounded to nearest 100ms) |
+| `TTFB` | `value`, `rating` | reportWebVitals.ts | Time to First Byte (rounded to nearest 100ms) |
 
 **Rating values**: `good`, `needs-improvement`, `poor` (per web-vitals thresholds)
 
@@ -460,9 +462,11 @@ User lands on anyplot.ai
 | `LCP` | `value`, `rating` | reportWebVitals.ts |
 | `CLS` | `value`, `rating` | reportWebVitals.ts |
 | `INP` | `value`, `rating` | reportWebVitals.ts |
+| `FCP` | `value`, `rating` | reportWebVitals.ts |
+| `TTFB` | `value`, `rating` | reportWebVitals.ts |
 | `og_image_view` | `page`, `platform`, `spec`?, `language`?, `library`?, `filter_*`? | api/analytics.py (server-side) |
 
-**Total: 28 client-side + 1 server-side = 29 events**
+**Total: 30 client-side + 1 server-side = 31 events**
 
 > Every pageview and event additionally carries a `theme` ambient prop (`dark` /
 > `light`). Set in `RootLayout` via `setAnalyticsAmbientProps` whenever the user

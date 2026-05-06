@@ -1,13 +1,17 @@
-""" pyplots.ai
+"""anyplot.ai
 line-multi: Multi-Line Comparison Plot
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 93/100 | Created: 2025-12-24
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-21
 """
+
+import os
 
 import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
+    element_line,
+    element_rect,
     element_text,
     geom_line,
     geom_point,
@@ -19,6 +23,16 @@ from plotnine import (
     theme_minimal,
 )
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7"]
 
 # Data - Monthly sales for 4 product lines over 12 months
 np.random.seed(42)
@@ -41,34 +55,45 @@ df = pd.DataFrame(
     }
 )
 
-# Make Product a categorical with specific order to control legend and color mapping
+# Make Product a categorical with specific order
 df["Product"] = pd.Categorical(
     df["Product"], categories=["Electronics", "Clothing", "Furniture", "Accessories"], ordered=True
 )
 
-# Colors mapped to category order: Python Blue, Yellow, then colorblind-safe
-colors = {"Electronics": "#306998", "Clothing": "#FFD43B", "Furniture": "#81C784", "Accessories": "#E57373"}
+# Map Okabe-Ito colors to products
+color_map = {
+    "Electronics": OKABE_ITO[0],
+    "Clothing": OKABE_ITO[1],
+    "Furniture": OKABE_ITO[2],
+    "Accessories": OKABE_ITO[3],
+}
 
 # Create plot
 plot = (
     ggplot(df, aes(x="Month", y="Sales", color="Product", group="Product"))
     + geom_line(size=2.5)
     + geom_point(size=5)
-    + scale_color_manual(values=colors)
+    + scale_color_manual(values=color_map)
     + scale_x_continuous(breaks=months, labels=month_labels)
-    + labs(x="Month", y="Sales (thousands USD)", title="line-multi · plotnine · pyplots.ai", color="Product Line")
+    + labs(x="Month", y="Sales (thousands USD)", title="line-multi · plotnine · anyplot.ai", color="Product Line")
     + theme_minimal()
     + theme(
         figure_size=(16, 9),
-        text=element_text(size=14),
-        axis_title=element_text(size=20),
-        axis_text=element_text(size=16),
-        plot_title=element_text(size=24, ha="center"),
-        legend_text=element_text(size=16),
-        legend_title=element_text(size=18),
+        plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        panel_background=element_rect(fill=PAGE_BG),
+        panel_grid_major=element_line(color=INK, size=0.3, alpha=0.10),
+        panel_grid_minor=element_line(color=INK, size=0.2, alpha=0.05),
+        panel_border=element_rect(color=INK_SOFT, fill=None),
+        axis_title=element_text(size=20, color=INK),
+        axis_text=element_text(size=16, color=INK_SOFT),
+        axis_line=element_line(color=INK_SOFT),
+        plot_title=element_text(size=24, color=INK, ha="center"),
+        legend_background=element_rect(fill=ELEVATED_BG, color=INK_SOFT),
+        legend_text=element_text(size=16, color=INK_SOFT),
+        legend_title=element_text(size=18, color=INK),
         legend_position="right",
     )
 )
 
 # Save
-plot.save("plot.png", dpi=300, verbose=False)
+plot.save(f"plot-{THEME}.png", dpi=300, verbose=False)

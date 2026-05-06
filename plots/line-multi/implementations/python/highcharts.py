@@ -1,9 +1,10 @@
-""" pyplots.ai
+"""anyplot.ai
 line-multi: Multi-Line Comparison Plot
-Library: highcharts unknown | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: highcharts | Python 3.13
+Quality: pending | Created: 2025-05-06
 """
 
+import os
 import tempfile
 import time
 import urllib.request
@@ -16,6 +17,17 @@ from highcharts_core.options.series.area import LineSeries
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
+
+# Okabe-Ito palette (first series always #009E73)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7"]
 
 # Data - Monthly sales for 4 product lines over 12 months
 np.random.seed(42)
@@ -42,51 +54,55 @@ chart.options.chart = {
     "type": "line",
     "width": 4800,
     "height": 2700,
-    "backgroundColor": "#ffffff",
-    "style": {"fontFamily": "Arial, sans-serif"},
+    "backgroundColor": PAGE_BG,
+    "style": {"fontFamily": "Arial, sans-serif", "color": INK},
     "spacingBottom": 100,
     "spacingTop": 50,
 }
 
 # Title
 chart.options.title = {
-    "text": "line-multi · highcharts · pyplots.ai",
-    "style": {"fontSize": "72px", "fontWeight": "bold"},
+    "text": "line-multi · highcharts · anyplot.ai",
+    "style": {"fontSize": "28px", "fontWeight": "bold", "color": INK},
 }
 
 # Subtitle
-chart.options.subtitle = {"text": "Monthly Sales by Product Category (thousands USD)", "style": {"fontSize": "48px"}}
+chart.options.subtitle = {
+    "text": "Monthly Sales by Product Category (thousands USD)",
+    "style": {"fontSize": "22px", "color": INK_SOFT},
+}
 
 # X-axis configuration
 chart.options.x_axis = {
     "categories": months,
-    "title": {"text": "Month", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
-    "lineWidth": 2,
-    "tickWidth": 2,
+    "title": {"text": "Month", "style": {"fontSize": "22px", "color": INK}},
+    "labels": {"style": {"fontSize": "18px", "color": INK_SOFT}},
+    "lineColor": INK_SOFT,
+    "tickColor": INK_SOFT,
+    "gridLineColor": GRID,
 }
 
 # Y-axis configuration
 chart.options.y_axis = {
-    "title": {"text": "Sales (thousands USD)", "style": {"fontSize": "48px"}},
-    "labels": {"style": {"fontSize": "36px"}},
+    "title": {"text": "Sales (thousands USD)", "style": {"fontSize": "22px", "color": INK}},
+    "labels": {"style": {"fontSize": "18px", "color": INK_SOFT}},
     "gridLineWidth": 1,
-    "gridLineColor": "#e0e0e0",
+    "gridLineColor": GRID,
     "min": 0,
 }
 
 # Legend configuration - position at top right
 chart.options.legend = {
     "enabled": True,
-    "itemStyle": {"fontSize": "42px"},
+    "itemStyle": {"fontSize": "18px", "color": INK_SOFT},
     "layout": "vertical",
     "align": "right",
     "verticalAlign": "top",
     "x": -50,
     "y": 150,
     "borderWidth": 1,
-    "borderColor": "#e0e0e0",
-    "backgroundColor": "#ffffff",
+    "borderColor": INK_SOFT,
+    "backgroundColor": ELEVATED_BG,
     "padding": 20,
     "itemMarginTop": 10,
     "itemMarginBottom": 10,
@@ -94,47 +110,45 @@ chart.options.legend = {
 
 # Plot options for line styling
 chart.options.plot_options = {
-    "line": {"lineWidth": 6, "marker": {"enabled": True, "radius": 12, "lineWidth": 3, "lineColor": "#ffffff"}}
+    "line": {"lineWidth": 3, "marker": {"enabled": True, "radius": 8, "lineWidth": 2, "lineColor": PAGE_BG}}
 }
 
-# Colorblind-safe colors
-colors = ["#306998", "#FFD43B", "#9467BD", "#17BECF"]
+# Set colors for the chart
+chart.options.colors = OKABE_ITO
 
 # Add series - Electronics
 series1 = LineSeries()
 series1.name = "Electronics"
 series1.data = electronics
-series1.color = colors[0]
-series1.marker = {"symbol": "circle"}
+series1.color = OKABE_ITO[0]
 chart.add_series(series1)
 
 # Add series - Clothing
 series2 = LineSeries()
 series2.name = "Clothing"
 series2.data = clothing
-series2.color = colors[1]
-series2.marker = {"symbol": "square"}
+series2.color = OKABE_ITO[1]
 chart.add_series(series2)
 
 # Add series - Home & Garden
 series3 = LineSeries()
 series3.name = "Home & Garden"
 series3.data = home_garden
-series3.color = colors[2]
-series3.marker = {"symbol": "triangle"}
+series3.color = OKABE_ITO[2]
 chart.add_series(series3)
 
 # Add series - Sports Equipment
 series4 = LineSeries()
 series4.name = "Sports Equipment"
 series4.data = sports
-series4.color = colors[3]
-series4.marker = {"symbol": "diamond"}
+series4.color = OKABE_ITO[3]
 chart.add_series(series4)
 
 # Download Highcharts JS for inline embedding
-highcharts_url = "https://code.highcharts.com/highcharts.js"
-with urllib.request.urlopen(highcharts_url, timeout=30) as response:
+highcharts_url = "https://unpkg.com/highcharts"
+headers = {"User-Agent": "Mozilla/5.0"}
+req = urllib.request.Request(highcharts_url, headers=headers)
+with urllib.request.urlopen(req, timeout=30) as response:
     highcharts_js = response.read().decode("utf-8")
 
 # Generate HTML with inline scripts
@@ -145,14 +159,14 @@ html_content = f"""<!DOCTYPE html>
     <meta charset="utf-8">
     <script>{highcharts_js}</script>
 </head>
-<body style="margin:0;">
+<body style="margin:0; background:{PAGE_BG};">
     <div id="container" style="width: 4800px; height: 2700px;"></div>
     <script>{html_str}</script>
 </body>
 </html>"""
 
 # Save HTML version
-with open("plot.html", "w", encoding="utf-8") as f:
+with open(f"plot-{THEME}.html", "w", encoding="utf-8") as f:
     f.write(html_content)
 
 # Create PNG via headless Chrome
@@ -165,13 +179,12 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--window-size=4800,2800")
+chrome_options.add_argument("--window-size=4800,2700")
 
 driver = webdriver.Chrome(options=chrome_options)
-driver.set_window_size(4800, 2700)
 driver.get(f"file://{temp_path}")
 time.sleep(5)  # Wait for chart to render
-driver.save_screenshot("plot.png")
+driver.save_screenshot(f"plot-{THEME}.png")
 driver.quit()
 
 Path(temp_path).unlink()  # Clean up temp file

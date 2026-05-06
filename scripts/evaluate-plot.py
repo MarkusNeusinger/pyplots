@@ -133,14 +133,17 @@ LIBRARY_PATTERNS = {
 }
 
 
-def get_plot_paths(spec_id: str, library: str) -> dict:
+def get_plot_paths(spec_id: str, library: str, language: str = "python") -> dict:
     """Get all relevant paths for a plot implementation."""
     plots_dir = PROJECT_ROOT / "plots" / spec_id
+    impl_dir = plots_dir / "implementations" / language
     return {
         "spec": plots_dir / "specification.md",
-        "impl": plots_dir / "implementations" / f"{library}.py",
-        "metadata": plots_dir / "metadata" / f"{library}.yaml",
-        "image": plots_dir / "implementations" / "plot.png",
+        "impl": impl_dir / f"{library}.py",
+        "metadata": plots_dir / "metadata" / language / f"{library}.yaml",
+        "image": impl_dir / "plot.png",
+        "image_light": impl_dir / "plot-light.png",
+        "image_dark": impl_dir / "plot-dark.png",
         "library_rules": PROJECT_ROOT / "prompts" / "library" / f"{library}.md",
         "quality_criteria": PROJECT_ROOT / "prompts" / "quality-criteria.md",
         "quality_evaluator": PROJECT_ROOT / "prompts" / "quality-evaluator.md",
@@ -374,6 +377,14 @@ def create_evaluation_prompt(spec_id: str, library: str, paths: dict) -> str:
     return f"""{evaluator_content}
 
 ---
+
+## Local CLI Mode — Single Render Only
+
+This invocation is from the `evaluate-plot.py` local CLI, not the production
+review workflow. Only a single rendered preview (`plot.png`) is attached, and
+there is no `plot-light.png` / `plot-dark.png` theme pair (or `plot-*.html`)
+available. Score VQ-07 (Palette Compliance) and any other theme-aware criteria
+based on the single render shown — do not deduct for "missing theme variant".
 
 ## Inputs
 

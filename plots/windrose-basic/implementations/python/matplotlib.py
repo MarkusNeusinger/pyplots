@@ -1,12 +1,28 @@
-""" pyplots.ai
+""" anyplot.ai
 windrose-basic: Wind Rose Chart
-Library: matplotlib 3.10.8 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: matplotlib 3.10.9 | Python 3.13.13
+Quality: 93/100 | Updated: 2026-05-07
 """
 
-import matplotlib.pyplot as plt
-import numpy as np
+import os
+import sys
 
+
+sys.path = [p for p in sys.path if p not in ("", ".", os.path.dirname(os.path.abspath(__file__)))]
+
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette for wind speed bins (starting with brand green)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9"]
 
 # Data - Simulated annual wind measurements (8760 hourly readings)
 np.random.seed(42)
@@ -60,10 +76,8 @@ for i in range(n_dir_bins):
 freq_matrix = freq_matrix / len(directions) * 100
 
 # Plot - square format for radial symmetry
-fig, ax = plt.subplots(figsize=(12, 12), subplot_kw={"projection": "polar"})
-
-# Colors from cool (calm) to warm (strong) - starts with Python Blue/Yellow
-colors = ["#306998", "#4A90D9", "#7BC8F6", "#FFD43B", "#FF9F1C", "#E63946"]
+fig, ax = plt.subplots(figsize=(12, 12), subplot_kw={"projection": "polar"}, facecolor=PAGE_BG)
+ax.set_facecolor(PAGE_BG)
 
 # Bar width slightly less than bin width for visual clarity
 bar_width = np.radians(20)
@@ -77,8 +91,8 @@ for j in range(len(speed_bins) - 1):
         freq_matrix[:, j],
         width=bar_width,
         bottom=bottoms,
-        color=colors[j],
-        edgecolor="white",
+        color=OKABE_ITO[j],
+        edgecolor=PAGE_BG,
         linewidth=0.5,
         label=f"{speed_labels[j]} m/s",
     )
@@ -91,31 +105,39 @@ ax.set_theta_direction(-1)
 # Direction labels for 16 sectors
 direction_labels = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
 ax.set_xticks(np.radians(np.arange(0, 360, 22.5)))
-ax.set_xticklabels(direction_labels, fontsize=16, fontweight="bold")
+ax.set_xticklabels(direction_labels, fontsize=16, fontweight="bold", color=INK)
 
 # Radial axis - frequency percentage
 max_freq = np.ceil(bottoms.max() * 1.1)
 ax.set_ylim(0, max_freq)
 yticks = np.arange(0, max_freq + 1, 2)
 ax.set_yticks(yticks)
-ax.set_yticklabels([f"{int(y)}%" for y in yticks], fontsize=14)
+ax.set_yticklabels([f"{int(y)}%" for y in yticks], fontsize=14, color=INK_SOFT)
 
-# Grid styling - subtle
-ax.grid(True, alpha=0.3, linestyle="--")
+# Grid styling - subtle, solid lines
+ax.grid(True, alpha=0.15, linestyle="-", color=INK_SOFT, linewidth=0.8)
+
+# Spine styling
+ax.spines["polar"].set_color(INK_SOFT)
+ax.spines["polar"].set_linewidth(0.5)
 
 # Title
-ax.set_title("windrose-basic · matplotlib · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.set_title("windrose-basic · matplotlib · anyplot.ai", fontsize=24, fontweight="medium", color=INK, pad=20)
 
-# Legend - positioned outside the polar plot
-ax.legend(
+# Legend - positioned in upper right area
+leg = ax.legend(
     title="Wind Speed",
     title_fontsize=16,
     fontsize=14,
-    loc="lower left",
-    bbox_to_anchor=(-0.15, -0.15),
+    loc="upper right",
+    bbox_to_anchor=(1.15, 1.1),
     framealpha=0.95,
-    edgecolor="gray",
+    facecolor=ELEVATED_BG,
+    edgecolor=INK_SOFT,
 )
+if leg:
+    plt.setp(leg.get_title(), color=INK)
+    plt.setp(leg.get_texts(), color=INK_SOFT)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

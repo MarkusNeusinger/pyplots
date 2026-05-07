@@ -1,19 +1,37 @@
-""" pyplots.ai
+""" anyplot.ai
 hive-basic: Basic Hive Plot
-Library: pygal 3.1.0 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-24
+Library: pygal 3.1.0 | Python 3.13.13
+Quality: 83/100 | Updated: 2026-05-07
 """
 
 import math
+import os
 import re
+import sys
 
 import cairosvg
 import numpy as np
-import pygal
-from pygal.style import Style
 
 
-# Set seed for reproducibility
+# Avoid import shadowing: temporarily remove current directory from path
+_cwd = os.getcwd()
+sys.path = [p for p in sys.path if os.path.abspath(p) != _cwd]
+
+import pygal  # noqa: E402
+from pygal.style import Style  # noqa: E402
+
+
+# Restore path for any later imports
+sys.path.insert(0, _cwd)
+
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442"]
+
 np.random.seed(42)
 
 # Data: Software module dependency network
@@ -94,16 +112,13 @@ edges = [
 
 # Axis configuration (3 radial axes at 120 degrees apart)
 n_axes = 3
-axis_angles = [2 * math.pi * i / n_axes - math.pi / 2 for i in range(n_axes)]  # Start from top
+axis_angles = [2 * math.pi * i / n_axes - math.pi / 2 for i in range(n_axes)]
 axis_names = ["Core", "Utility", "Interface"]
-axis_colors = ["#306998", "#FFD43B", "#4CAF50"]
 
 # Calculate node positions along each axis
-# Position along axis based on degree (higher degree = closer to center)
-# Use larger radii to improve canvas utilization
 center_x, center_y = 5.0, 5.0
-inner_radius = 1.0
-outer_radius = 4.2
+inner_radius = 1.2
+outer_radius = 4.0
 
 # Sort nodes by axis and degree for positioning
 axis_nodes = {i: [] for i in range(n_axes)}
@@ -122,7 +137,6 @@ for axis_id in range(n_axes):
     n_nodes = len(nodes_on_axis)
 
     for i, node in enumerate(nodes_on_axis):
-        # Distribute nodes along the axis from inner to outer based on sorted order
         if n_nodes > 1:
             t = i / (n_nodes - 1)
         else:
@@ -132,43 +146,38 @@ for axis_id in range(n_axes):
         y = center_y + radius * math.sin(angle)
         node_positions[node["id"]] = (x, y, axis_id)
 
-# Custom style - axis lines, edges (3 groups), nodes (3 groups)
-# Color order: 3 axis lines (gray), 3 edge groups (semi-transparent), 3 node groups
+# Create theme-adaptive style
 custom_style = Style(
-    background="white",
-    plot_background="white",
-    foreground="#333333",
-    foreground_strong="#333333",
-    foreground_subtle="#666666",
+    background=PAGE_BG,
+    plot_background=PAGE_BG,
+    foreground=INK,
+    foreground_strong=INK,
+    foreground_subtle=INK_MUTED,
     colors=(
-        "#AAAAAA",
-        "#AAAAAA",
-        "#AAAAAA",  # Axis lines (gray)
-        "#30699866",
-        "#FFD43B88",
-        "#4CAF5066",  # Edges by source axis (semi-transparent)
-        "#306998",
-        "#FFD43B",
-        "#4CAF50",  # Nodes by axis (Core, Utility, Interface)
+        INK_SOFT,
+        INK_SOFT,
+        INK_SOFT,
+        OKABE_ITO[0] + "44",
+        OKABE_ITO[1] + "44",
+        OKABE_ITO[2] + "44",
+        OKABE_ITO[0],
+        OKABE_ITO[1],
+        OKABE_ITO[2],
     ),
-    title_font_size=72,
-    label_font_size=56,  # Increased for more prominent node labels
-    major_label_font_size=48,
-    legend_font_size=48,
-    value_font_size=44,  # Increased for value labels on nodes
-    value_label_font_size=44,  # Explicit value label size
-    tooltip_font_size=32,
+    title_font_size=28,
+    label_font_size=18,
+    major_label_font_size=16,
+    legend_font_size=16,
+    value_font_size=14,
     stroke_width=2,
-    opacity=0.9,
-    opacity_hover=1.0,
 )
 
 # Create XY chart
 chart = pygal.XY(
-    width=3600,
-    height=3600,
+    width=4800,
+    height=2700,
     style=custom_style,
-    title="hive-basic · pygal · pyplots.ai",
+    title="hive-basic · pygal · anyplot.ai",
     show_legend=True,
     x_title="",
     y_title="",
@@ -177,73 +186,65 @@ chart = pygal.XY(
     show_x_labels=False,
     show_y_labels=False,
     stroke=True,
-    dots_size=28,  # Increased for more prominent nodes
+    dots_size=20,
     legend_at_bottom=True,
-    legend_at_bottom_columns=3,
     range=(0, 10),
     xrange=(0, 10),
-    print_labels=True,  # Enable labels to show node names on the plot
+    print_labels=True,
     print_values=False,
 )
 
 # Draw axis lines
-# Position axis labels beyond the outer nodes for visibility
-label_radius = outer_radius + 0.9
 for axis_id in range(n_axes):
     angle = axis_angles[axis_id]
     x1 = center_x + (inner_radius - 0.3) * math.cos(angle)
     y1 = center_y + (inner_radius - 0.3) * math.sin(angle)
-    x2 = center_x + (outer_radius + 0.4) * math.cos(angle)
-    y2 = center_y + (outer_radius + 0.4) * math.sin(angle)
-    # Draw axis line (hidden from legend)
+    x2 = center_x + (outer_radius + 0.3) * math.cos(angle)
+    y2 = center_y + (outer_radius + 0.3) * math.sin(angle)
     chart.add(
         None,
         [(x1, y1), (x2, y2)],
         stroke=True,
         show_dots=False,
         fill=False,
-        stroke_style={"width": 6, "linecap": "round"},
+        stroke_style={"width": 4, "linecap": "round"},
     )
 
-# Store axis label positions for SVG post-processing
-# (pygal's native labeling doesn't give us enough control for axis endpoint labels)
+# Calculate axis label positions
+label_radius = outer_radius + 0.7
 axis_label_positions = []
 for axis_id in range(n_axes):
     angle = axis_angles[axis_id]
     label_x = center_x + label_radius * math.cos(angle)
     label_y = center_y + label_radius * math.sin(angle)
-    axis_label_positions.append((label_x, label_y, axis_names[axis_id], axis_colors[axis_id]))
+    axis_label_positions.append((label_x, label_y, axis_names[axis_id], OKABE_ITO[axis_id]))
 
-# Draw edges as curved paths between nodes, grouped by source axis for coloring
-# Using quadratic Bezier curves that bend around the center
+# Draw edges as curved paths with bundling to reduce visual clutter
 edge_points_by_axis = {0: [], 1: [], 2: []}
 
 for src, tgt in edges:
     src_x, src_y, src_axis = node_positions[src]
     tgt_x, tgt_y, tgt_axis = node_positions[tgt]
 
-    # Control point - pull toward center for curved edges
-    # More curve for edges crossing different axes
+    # Edge bundling: bend toward center more for inter-axis edges
     if src_axis == tgt_axis:
-        # Same axis - slight curve
-        pull = 0.7
+        pull = 0.75
     else:
-        # Different axes - curve through center area
-        pull = 0.4
+        pull = 0.35
 
     ctrl_x = center_x + pull * ((src_x + tgt_x) / 2 - center_x)
     ctrl_y = center_y + pull * ((src_y + tgt_y) / 2 - center_y)
 
     # Generate Bezier curve points
-    n_points = 30
+    n_points = 25
     for t_idx in range(n_points + 1):
         t = t_idx / n_points
         bx = (1 - t) ** 2 * src_x + 2 * (1 - t) * t * ctrl_x + t**2 * tgt_x
         by = (1 - t) ** 2 * src_y + 2 * (1 - t) * t * ctrl_y + t**2 * tgt_y
         edge_points_by_axis[src_axis].append((bx, by))
-    edge_points_by_axis[src_axis].append(None)  # Break between edges
+    edge_points_by_axis[src_axis].append(None)
 
-# Add edges grouped by source axis for color differentiation
+# Add edges grouped by source axis
 for axis_id in range(n_axes):
     chart.add(
         None,
@@ -251,57 +252,45 @@ for axis_id in range(n_axes):
         stroke=True,
         show_dots=False,
         fill=False,
-        stroke_style={"width": 2, "linecap": "round"},
+        stroke_style={"width": 1, "linecap": "round"},
     )
 
-# Add nodes grouped by axis for legend (simplified legend names - just axis names)
+# Add nodes grouped by axis with abbreviated labels to reduce overlap
 for axis_id in range(n_axes):
     nodes_on_axis = axis_nodes[axis_id]
     node_points = []
     for node in nodes_on_axis:
         x, y, _ = node_positions[node["id"]]
-        # Include module name in tooltip
-        node_points.append({"value": (x, y), "label": f"{node['label']} (degree: {node['degree']})"})
-    # Use axis name only to avoid redundant legend entries
+        node_points.append({"value": (x, y), "label": node["label"][:4].upper()})
     chart.add(axis_names[axis_id], node_points, stroke=False)
 
-# Render initial SVG
+# Render SVG
 svg_content = chart.render().decode("utf-8")
 
-# Post-process SVG to add axis endpoint labels directly on the plot
-# Calculate SVG coordinate transformation (pygal uses viewBox scaling)
-# The chart range is 0-10 for both axes, and viewBox handles the scaling
-# Find the plot area in the SVG by examining the viewBox
+# Extract viewBox dimensions
 viewbox_match = re.search(r'viewBox="([^"]+)"', svg_content)
 if viewbox_match:
     vb_parts = viewbox_match.group(1).split()
     vb_width = float(vb_parts[2])
     vb_height = float(vb_parts[3])
 else:
-    vb_width = 3600
-    vb_height = 3600
+    vb_width = 4800
+    vb_height = 2700
 
-# Pygal XY chart maps data coordinates to plot area
-# For range (0,10) and xrange (0,10), we need to calculate the offset and scale
-# The plot area has margins for title, legend, etc.
-# Approximate: plot area starts around 5% from left and 10% from top (after title)
-# and ends around 95% width and 85% height (before legend)
+# Calculate plot area coordinates
 plot_left = vb_width * 0.08
-plot_right = vb_width * 0.92
+plot_right = vb_width * 0.95
 plot_top = vb_height * 0.12
-plot_bottom = vb_height * 0.82
+plot_bottom = vb_height * 0.88
 
 plot_width = plot_right - plot_left
 plot_height = plot_bottom - plot_top
-
-# Data range is 0-10 for both axes
 data_range = 10.0
 
 
 def data_to_svg(dx, dy):
     """Convert data coordinates to SVG coordinates."""
     sx = plot_left + (dx / data_range) * plot_width
-    # Y is inverted in SVG (0 at top)
     sy = plot_bottom - (dy / data_range) * plot_height
     return sx, sy
 
@@ -310,51 +299,49 @@ def data_to_svg(dx, dy):
 axis_label_svg = ""
 for dx, dy, label, color in axis_label_positions:
     sx, sy = data_to_svg(dx, dy)
-    # Adjust text anchor based on position (top label centered, bottom labels angled)
-    if dy > center_y:  # Top axis (Core)
+    if dy > center_y:
         text_anchor = "middle"
-        dy_offset = -35
+        dy_offset = -30
         dx_offset = 0
-    elif dx < center_x:  # Left axis (Utility)
+    elif dx < center_x:
         text_anchor = "end"
-        dy_offset = 10
-        dx_offset = -25
-    else:  # Right axis (Interface)
+        dy_offset = 8
+        dx_offset = -22
+    else:
         text_anchor = "start"
-        dy_offset = 10
-        dx_offset = 25
+        dy_offset = 8
+        dx_offset = 22
 
     axis_label_svg += f'''
     <text x="{sx + dx_offset}" y="{sy + dy_offset}" fill="{color}"
-          font-size="60" font-weight="bold" font-family="sans-serif"
+          font-size="24" font-weight="bold" font-family="sans-serif"
           text-anchor="{text_anchor}">{label}</text>'''
 
-# Insert axis labels before the closing </svg> tag
+# Insert axis labels before closing tag
 svg_content = svg_content.replace("</svg>", f"{axis_label_svg}\n</svg>")
 
-# Save modified SVG
-with open("plot.svg", "w") as f:
+# Save SVG and convert to PNG
+with open(f"plot-{THEME}.svg", "w") as f:
     f.write(svg_content)
 
-# Render PNG from the modified SVG
-cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to="plot.png")
+cairosvg.svg2png(bytestring=svg_content.encode("utf-8"), write_to=f"plot-{THEME}.png")
 
-# Save HTML for interactive version
-with open("plot.html", "w") as f:
+# Save interactive HTML
+with open(f"plot-{THEME}.html", "w") as f:
     f.write(
-        """<!DOCTYPE html>
+        f"""<!DOCTYPE html>
 <html>
 <head>
-    <title>hive-basic · pygal · pyplots.ai</title>
+    <title>hive-basic · pygal · anyplot.ai</title>
     <style>
-        body { margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 100%; margin: 0 auto; }
-        object { width: 100%; height: auto; }
+        body {{ margin: 0; padding: 20px; background: {PAGE_BG}; }}
+        .container {{ max-width: 100%; margin: 0 auto; }}
+        object {{ width: 100%; height: auto; }}
     </style>
 </head>
 <body>
     <div class="container">
-        <object type="image/svg+xml" data="plot.svg">
+        <object type="image/svg+xml" data="plot-{THEME}.svg">
             Hive plot not supported
         </object>
     </div>

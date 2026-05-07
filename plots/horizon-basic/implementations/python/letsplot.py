@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 horizon-basic: Horizon Chart
-Library: letsplot | Python 3.13
-Quality: 91 | Updated: 2025-12-24
+Library: letsplot 4.9.0 | Python 3.13.13
+Quality: 94/100 | Updated: 2026-05-07
 """
 
 import os

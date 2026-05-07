@@ -1,7 +1,7 @@
 """ anyplot.ai
 bar-horizontal: Horizontal Bar Chart
 Library: highcharts unknown | Python 3.13.13
-Quality: 88/100 | Updated: 2026-05-07
+Quality: 89/100 | Updated: 2026-05-07
 """
 
 import os

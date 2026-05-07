@@ -1,14 +1,31 @@
-""" pyplots.ai
+""" anyplot.ai
 windrose-basic: Wind Rose Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: bokeh 3.9.0 | Python 3.13.13
+Quality: 96/100 | Updated: 2026-05-07
 """
 
+import os
+import time
+from pathlib import Path
+
 import numpy as np
-from bokeh.io import export_png, output_file, save
+from bokeh.io import output_file, save
 from bokeh.models import ColumnDataSource, Legend, LegendItem
 from bokeh.plotting import figure
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
+
+# Okabe-Ito palette for speed bins (cool to warm progression)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00"]
 
 # Data - Generate realistic wind data for a coastal weather station
 np.random.seed(42)
@@ -30,9 +47,6 @@ direction_labels = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 speed_bins = [0, 3, 6, 9, 12, np.inf]  # m/s ranges
 speed_labels = ["0-3 m/s", "3-6 m/s", "6-9 m/s", "9-12 m/s", ">12 m/s"]
 
-# Colors from cool (calm) to warm (strong)
-speed_colors = ["#306998", "#4A90A4", "#FFD43B", "#FFA500", "#E74C3C"]
-
 # Aggregate data into direction/speed bins
 dir_indices = np.digitize(directions, direction_bins) - 1
 dir_indices = np.clip(dir_indices, 0, 7)
@@ -52,37 +66,42 @@ frequencies = frequencies / n_observations * 100
 p = figure(
     width=3600,
     height=3600,
-    title="windrose-basic · bokeh · pyplots.ai",
+    title="windrose-basic · bokeh · anyplot.ai",
     x_range=(-35, 35),
     y_range=(-35, 35),
     tools="",
     toolbar_location=None,
 )
 
-# Style title
-p.title.text_font_size = "32pt"
+# Style title and overall appearance
+p.title.text_font_size = "28pt"
+p.title.text_color = INK
 p.title.align = "center"
+
+# Theme-adaptive background
+p.background_fill_color = PAGE_BG
+p.border_fill_color = PAGE_BG
+p.outline_line_color = None
 
 # Hide axes for polar plot
 p.xaxis.visible = False
 p.yaxis.visible = False
 p.xgrid.visible = False
 p.ygrid.visible = False
-p.outline_line_color = None
 
 # Draw concentric circles for reference
 for radius in [5, 10, 15, 20, 25]:
     theta_circle = np.linspace(0, 2 * np.pi, 100)
     x_circle = radius * np.cos(theta_circle)
     y_circle = radius * np.sin(theta_circle)
-    p.line(x_circle, y_circle, line_color="#CCCCCC", line_width=1.5, line_alpha=0.5)
+    p.line(x_circle, y_circle, line_color=INK_SOFT, line_width=1.5, line_alpha=0.4)
     # Add frequency labels on the right side
     p.text(
         x=[radius + 0.5],
         y=[0.5],
         text=[f"{radius}%"],
-        text_font_size="16pt",
-        text_color="#666666",
+        text_font_size="20pt",
+        text_color=INK_SOFT,
         text_baseline="bottom",
     )
 
@@ -94,7 +113,7 @@ for i, label in enumerate(direction_labels):
     # Draw spoke lines
     x_spoke = [0, 28 * np.cos(angle)]
     y_spoke = [0, 28 * np.sin(angle)]
-    p.line(x_spoke, y_spoke, line_color="#AAAAAA", line_width=1.5, line_alpha=0.4)
+    p.line(x_spoke, y_spoke, line_color=INK_SOFT, line_width=1.5, line_alpha=0.3)
 
     # Add direction labels outside
     label_radius = 30
@@ -106,7 +125,7 @@ for i, label in enumerate(direction_labels):
         text=[label],
         text_font_size="22pt",
         text_font_style="bold",
-        text_color="#333333",
+        text_color=INK,
         text_align="center",
         text_baseline="middle",
     )
@@ -147,9 +166,9 @@ for dir_idx in range(8):
                 xs="x",
                 ys="y",
                 source=source,
-                fill_color=speed_colors[speed_idx],
+                fill_color=OKABE_ITO[speed_idx],
                 fill_alpha=0.85,
-                line_color="white",
+                line_color=PAGE_BG,
                 line_width=1.5,
             )
             renderers_by_speed[speed_idx].append(renderer)
@@ -161,16 +180,17 @@ for speed_idx in range(len(speed_labels)):
     if renderers_by_speed[speed_idx]:
         legend_items.append(LegendItem(label=speed_labels[speed_idx], renderers=[renderers_by_speed[speed_idx][0]]))
 
-# Add legend
+# Add legend with theme-adaptive styling
 legend = Legend(
     items=legend_items,
     location="center",
-    label_text_font_size="18pt",
+    label_text_font_size="22pt",
+    label_text_color=INK_SOFT,
     spacing=10,
     padding=15,
-    background_fill_alpha=0.9,
-    background_fill_color="white",
-    border_line_color="#CCCCCC",
+    background_fill_alpha=0.95,
+    background_fill_color=ELEVATED_BG,
+    border_line_color=INK_SOFT,
     border_line_width=2,
 )
 p.add_layout(legend, "right")
@@ -181,12 +201,30 @@ p.text(
     y=[-33],
     text=["Wind Speed (m/s)"],
     text_font_size="20pt",
-    text_color="#444444",
+    text_color=INK_SOFT,
     text_align="center",
     text_baseline="top",
 )
 
-# Save as PNG and HTML
-export_png(p, filename="plot.png")
-output_file("plot.html")
+# Save as HTML
+output_file(f"plot-{THEME}.html")
 save(p)
+
+# Screenshot with headless Chrome — Selenium 4 / Selenium Manager auto-resolves a working driver
+W, H = 3600, 3600
+opts = Options()
+for arg in (
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    f"--window-size={W},{H}",
+    "--hide-scrollbars",
+):
+    opts.add_argument(arg)
+driver = webdriver.Chrome(options=opts)
+driver.set_window_size(W, H)
+driver.get(f"file://{Path(f'plot-{THEME}.html').resolve()}")
+time.sleep(3)  # let bokeh's JS render the canvas
+driver.save_screenshot(f"plot-{THEME}.png")
+driver.quit()

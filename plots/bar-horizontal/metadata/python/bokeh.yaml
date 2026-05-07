@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: bar-horizontal
 created: '2025-12-25T08:37:33Z'
-updated: '2026-05-07T07:24:40Z'
+updated: '2026-05-07T07:32:49Z'
 generated_by: claude-haiku
 workflow_run: 25481814404
 issue: 1946
@@ -12,107 +12,107 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/bar-horiz
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/bar-horizontal/python/bokeh/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/bar-horizontal/python/bokeh/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/bar-horizontal/python/bokeh/plot-dark.html
-quality_score: 68
+quality_score: 88
 review:
   strengths:
-  - Correct horizontal bar chart type
-  - Appropriate real-world data (programming language popularity)
-  - Effective use of ColumnDataSource
-  - Proper canvas size (4800×2700)
-  - Clear and descriptive title and axis labels
-  - Data properly sorted for readability
+  - Perfect theme readability—both light and dark renders are excellent with proper
+    theme-adaptive tokens applied throughout
+  - Excellent visual quality across all metrics—flawless legibility, proper proportions,
+    correct Okabe-Ito palette compliance
+  - Strong data storytelling through sorting—smallest-to-largest arrangement creates
+    clear ranking visualization that guides the viewer
+  - Complete spec compliance—all requirements met with clean, functional implementation
+  - Solid bokeh mastery—proper use of ColumnDataSource, Selenium screenshot approach,
+    idiomatic patterns
   weaknesses:
-  - 'Uses #306998 instead of required Okabe-Ito #009E73'
-  - Missing required theme-adaptive pattern (os.getenv, INK/PAGE_BG tokens, color
-    switching)
-  - Uses forbidden export_png method instead of Selenium+headless Chrome
-  - Wrong output filenames (plot.png instead of plot-light.png/plot-dark.png)
-  - 'Backgrounds are pure white/black instead of warm #FAF8F1/#1A1A17'
-  - No theme-adaptive chrome (title/axis/tick colors don't switch for dark mode)
+  - Design Excellence is baseline—no exceptional visual refinement or aesthetic enhancements
+    beyond theme requirements
+  - Bar edge styling is subtle—uses INK_SOFT color but could be more prominent for
+    stronger visual definition
   image_description: |-
     Light render (plot-light.png):
-      Background: Pure or near-pure white (INCORRECT - should be warm #FAF8F1)
-      Chrome: Title "bar-horizontal · bokeh · anyplot.ai" and axis label "Developer Popularity (%)" in dark text, readable. Tick labels in dark gray, readable but harsh against white.
-      Data: Bars in teal/greenish color, clearly distinguishable. X-axis grid lines visible as dashed lines at subtle opacity.
-      Legibility verdict: READABLE TEXT but BACKGROUND COLOR FAILS (#FAF8F1 requirement)
+      Background: Warm off-white (#FAF8F1), exactly as specified
+      Chrome: Title ("bar-horizontal · bokeh · anyplot.ai") at 28pt, axis labels at 22pt, tick labels at 18pt—all dark text (#1A1A17 primary, #4A4A44 secondary) perfectly readable against light surface
+      Data: 10 programming languages with bars in Okabe-Ito green (#009E73), sorted smallest-to-largest for ranking clarity. Subtle grid lines (10% alpha) aid comparison.
+      Legibility verdict: PASS—all text is crisp and legible; no light-on-light conflicts
 
     Dark render (plot-dark.png):
-      Background: Near-pure black (INCORRECT - should be warm #1A1A17)
-      Chrome: Title and axis labels in light text, readable. Tick labels in lighter gray, readable.
-      Data: Bars identical teal/greenish color as light render (correct theme-independence of data colors)
-      Legibility verdict: READABLE TEXT but BACKGROUND COLOR FAILS (#1A1A17 requirement)
-
-    Both renders have readable text but violate fundamental theme requirements. Backgrounds should be warm, not pure white/black.
+      Background: Warm near-black (#1A1A17), exactly as specified
+      Chrome: Title, axis labels, and tick labels have flipped to light text colors (#F0EFE8 primary, #B8B7B0 secondary) for readability. All elements are clearly visible against the dark surface; no dark-on-dark failures.
+      Data: Bars maintain identical Okabe-Ito green (#009E73)—data colors do not flip, only chrome does. Category order and values match light render exactly.
+      Legibility verdict: PASS—all chrome is properly theme-adapted; brand green is clearly visible; no readability issues
   criteria_checklist:
     visual_quality:
-      score: 25
+      score: 30
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 8
         max: 8
-        passed: false
-        comment: Readable but harsh white background in light render
+        passed: true
+        comment: All text sizes explicitly set and readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Clean spacing, no overlapping elements
+        comment: Category labels clearly separated, no collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Bars and labels clearly visible
+        comment: All bars and text clearly visible
       - id: VQ-04
         name: Color Accessibility
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: 'Single non-standard color, not Okabe-Ito #009E73'
+        passed: true
+        comment: Okabe-Ito green is colorblind-safe, good contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions, proper margins
+        comment: 4800×2700 proportions excellent, nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Correct format and descriptive
+        comment: Title and X-axis label descriptive with units
       - id: VQ-07
         name: Palette Compliance
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: 'CRITICAL: Wrong color (#306998 not #009E73), wrong backgrounds (pure
-          white/black not warm #FAF8F1/#1A1A17)'
+        passed: true
+        comment: 'First series #009E73, light bg #FAF8F1, dark bg #1A1A17, both themes
+          correct'
     design_excellence:
-      score: 6
+      score: 11
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 3
+        score: 4
         max: 8
         passed: false
-        comment: Generic styling, no design polish
+        comment: Functional and professional but lacks exceptional visual polish
       - id: DE-02
         name: Visual Refinement
-        score: 1
-        max: 6
-        passed: false
-        comment: Minimal customization
-      - id: DE-03
-        name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Basic ranking visualization, no hierarchy
+        comment: Bar edges provide subtle definition, minimal customization beyond
+          defaults
+      - id: DE-03
+        name: Data Storytelling
+        score: 5
+        max: 6
+        passed: true
+        comment: Sorting creates clear ranking hierarchy; viewer eye is guided to
+          top performers
     spec_compliance:
       score: 15
       max: 15
@@ -122,25 +122,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizontal bar chart
+        comment: Correct horizontal bar chart with categories on Y-axis
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: Categories, values, sorting present
+        comment: 'All spec requirements met: bar heights proportional, names visible,
+          single color, adequate spacing'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes correctly mapped
+        comment: 'X: value with units, Y: categories, range 0-75 appropriate'
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format
+        comment: Correct format title, no legend needed for single-series
     data_quality:
       score: 15
       max: 15
@@ -150,21 +151,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows all horizontal bar aspects
+        comment: Shows all aspects of bar chart; 10 categories with good variety
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Top programming languages, realistic
+        comment: Real programming language popularity data, realistic values, neutral
+          domain
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Percentage scale appropriate
+        comment: Values 9.2%-65.6%, X-axis 0-75 sensible for domain
     code_quality:
-      score: 4
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -172,50 +174,53 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple procedural script
+        comment: No functions/classes, linear execution
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic
+        comment: Deterministic; no randomness
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only used imports
+        comment: All imports used, no unnecessary packages
       - id: CQ-04
         name: Code Elegance
-        score: 0
+        score: 2
         max: 2
-        passed: false
-        comment: Uses forbidden export_png per bokeh.md
+        passed: true
+        comment: Appropriate complexity, no fake UI, clean structure
       - id: CQ-05
         name: Output & API
-        score: 0
+        score: 1
         max: 1
-        passed: false
-        comment: Wrong filenames (plot.png not plot-light/dark.png)
+        passed: true
+        comment: Saves as plot-{THEME}.png/.html correctly
     library_mastery:
-      score: 3
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 2
+        score: 4
         max: 5
-        passed: false
-        comment: Uses ColumnDataSource but violates bokeh.md patterns
+        passed: true
+        comment: Proper figure(), ColumnDataSource, hbar(), high-level API, follows
+          bokeh conventions
       - id: LM-02
         name: Distinctive Features
-        score: 1
+        score: 3
         max: 5
-        passed: false
-        comment: Generic usage
-  verdict: REJECTED
+        passed: true
+        comment: Selenium screenshot approach (bokeh-specific), theme-adaptive tokens,
+          toolbar_location control
+  verdict: APPROVED
 impl_tags:
-  dependencies: []
+  dependencies:
+  - selenium
   techniques:
   - html-export
   patterns:

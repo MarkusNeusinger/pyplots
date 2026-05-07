@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 bar-horizontal: Horizontal Bar Chart
 Library: bokeh 3.9.0 | Python 3.13.13
-Quality: 68/100 | Updated: 2026-05-07
+Quality: 88/100 | Updated: 2026-05-07
 """
 
 import os

@@ -2,7 +2,7 @@ library: seaborn
 language: python
 specification_id: horizon-basic
 created: '2025-12-24T22:16:46Z'
-updated: '2026-05-07T05:32:20Z'
+updated: '2026-05-07T05:42:15Z'
 generated_by: claude-haiku
 workflow_run: 25477630508
 issue: 1877
@@ -12,109 +12,120 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/horizon-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/seaborn/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 82
+quality_score: 70
 review:
   strengths:
-  - Excellent spec compliance with correct horizon chart implementation
-  - Realistic and well-designed synthetic stock data showing diverse patterns (oscillation,
-    volatility, trend, cycle)
-  - Clean, reproducible code with proper seeding and minimal complexity
-  - Good visual hierarchy through color intensity encoding for magnitude
-  - Compact multi-series display effectively addresses specification goals
-  - Proper axis labels with context units
+  - Correct and complete horizon chart implementation with proper folding technique
+  - Data is realistic, well-chosen, and shows good feature coverage with multiple
+    series and diverging positive/negative patterns
+  - Light render is clean and readable with proper contrast throughout
+  - Compact and effective presentation of 5 time series in limited vertical space
+  - Title and legend properly formatted according to spec requirements
   weaknesses:
-  - Legend text color not explicitly set to theme-adaptive INK value, causing dark
-    render readability failure (VQ-07, VQ-01)
-  - Mostly uses raw matplotlib rather than leveraging seaborn's high-level API (appropriate
-    for custom horizon chart, but impacts library mastery score)
+  - Legend text color is not theme-adaptive, rendering unreadable in dark mode (black
+    text on dark background)
+  - Custom green/red colors used instead of recommended BrBG diverging palette for
+    continuous-like data encoding
+  - 'Light band colors (#E8F5E9, #FFEBEE) too bright in dark theme, lack visual subtlety
+    and create visual jarring'
+  - No distinctive seaborn features utilized; implementation relies on matplotlib
+    primitives
+  - Minimal design customization beyond library defaults; no custom palette, no visual
+    hierarchy
+  - No visual emphasis or data storytelling to guide viewer to insights
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 (correct)
-      Chrome: Title, stock labels, axis labels, tick labels all clearly visible in dark INK text
-      Data: 5 stock series shown as horizon bands; positive deviations in green shades, negative in red shades; color intensity encodes magnitude within bands
-      Grid: Subtle vertical gridlines
-      Legend: Upper right corner with 6 bands clearly labeled; white frame, readable dark text
-      Legibility verdict: PASS - all elements readable
+      Background: Warm off-white (#FAF8F1) - correct
+      Chrome: Title "horizon-basic · seaborn · anyplot.ai" clearly visible in dark text (24pt); Y-axis stock labels (TECH, FINANCE, ENERGY, HEALTHCARE, RETAIL) visible in dark text (16pt); X-axis label "Trading Days (90-day period)" visible (20pt); tick labels at 15-day intervals visible in soft text
+      Data: Green bands (positive: light #E8F5E9, medium #66BB6A, dark #2E7D32) and red bands (negative: light #FFEBEE, medium #EF5350, dark #C62828) clearly distinguishable
+      Legend: Upper right corner with light background (#FFFDF6), clearly readable labels describing deviation magnitude ranges
+      Legibility verdict: PASS - all text is readable, no contrast issues
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 (correct)
-      Chrome: Title, stock labels, axis labels, tick labels all clearly visible in light text
-      Data: Green and red bands identical to light render (correct theme independence)
-      Grid: Subtle vertical gridlines visible
-      Legend: Upper right corner - text is dim/hard to read, insufficient contrast; frame visible but text color not adapted to dark theme
-      Legibility verdict: FAIL - legend text unreadable due to missing theme adaptation (missing textprops={'color': INK})
+      Background: Very dark, intended to be #1A1A17 (appears correct but perception affected by legibility issues)
+      Chrome: Title visible but harder to distinguish; stock labels present but difficult to read; x-axis tick labels (Day 0, Day 15, etc.) barely visible; **legend text is nearly UNREADABLE** - text color not adapted to dark theme
+      Data: Green and red band colors identical to light render (correct), but light-colored bands (#E8F5E9, #FFEBEE) appear very bright against dark surface
+      Legend: Frame is visible but text inside is extremely faint (appears to be black or very dark text on dark background)
+      Legibility verdict: FAIL - legend text is unreadable due to missing theme-adaptive color property; this is a critical implementation bug
 
-    Overall: Plot elements are readable in both themes, but legend fails dark-theme legibility check (VQ-07/VQ-01 failure).
+    Both renders must pass legibility - dark render fails the mandatory theme-readiness check due to legend text being unreadable.
   criteria_checklist:
     visual_quality:
-      score: 23
+      score: 19
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 4
+        score: 3
         max: 8
         passed: false
-        comment: Legend text in dark render lacks theme adaptation, reducing readability
+        comment: Title, axis labels, tick labels readable in light render; legend
+          text unreadable in dark render due to missing theme-adaptive color
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: All elements well-spaced
+        comment: All text elements properly spaced with no overlapping
       - id: VQ-03
         name: Element Visibility
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Horizon bands clearly visible; intensity encoding effective
+        comment: Data bands visible, light colors in dark theme somewhat distracting
+          but acceptable
       - id: VQ-04
         name: Color Accessibility
         score: 1
         max: 2
         passed: false
-        comment: Green/red adequate but not optimal for colorblind audiences
+        comment: Custom green/red colors instead of recommended BrBG diverging palette
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Perfect balance with generous margins
+        comment: Figure size appropriate (16x9 = 4800x2700px), balanced margins, no
+          cut-offs
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units
+        comment: Title format correct with spec-id and library; axis labels descriptive
+          with units
       - id: VQ-07
         name: Palette Compliance
-        score: 0
+        score: 1
         max: 2
         passed: false
-        comment: Dark render chrome failure - legend text color not theme-adapted
+        comment: Custom colors instead of BrBG; backgrounds mostly correct but dark
+          render legibility compromised
     design_excellence:
-      score: 13
+      score: 8
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 5
+        score: 4
         max: 8
         passed: false
-        comment: Custom palette with thoughtful design, professional but not publication-ready
+        comment: Generic styling with default colors; no distinctive design choices
+          or custom palette
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 2
         max: 6
-        passed: true
-        comment: Spines removed, subtle grid, good attention to detail
+        passed: false
+        comment: Minimal customization; spines mostly removed but library defaults
+          dominate
       - id: DE-03
         name: Data Storytelling
-        score: 4
+        score: 2
         max: 6
-        passed: true
-        comment: Horizon chart technique and color intensity create effective visual
-          hierarchy
+        passed: false
+        comment: Data displayed but no visual hierarchy, emphasis, or narrative to
+          guide viewer
     spec_compliance:
       score: 15
       max: 15
@@ -124,25 +135,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizon chart with proper band folding
+        comment: Correct horizon chart with proper folding bands
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: series, bands, positive/negative, magnitude'
+        comment: 'All features present: folded bands, positive/negative diverging,
+          magnitude encoding, multiple series'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y correctly assigned, all data visible
+        comment: 'X-axis: time (trading days), Y-axis: magnitude via band height;
+          all 5 series shown'
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, legend labels clear
+        comment: Title format correct; legend labels properly describe deviation magnitude
+          ranges
     data_quality:
       score: 15
       max: 15
@@ -152,21 +166,24 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all aspects: positive, negative, all bands, diverse patterns'
+        comment: 'Shows all horizon chart aspects: multiple series, diverging patterns,
+          different magnitude levels'
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real-world stock scenario, neutral and non-controversial
+        comment: Stock market deviations from moving average is realistic, plausible,
+          and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 90 trading days and ±15% deviations realistic
+        comment: 90 trading days, 5 stocks, deviation range [-15, 15] realistic and
+          well-proportioned
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -174,33 +191,36 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Clean linear structure
+        comment: No classes/functions; straightforward data generation, plotting,
+          and save workflow
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Seed set, deterministic
+        comment: Uses np.random.seed(42) for deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used
+        comment: 'Only necessary imports: matplotlib.patches, matplotlib.pyplot, numpy,
+          pandas'
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Clean and appropriate
+        passed: false
+        comment: 'Legend text color not set explicitly; should use prop={''color'':
+          INK} parameter'
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correct plot-{THEME}.png format
+        comment: Saves correctly as plot-{THEME}.png
     library_mastery:
-      score: 6
+      score: 4
       max: 10
       items:
       - id: LM-01
@@ -208,28 +228,27 @@ review:
         score: 3
         max: 5
         passed: false
-        comment: Correct matplotlib patterns but doesn't leverage seaborn high-level
-          API
+        comment: Uses matplotlib appropriately (fill_between, set_facecolor), but
+          theme handling not fully comprehensive
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 1
         max: 5
         passed: false
-        comment: Custom horizon chart is distinctive; appropriate for spec but generic
-          library usage
-    total:
-      score: 82
-      max: 100
+        comment: Generic matplotlib usage; no distinctive seaborn features or high-level
+          APIs utilized
+    score_caps_applied: []
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - subplots
   - custom-legend
-  - manual-ticks
+  - fill_between
   patterns:
   - data-generation
   - iteration-over-groups
   dataprep: []
   styling:
+  - grid-styling
   - alpha-blending

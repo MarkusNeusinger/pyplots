@@ -1,14 +1,17 @@
-""" pyplots.ai
+"""anyplot.ai
 hive-basic: Basic Hive Plot
-Library: plotnine 0.15.2 | Python 3.13.11
-Quality: 82/100 | Created: 2025-12-24
+Library: plotnine | Python 3.13
+Quality: pending | Created: 2025-12-24
 """
+
+import os
 
 import numpy as np
 import pandas as pd
 from plotnine import (
     aes,
     coord_fixed,
+    element_rect,
     element_text,
     geom_point,
     geom_segment,
@@ -23,16 +26,19 @@ from plotnine import (
 )
 
 
-# Set seed for reproducibility
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+BRAND = "#009E73"
+COLOR_2 = "#D55E00"
+COLOR_3 = "#0072B2"
+
 np.random.seed(42)
 
-# Create sample software module dependency network
-# Nodes: modules categorized by type (core, utility, interface)
-# Balanced distribution: 7 core, 7 utility, 7 interface = 21 nodes
 nodes = pd.DataFrame(
     {
         "id": [
-            # Core modules (7)
             "auth",
             "db",
             "core",
@@ -40,7 +46,6 @@ nodes = pd.DataFrame(
             "kernel",
             "runtime",
             "engine",
-            # Utility modules (7)
             "cache",
             "logger",
             "config",
@@ -48,7 +53,6 @@ nodes = pd.DataFrame(
             "crypto",
             "parser",
             "queue",
-            # Interface modules (7)
             "api",
             "web",
             "cli",
@@ -84,7 +88,6 @@ nodes = pd.DataFrame(
     }
 )
 
-# Edges: dependencies between modules
 edges = pd.DataFrame(
     {
         "source": [
@@ -154,44 +157,42 @@ edges = pd.DataFrame(
     }
 )
 
-# Hive plot parameters
-# 3 axes for the 3 categories
-axis_angles = {"core": 90, "utility": 210, "interface": 330}  # degrees
-axis_colors = {"core": "#306998", "utility": "#FFD43B", "interface": "#4ECDC4"}
+axis_angles = {"core": 90, "utility": 210, "interface": 330}
+axis_colors = {"core": BRAND, "utility": COLOR_2, "interface": COLOR_3}
 
-# Calculate node positions on axes
 max_degree = nodes["degree"].max()
 
-# Count nodes per category for spacing
-category_counts = nodes.groupby("category").cumcount()
-category_totals = nodes.groupby("category")["id"].transform("count")
+nodes_by_category = {}
+for cat in ["core", "utility", "interface"]:
+    cat_nodes = nodes[nodes["category"] == cat].sort_values("degree", ascending=False).reset_index(drop=True)
+    nodes_by_category[cat] = cat_nodes
 
-nodes["idx_in_axis"] = category_counts
-nodes["count_in_axis"] = category_totals
-
-# Calculate positions for each node (flat code, no function)
 positions = []
-for _, row in nodes.iterrows():
-    angle_deg = axis_angles[row["category"]]
+for cat, cat_nodes in nodes_by_category.items():
+    angle_deg = axis_angles[cat]
     angle_rad = np.radians(angle_deg)
 
-    # Normalize degree to radial distance (0.25 to 0.90 of axis length)
-    # Space nodes more evenly along axis using index-based positioning
-    base_radius = 0.25 + (row["idx_in_axis"] / max(row["count_in_axis"] - 1, 1)) * 0.65
+    for _idx, row in cat_nodes.iterrows():
+        base_radius = 0.25 + (row["degree"] / max_degree) * 0.70
 
-    x = base_radius * np.cos(angle_rad)
-    y = base_radius * np.sin(angle_rad)
+        x = base_radius * np.cos(angle_rad)
+        y = base_radius * np.sin(angle_rad)
 
-    # Calculate node size based on degree (min 4, max 12)
-    node_size = 4 + (row["degree"] / max_degree) * 8
+        node_size = 6 + (row["degree"] / max_degree) * 16
 
-    positions.append(
-        {"id": row["id"], "x": x, "y": y, "category": row["category"], "degree": row["degree"], "node_size": node_size}
-    )
+        positions.append(
+            {
+                "id": row["id"],
+                "x": x,
+                "y": y,
+                "category": row["category"],
+                "degree": row["degree"],
+                "node_size": node_size,
+            }
+        )
 
 node_positions = pd.DataFrame(positions)
 
-# Create axis lines data (from center to edge)
 axis_lines = []
 for cat, angle in axis_angles.items():
     angle_rad = np.radians(angle)
@@ -200,7 +201,6 @@ for cat, angle in axis_angles.items():
     )
 axis_df = pd.DataFrame(axis_lines)
 
-# Create edge data with Bezier curves
 edge_data = []
 for _, row in edges.iterrows():
     src_match = node_positions[node_positions["id"] == row["source"]]
@@ -215,25 +215,19 @@ for _, row in edges.iterrows():
     src_cat = src_pos["category"]
     tgt_cat = tgt_pos["category"]
 
-    # Determine curve control point based on edge type
     if src_cat == tgt_cat:
-        # Same axis: curve inward toward center
         mid_factor = 0.3
     else:
-        # Different axes: curve through center area
         mid_factor = 0.15
 
-    # Control point toward center
     ctrl_x = mid_factor * (src_pos["x"] + tgt_pos["x"]) / 2
     ctrl_y = mid_factor * (src_pos["y"] + tgt_pos["y"]) / 2
 
-    # Generate points along quadratic Bezier curve
     n_points = 20
     for i in range(n_points):
         t0 = i / n_points
         t1 = (i + 1) / n_points
 
-        # Quadratic Bezier: B(t) = (1-t)^2*P0 + 2*(1-t)*t*P1 + t^2*P2
         x0 = (1 - t0) ** 2 * src_pos["x"] + 2 * (1 - t0) * t0 * ctrl_x + t0**2 * tgt_pos["x"]
         y0 = (1 - t0) ** 2 * src_pos["y"] + 2 * (1 - t0) * t0 * ctrl_y + t0**2 * tgt_pos["y"]
         x1 = (1 - t1) ** 2 * src_pos["x"] + 2 * (1 - t1) * t1 * ctrl_x + t1**2 * tgt_pos["x"]
@@ -253,63 +247,47 @@ for _, row in edges.iterrows():
 
 edge_df = pd.DataFrame(edge_data)
 
-# Create axis labels
 axis_labels = []
 for cat, angle in axis_angles.items():
     angle_rad = np.radians(angle)
     axis_labels.append(
-        {"x": 1.12 * np.cos(angle_rad), "y": 1.12 * np.sin(angle_rad), "label": cat.upper(), "category": cat}
+        {"x": 1.18 * np.cos(angle_rad), "y": 1.18 * np.sin(angle_rad), "label": cat.upper(), "category": cat}
     )
 label_df = pd.DataFrame(axis_labels)
 
-# Create node labels offset from node positions
 node_labels = []
 for _, row in node_positions.iterrows():
     angle_deg = axis_angles[row["category"]]
     angle_rad = np.radians(angle_deg)
 
-    # Offset label perpendicular to axis (to avoid overlap with axis line)
-    # Use larger offset for better visibility
-    offset = 0.12
-    perp_angle = angle_rad + np.pi / 2  # perpendicular direction
+    offset = 0.18
+    perp_angle = angle_rad + np.pi / 2
     label_x = row["x"] + offset * np.cos(perp_angle)
     label_y = row["y"] + offset * np.sin(perp_angle)
 
     node_labels.append({"x": label_x, "y": label_y, "label": row["id"], "category": row["category"]})
 node_labels_df = pd.DataFrame(node_labels)
 
-# Create the plot
 plot = (
     ggplot()
-    # Draw edges first (behind nodes) colored by source category
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="src_cat"), data=edge_df, size=1.2, alpha=0.6)
-    # Draw axis lines
-    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="category"), data=axis_df, size=3, alpha=0.8)
-    # Draw nodes with size based on degree
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="src_cat"), data=edge_df, size=1.5, alpha=0.5)
+    + geom_segment(aes(x="x", y="y", xend="xend", yend="yend", color="category"), data=axis_df, size=3.5, alpha=0.8)
     + geom_point(aes(x="x", y="y", color="category", size="node_size"), data=node_positions, alpha=0.95)
-    # Add node labels (module names) with larger size and white background effect
-    + geom_text(aes(x="x", y="y", label="label"), data=node_labels_df, size=11, color="#1a1a1a", fontweight="bold")
-    # Add axis category labels
-    + geom_text(aes(x="x", y="y", label="label", color="category"), data=label_df, size=16, fontweight="bold")
-    # Color scale
+    + geom_text(aes(x="x", y="y", label="label"), data=node_labels_df, size=10, color=INK)
+    + geom_text(aes(x="x", y="y", label="label", color="category"), data=label_df, size=18)
     + scale_color_manual(values=axis_colors)
-    # Styling
     + coord_fixed(ratio=1)
-    + xlim(-1.5, 1.5)
-    + ylim(-1.5, 1.5)
-    + labs(
-        title="hive-basic · plotnine · pyplots.ai",
-        subtitle="Node size indicates connection degree (larger = more connections)",
-    )
+    + xlim(-1.6, 1.6)
+    + ylim(-1.6, 1.6)
+    + labs(title="hive-basic · plotnine · anyplot.ai")
     + theme_void()
     + theme(
-        figure_size=(12, 12),
-        plot_title=element_text(size=24, ha="center", weight="bold"),
-        plot_subtitle=element_text(size=14, ha="center", color="#555555"),
+        figure_size=(16, 16),
+        plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        plot_title=element_text(size=28, color=INK, weight="bold"),
         legend_position="none",
-        plot_margin=0.02,
+        plot_margin=0.01,
     )
 )
 
-# Save
-plot.save("plot.png", dpi=300, verbose=False)
+plot.save(f"plot-{THEME}.png", dpi=300, verbose=False)

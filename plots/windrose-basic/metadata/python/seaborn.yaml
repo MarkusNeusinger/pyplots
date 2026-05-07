@@ -1,175 +1,174 @@
 library: seaborn
+language: python
 specification_id: windrose-basic
 created: '2025-12-24T22:16:59Z'
-updated: '2025-12-24T22:21:55Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494683616
-issue: 0
-python_version: 3.13.11
+updated: '2026-05-07T03:33:08Z'
+generated_by: claude-haiku
+workflow_run: 25474192715
+issue: 1880
+python_version: 3.13.13
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/seaborn/plot.png
-preview_html: null
-quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques:
-  - polar-projection
-  - manual-ticks
-  patterns:
-  - data-generation
-  - iteration-over-groups
-  dataprep: []
-  styling:
-  - grid-styling
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/seaborn/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/seaborn/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 88
 review:
   strengths:
-  - Excellent wind rose visualization with proper meteorological conventions (North
-    at top, clockwise direction)
-  - Beautiful color progression using seaborn YlOrRd palette from cool to warm
-  - Realistic simulated wind data with dominant SW and secondary NE patterns matching
-    real-world scenarios
-  - Clean stacked bar implementation with white edges for visual separation
-  - Well-positioned and styled legend with proper title
+  - 'Perfect visual quality: All 8 VQ criteria at maximum with explicit font sizing
+    and flawless theme adaptation'
+  - 'Impeccable readability in both themes: Light and dark renders both fully legible
+    with zero dark-on-dark or light-on-light issues'
+  - 'Complete spec compliance: All windrose features present and correct with proper
+    title and legend formatting'
+  - 'Excellent data quality: Realistic meteorological data with plausible Weibull-distributed
+    speeds and natural prevailing wind patterns'
+  - 'Thoughtful design choices: Alpha variation (0.90 dominant, 0.65 weaker) creates
+    visual hierarchy emphasizing prevailing SW winds'
+  - 'Clean, reproducible code: Deterministic data generation with explicit seed and
+    straightforward structure'
+  - 'Professional presentation: Proper typography hierarchy (24pt/18pt/14pt), balanced
+    layout, well-positioned legend on elevated background'
   weaknesses:
-  - Missing explicit radial axis label (should indicate Frequency or similar)
-  - Seaborn is used primarily for styling rather than seaborn plotting functions -
-    actual bars drawn with matplotlib polar bar plot
-  image_description: The plot displays a polar wind rose chart with 16 directional
-    sectors. The title "windrose-basic · seaborn · pyplots.ai" is prominently displayed
-    at the top in bold black text. North (N) is correctly positioned at the top, with
-    compass directions (NE, E, SE, S, SW, W, NW) labeled around the perimeter in bold
-    black text. The chart shows stacked colored bars representing wind speed categories,
-    progressing from pale yellow (0-3 m/s) through orange shades (3-6, 6-10 m/s) to
-    red/crimson (10-15, 15+ m/s). The dominant wind direction is clearly from the
-    SW, with a prominent ~30% frequency spike showing strong winds (many red/orange
-    segments). A secondary NE pattern (~10% frequency) is visible with moderate speeds.
-    The radial axis shows percentage labels (0%, 5%, 10%, 15%, 20%, 25%, 30%) with
-    subtle gray grid lines. A legend titled "Wind Speed" is positioned in the lower
-    right corner with a white background and gray border, showing all five speed categories
-    with their colors.
+  - 'Limited distinctive seaborn features: Wind rose requires custom matplotlib implementation;
+    seaborn''s role is primarily theming rather than leveraging distinctive plotting
+    capabilities (FacetGrid, hue patterns, etc.)'
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1)
+      Chrome: Title in 24pt dark text, direction labels in 18pt dark, radial labels in 14pt soft gray — all clearly readable
+      Data: Green (#009E73, 0-3 m/s innermost), orange (#D55E00), blue (#0072B2), pink (#CC79A7), yellow (#E69F00, 15+ m/s outermost); SW sector dominates with full opacity (0.90), weaker sectors at reduced opacity (0.65); stacked composition clearly visible
+      Legibility verdict: PASS - All text crisp and fully readable; no overlap; contrast excellent
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17)
+      Chrome: Title in light text (#F0EFE8), direction labels in light text, radial labels in soft light gray (#B8B7B0) — all clearly visible against dark background; critically, NO dark-on-dark text failures present
+      Data: Identical colors to light render (green, orange, blue, pink, yellow in same positions); opacity variation (0.90 dominant, 0.65 weaker) preserved
+      Legibility verdict: PASS - All elements visible; legend readable on elevated dark background (#242420); theme adaptation flawless; both renders equally readable
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title at 24pt bold, direction labels at 18pt bold, radial labels
-          at 14pt, all perfectly readable
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements, clean separation between all labels
+        comment: All font sizes explicitly set (24pt, 18pt, 14pt); perfectly readable
+          in both themes
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text; all labels fully separated
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Stacked bars are clearly visible with good alpha (0.9), white edges
-          provide separation; minor deduction for some thin segments in less frequent
-          directions
+        comment: Stacked bars clearly visible; colors distinct; opacity variation
+          optimal
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: YlOrRd palette progresses from yellow to red, colorblind-friendly
-          sequential palette
-      - id: VQ-05
-        name: Layout Balance
-        score: 4
-        max: 5
-        passed: true
-        comment: Square 12x12 figure works well for polar plot, but some empty space
-          in corners; legend well-positioned
-      - id: VQ-06
-        name: Axis Labels
-        score: 0
-        max: 2
-        passed: true
-        comment: No explicit axis labels (radial axis shows only percentages without
-          "Frequency" label)
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: Grid subtle at alpha 0.3, legend well-placed with good styling
+        comment: Okabe-Ito palette CVD-safe; adequate contrast
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Polar plot fills canvas beautifully; balanced margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Title correct; labels descriptive with units
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73; colors follow Okabe-Ito; backgrounds #FAF8F1
+          and #1A1A17; theme-adaptive chrome in both'
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 5
+        max: 8
+        passed: true
+        comment: Thoughtful design with alpha variation; above defaults but not exceptional
+      - id: DE-02
+        name: Visual Refinement
+        score: 5
+        max: 6
+        passed: true
+        comment: Custom grid styling; theme-aware spines; elegant legend frame
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Visual hierarchy through opacity guides reader to dominant SW winds
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct wind rose chart as polar stacked histogram
+        comment: Correct wind rose with 8 directions and 5 speed bins
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Direction mapped to theta, speed to stacked segments, frequency to
-          radial extent
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 16 direction bins, 5 speed ranges, stacked colored segments, legend
-          present
-      - id: SC-04
-        name: Data Range
+        comment: 'All features present: sectors, bins, stacking, legend, percentages'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Full 360° coverage, radial axis properly scaled to max ~30%
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Polar angle = direction; radial = frequency; all data visible
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend accurately shows speed ranges with matching colors
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Exact format "windrose-basic · seaborn · pyplots.ai" with middle
-          dots
+        comment: Title and legend correct format
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows prevailing SW winds, secondary NE pattern, varying speeds by
-          direction; good distribution but could show more calm conditions
+        comment: Shows all aspects of wind rose
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: 8760 observations (one year hourly) with realistic Weibull-distributed
-          speeds and dominant SW/NE patterns typical of many locations
+        comment: Realistic weather data with plausible distributions
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Wind speeds 0-25 m/s realistic, though max 25 m/s is on the high
-          end for typical hourly data
+        comment: Wind speeds and proportions physically realistic
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -177,42 +176,57 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear script: imports → data → bins → plot → save'
+        comment: 'Linear: imports→data→plot→save'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) set at start
+        comment: Seed set (42); fully deterministic
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only matplotlib, numpy, seaborn used (all necessary)
+        comment: All imports used
       - id: CQ-04
-        name: No Deprecated API
-        score: 0
-        max: 1
-        passed: false
-        comment: Uses `strict=True` in zip which is fine, but line 65 has overly complex
-          logic
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Clean, Pythonic, appropriate complexity
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as 'plot.png'
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot-{THEME}.png
+    library_mastery:
+      score: 4
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
         score: 3
         max: 5
         passed: true
-        comment: Uses sns.set_style("whitegrid"), sns.set_context("talk"), sns.color_palette("YlOrRd");
-          however, the actual plotting is done with matplotlib's ax.bar on polar projection,
-          not seaborn plotting functions
+        comment: Proper seaborn theming, but wind rose requires matplotlib
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
+        max: 5
+        passed: false
+        comment: Limited distinctive seaborn usage; wind rose necessitates matplotlib
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - manual-ticks
+  patterns:
+  - data-generation
+  - matrix-construction
+  dataprep: []
+  styling:
+  - grid-styling
+  - alpha-blending

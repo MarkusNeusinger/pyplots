@@ -1,15 +1,36 @@
-""" pyplots.ai
+"""anyplot.ai
 horizon-basic: Horizon Chart
-Library: bokeh 3.8.1 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: bokeh | Python 3.13
+Quality: pending | Created: 2026-05-07
 """
 
+import os
+import sys
+import time
+from pathlib import Path
+
+
+# Remove current directory from path to avoid conflict with local bokeh.py filename
+if "" in sys.path:
+    sys.path.remove("")
+if "." in sys.path:
+    sys.path.remove(".")
+
 import numpy as np
-from bokeh.io import export_png
+from bokeh.io import output_file, save
 from bokeh.layouts import column
 from bokeh.models import ColumnDataSource, HoverTool, Label, Range1d, Title
-from bokeh.plotting import figure, output_file, save
+from bokeh.plotting import figure
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
+
+# Theme tokens (see prompts/default-style-guide.md)
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 
 # Data - Server metrics over 24 hours for 6 servers
 np.random.seed(42)
@@ -43,9 +64,9 @@ chart_width = 4800
 total_height = 2700
 individual_height = total_height // n_series  # ~450px per series
 
-# Define colors - blue for positive, orange for negative (colorblind-friendly)
-pos_colors = ["#a6cee3", "#306998", "#08306b"]  # Light to dark blue (using Python Blue)
-neg_colors = ["#fdd0a2", "#f16913", "#8c2d04"]  # Light to dark orange (colorblind-safe)
+# Okabe-Ito palette positions for color intensity (position 1 for primary, positions 2-3 for intensity)
+pos_colors = ["#56B4E9", "#0072B2", "#004494"]  # Light to dark blue (Okabe-Ito positions 6, 3, variant)
+neg_colors = ["#E69F00", "#D55E00", "#8B3A00"]  # Light to dark orange (Okabe-Ito positions 5, 2, variant)
 
 # Create individual horizon plots
 plots = []
@@ -69,20 +90,26 @@ for idx, data in enumerate(series_data):
         toolbar_location="right" if idx == 0 else None,
     )
 
+    # Theme-adaptive background
+    p.background_fill_color = PAGE_BG
+    p.border_fill_color = PAGE_BG
+    p.outline_line_color = INK_SOFT
+
     # Configure axes
     if idx < len(series_data) - 1:
         p.xaxis.visible = False
     else:
-        p.xaxis.axis_label = "Hour of Day"
-        p.xaxis.axis_label_text_font_size = "24pt"
-        p.xaxis.major_label_text_font_size = "20pt"
+        p.xaxis.axis_label = "Hour of Day (0-24h)"
+        p.xaxis.axis_label_text_font_size = "22pt"
+        p.xaxis.major_label_text_font_size = "18pt"
+        p.xaxis.axis_label_text_color = INK
+        p.xaxis.major_label_text_color = INK_SOFT
+        p.xaxis.axis_line_color = INK_SOFT
 
     p.yaxis.visible = False
     p.grid.visible = False
-    p.outline_line_color = "#cccccc"
-    p.outline_line_width = 1
 
-    # Add series name as label on the left (larger for better readability)
+    # Add series name as label on the left
     label = Label(
         x=0.3,
         y=band_size * 0.5,
@@ -91,7 +118,7 @@ for idx, data in enumerate(series_data):
         text_font_style="bold",
         text_align="left",
         text_baseline="middle",
-        text_color="#333333",
+        text_color=INK,
     )
     p.add_layout(label)
 
@@ -124,10 +151,12 @@ for idx, data in enumerate(series_data):
     plots.append(p)
 
 # Add main title to the first plot
-plots[0].add_layout(Title(text="horizon-basic · bokeh · pyplots.ai", text_font_size="32pt", align="center"), "above")
+plots[0].add_layout(
+    Title(text="horizon-basic · bokeh · anyplot.ai", text_font_size="28pt", align="center", text_color=INK), "above"
+)
 
-# Create legend figure explaining color bands
-legend_height = 150
+# Create legend figure explaining color bands - made more prominent
+legend_height = 200
 legend_fig = figure(
     width=chart_width,
     height=legend_height,
@@ -139,39 +168,57 @@ legend_fig = figure(
 legend_fig.xaxis.visible = False
 legend_fig.yaxis.visible = False
 legend_fig.grid.visible = False
+legend_fig.background_fill_color = PAGE_BG
+legend_fig.border_fill_color = PAGE_BG
 legend_fig.outline_line_color = None
 
 # Add legend title
 legend_fig.add_layout(
-    Label(x=2, y=7, text="Color Legend:", text_font_size="22pt", text_font_style="bold", text_color="#333333")
+    Label(x=2, y=8.5, text="Color Legend:", text_font_size="24pt", text_font_style="bold", text_color=INK)
 )
 
 # Positive bands legend (left side)
 legend_fig.add_layout(
-    Label(x=20, y=7, text="Positive Values (above baseline):", text_font_size="18pt", text_color="#333333")
+    Label(x=20, y=8.5, text="Positive Values (above baseline):", text_font_size="20pt", text_color=INK_SOFT)
 )
 for i, (color, label_text) in enumerate(zip(pos_colors, ["Low (+)", "Medium (+)", "High (+)"], strict=True)):
-    legend_fig.rect(x=22 + i * 8, y=3, width=6, height=4, fill_color=color, line_color=None)
+    legend_fig.rect(x=22 + i * 10, y=5, width=8, height=5, fill_color=color, line_color=None)
     legend_fig.add_layout(
-        Label(x=22 + i * 8, y=0.5, text=label_text, text_font_size="14pt", text_align="center", text_color="#333333")
+        Label(x=22 + i * 10, y=2.5, text=label_text, text_font_size="16pt", text_align="center", text_color=INK_SOFT)
     )
 
 # Negative bands legend (right side)
 legend_fig.add_layout(
-    Label(x=55, y=7, text="Negative Values (below baseline):", text_font_size="18pt", text_color="#333333")
+    Label(x=55, y=8.5, text="Negative Values (below baseline):", text_font_size="20pt", text_color=INK_SOFT)
 )
 for i, (color, label_text) in enumerate(zip(neg_colors, ["Low (−)", "Medium (−)", "High (−)"], strict=True)):
-    legend_fig.rect(x=57 + i * 8, y=3, width=6, height=4, fill_color=color, line_color=None)
+    legend_fig.rect(x=57 + i * 10, y=5, width=8, height=5, fill_color=color, line_color=None)
     legend_fig.add_layout(
-        Label(x=57 + i * 8, y=0.5, text=label_text, text_font_size="14pt", text_align="center", text_color="#333333")
+        Label(x=57 + i * 10, y=2.5, text=label_text, text_font_size="16pt", text_align="center", text_color=INK_SOFT)
     )
 
 # Combine all plots vertically with legend at top
 layout = column(legend_fig, *plots)
 
 # Save as HTML (interactive)
-output_file("plot.html", title="Horizon Chart - pyplots.ai")
+output_file(f"plot-{THEME}.html")
 save(layout)
 
-# Save as PNG
-export_png(layout, filename="plot.png")
+# Screenshot with headless Chrome for PNG
+W, H = 4800, 2700
+opts = Options()
+for arg in (
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    f"--window-size={W},{H}",
+    "--hide-scrollbars",
+):
+    opts.add_argument(arg)
+driver = webdriver.Chrome(options=opts)
+driver.set_window_size(W, H)
+driver.get(f"file://{Path(f'plot-{THEME}.html').resolve()}")
+time.sleep(3)
+driver.save_screenshot(f"plot-{THEME}.png")
+driver.quit()

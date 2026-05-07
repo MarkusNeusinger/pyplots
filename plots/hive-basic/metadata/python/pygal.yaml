@@ -2,7 +2,7 @@ library: pygal
 language: python
 specification_id: hive-basic
 created: '2025-12-24T22:18:26Z'
-updated: '2026-05-07T01:13:28Z'
+updated: '2026-05-07T01:20:43Z'
 generated_by: claude-haiku
 workflow_run: 25470075756
 issue: 1879
@@ -12,106 +12,114 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/hive-basi
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/hive-basic/python/pygal/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/hive-basic/python/pygal/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/hive-basic/python/pygal/plot-dark.html
-quality_score: 82
+quality_score: 83
 review:
   strengths:
-  - Correct hive plot implementation with properly positioned radial axes
-  - Excellent theme-adaptive styling with correct color tokens in both light and dark
-    themes
-  - Thoughtful data choice (software dependencies) that clearly demonstrates the plot
-    type
-  - Proper edge bundling reduces visual clutter and improves readability
-  - Title and legend follow the exact required format
+  - Correct hive plot with proper 3-axis network structure and radial layout
+  - Theme-adaptive styling with full color palette (Okabe-Ito) and correct background
+    colors
+  - Both light and dark renders fully readable with no legibility or contrast failures
+  - Deterministic data generation with proper seeding (np.random.seed(42))
+  - Smooth Bezier curve edges with intelligent edge bundling to reduce visual clutter
+  - Clean code structure with appropriate complexity for the task
+  - Good balance of nodes across axes (7, 8, 5 nodes per axis)
   weaknesses:
-  - Node labels are too small to read comfortably; 4-character abbreviations lose
-    context
-  - Limited design sophistication—uses defaults without custom visual enhancements
-  - No visual hierarchy to guide the viewer's attention
-  - Abbreviated node labels (e.g., KERN, CONF) are cryptic and difficult to parse
+  - Using XY chart is unconventional for network visualization; less idiomatic than
+    specialized approach
+  - Design is functional but lacks distinctive visual polish or refinement
+  - Node labels abbreviated to 4 characters — preserves readability but loses semantic
+    clarity
+  - No edge styling for weight or direction encoding (though not explicitly required
+    by spec)
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct and readable
-      Chrome: Title "hive-basic · pygal · anyplot.ai" clearly readable in dark text at top; axis labels (Core, Utility, Interface) visible in colored text at axis positions; legend at bottom shows series names in light gray
-      Data: Three series clearly distinguished by color—Core (green #009E73), Utility (orange #D55E00), Interface (blue #0072B2); 20 nodes positioned along three radial axes; 36 edges rendered as semi-transparent curves with bundling
-      Legibility verdict: PASS - All text readable, though node label abbreviations are small
+      Background: Warm off-white (#FAF8F1) - correct, not pure white
+      Chrome: Title "hive-basic · pygal · anyplot.ai" clearly visible in dark text; axis labels (Core, Utility, Interface) readable in colored text; node labels (4-char abbreviations) distinct and readable; no contrast issues
+      Data: Three radial axes at 120° intervals with nodes positioned by degree; Core nodes (#009E73 brand green), Utility nodes (orange), Interface nodes (blue); edges rendered as smooth Bezier curves; color separation clear between axis groups
+      Legibility verdict: PASS - all text readable against light background
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - correct and readable
-      Chrome: Title clearly visible at top in light text; axis labels visible in colored text (green Core, orange Utility, blue Interface) with no dark-on-dark failures; legend at bottom in light gray (#B8B7B0) provides good contrast
-      Data: Colors identical to light render—Core nodes green, Utility orange, Interface blue—confirming proper theme-independent data coloring; edges visible and properly semi-transparent
-      Legibility verdict: PASS - All structural elements readable; proper theme adaptation with data colors constant across themes
+      Background: Warm near-black (#1A1A17) - correct, not pure black
+      Chrome: Title clearly visible in light text; axis labels and node labels readable against dark background; no dark-on-dark failures observed
+      Data: Node colors identical to light render (green Core, orange Utility, blue Interface); edges visible and distinct; proper data color fidelity confirmed between renders
+      Legibility verdict: PASS - all text readable against dark background, both renders properly theme-adapted
   criteria_checklist:
     visual_quality:
-      score: 27
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 6
+        score: 8
         max: 8
         passed: true
-        comment: Title, axis labels, and legend readable; node labels present but
-          very small
+        comment: All text readable in both themes with explicit font sizing (title
+          28px, labels 24px, nodes 18px)
       - id: VQ-02
         name: No Overlap
-        score: 4
-        max: 6
-        passed: true
-        comment: Node labels may have proximity issues in dense regions; natural edge
-          overlap expected
-      - id: VQ-03
-        name: Element Visibility
         score: 5
         max: 6
         passed: true
-        comment: Nodes and edges clearly visible; axis structure well-defined
+        comment: Node labels distinct and mostly well-spaced; minor proximity but
+          no overlaps
+      - id: VQ-03
+        name: Element Visibility
+        score: 6
+        max: 6
+        passed: true
+        comment: All nodes visible as 20px circles; edges visible via Bezier curves
+          and color differentiation
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito palette CVD-safe; strong contrast; no red-green sole signal
+        comment: Okabe-Ito palette CVD-safe; no red-green sole signal; proper contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 4800×2700 proportions appropriate; nothing cut off; generous whitespace
+        comment: Well-centered on 4800x2700 canvas; generous margins; nothing cut
+          off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title format correct; axis labels descriptive
+        comment: Title correct format; axis labels (Core, Utility, Interface) descriptive
+          and clear
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'Backgrounds correct; first series #009E73; colors identical across
-          themes'
+        comment: 'First series #009E73 confirmed; Okabe-Ito order respected; backgrounds
+          #FAF8F1/#1A1A17 correct for both themes'
     design_excellence:
-      score: 8
+      score: 11
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: false
-        comment: Generic defaults; no custom visual enhancements
+        comment: Theme-adaptive Style with Okabe-Ito palette applied; custom SVG axis
+          labels show design intent; overall styling functional but not polished
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: Minimal customization; no spine removal or extra polish
+        comment: Grid off, generous whitespace; minimal custom refinement beyond defaults
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 4
         max: 6
-        passed: false
-        comment: No clear visual hierarchy; plot shows data but doesn't guide viewer
+        passed: true
+        comment: Visual hierarchy via degree-based positioning; clear focal point
+          at center where edges converge
     spec_compliance:
       score: 15
       max: 15
@@ -121,108 +129,113 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct hive plot with 3 radial axes
+        comment: Correct 3-axis hive plot with radial layout
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features: axes, nodes, edges, edge bundling, axis labels'
+        comment: Nodes on axes, edges, axis labels, node labels, 2-3 axes all implemented
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 20 nodes, 36 edges properly rendered
+        comment: Coordinates correctly calculated; all 20 nodes rendered; appropriate
+          range 0-10
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Correct title format and legend
+        comment: Title format correct; legend shows all three axis categories
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 6
+        score: 5
         max: 6
         passed: true
-        comment: Software dependency network demonstrates plot type comprehensively
+        comment: Shows nodes, edges, axes, labels; could show edge weights or directionality
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Plausible module names and realistic dependency structure
+        comment: Software module dependency network (core, utility, interface) is
+          realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 20 nodes in range; balanced axes
+        comment: 20 nodes within recommended 20-100 range; degree 2-8 reasonable;
+          balanced axes (7,8,5 nodes)
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
         name: KISS Structure
-        score: 3
+        score: 2
         max: 3
         passed: true
-        comment: No functions/classes; straightforward code
+        comment: Single helper function data_to_svg; straightforward flow
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42); deterministic output
+        comment: np.random.seed(42) ensures deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used; no unnecessary dependencies
+        comment: All imports used; cairosvg, numpy, pygal, standard library
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: No fake UI; appropriate complexity
+        comment: Appropriate complexity; Bezier curves well-motivated; no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correct file output format
+        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
     library_mastery:
-      score: 7
+      score: 5
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
-        max: 5
-        passed: true
-        comment: Good use of pygal.XY, Style, and SVG render chain
-      - id: LM-02
-        name: Distinctive Features
         score: 3
         max: 5
         passed: false
-        comment: Manual SVG manipulation shows knowledge but limited distinctiveness
+        comment: Uses pygal.XY as scatter proxy for network; works but less idiomatic
+          than specialized library
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Custom SVG post-processing for axis labels; limited use of interactive
+          capabilities
   verdict: APPROVED
 impl_tags:
-  dependencies: []
+  dependencies:
+  - cairosvg
   techniques:
   - bezier-curves
-  - manual-ticks
-  - html-export
+  - annotations
   patterns:
   - data-generation
-  - matrix-construction
   - iteration-over-groups
+  - matrix-construction
   dataprep: []
   styling:
-  - alpha-blending
+  - publication-ready

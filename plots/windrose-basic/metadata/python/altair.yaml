@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: windrose-basic
 created: '2025-12-24T22:24:47Z'
-updated: '2026-05-07T03:34:07Z'
+updated: '2026-05-07T03:40:41Z'
 generated_by: claude-haiku
 workflow_run: 25474373583
 issue: 1880
@@ -12,37 +12,41 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/windrose-
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/altair/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/altair/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/altair/plot-dark.html
-quality_score: 87
+quality_score: 82
 review:
   strengths:
-  - 'Excellent theme-adaptive chrome: all text readable in both light and dark modes
-    with proper INK/INK_SOFT tokens'
-  - Well-designed radial layout with concentric circles and percentages positioned
-    to avoid overlap
-  - Realistic, meteorologically sound synthetic data with Weibull wind speed distribution
-  - Clean, reproducible code with deterministic seed and proper data binning
-  - 'Correct wind rose semantics: 8 compass directions, 5 speed bins, proper stacking
-    and legend'
+  - Excellent text legibility in both light and dark themes with no readability failures
+  - Comprehensive realistic meteorological data with Weibull-distributed wind speeds
+    and prevailing patterns
+  - Correct wind rose geometry with North at top and frequency-based wedge sizing
+  - Proper theme tokenization throughout with correct background and text color adaptation
+  - Clean, deterministic code with good reproducibility and appropriate complexity
   weaknesses:
-  - 'CRITICAL: Custom color hex array violates style guide hard rule - first categorical
-    series must be #009E73 (Okabe-Ito), not #31688e'
-  - Chart dimensions (2700×2700) below recommended square size of 3600×3600 for symmetric
-    polar plots
+  - 'Palette non-compliance: uses viridis-derived colors (#31688e, #35b779, #fde724,
+    #f8765d, #440154) instead of required Okabe-Ito (#009E73, #D55E00, #0072B2, #CC79A7,
+    #E69F00)'
+  - Color accessibility not documented; CVD-safe rendering not guaranteed
+  - Design lacks sophistication; palette choice appears arbitrary rather than intentional
+  - Limited use of altair distinctive features; manual polygon construction is verbose
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) as required
-      Chrome: Title "windrose-basic · altair · anyplot.ai" in dark text (#1A1A17); compass directions N/NE/E/SE/S/SW/W/NW in bold dark labels; frequency percentage labels (5%, 10%, 15%, 20%, 25%) in soft dark gray (#4A4A44); "Frequency (%)" axis label angled at 115°; legend title and speed range labels on light elevated background
-      Data: Stacked wedges in colors [dark purple, orange, yellow, teal, light blue] representing 5 wind speed ranges; radial grid circles in subtle gray; all markers clearly distinguishable from background
-      Legibility verdict: PASS - All text fully readable against light background with excellent contrast
+      Background: Warm off-white (#FAF8F1) with no pure white areas
+      Chrome: Title, compass labels (N, NE, E, SE, S, SW, W, NW), frequency percentages (15%, 20%, 25%), and legend all readable in dark text (#1A1A17)
+      Data: Stacked colored wedges representing 5 wind speed ranges (0-3, 3-6, 6-9, 9-12, >12 m/s); colors are #31688e (blue), #35b779 (green), #fde724 (yellow), #f8765d (orange), #440154 (purple)
+      Grid: Concentric circles and radial lines in subtle INK_SOFT color with low opacity
+      Legibility verdict: PASS - All text clearly visible against light background
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) as required
-      Chrome: Title in light text (#F0EFE8); compass directions in light labels; percentage labels in light soft gray (#B8B7B0); legend with light text on darker elevated background (#242420); all grid elements in light gray
-      Data: Wedge colors identical to light render [dark purple, orange, yellow, teal, light blue] - ONLY chrome flipped theme, data colors remain constant
-      Legibility verdict: PASS - No dark-on-dark failures; all text and elements clearly readable against dark background; theme adaptation properly applied
+      Background: Warm near-black (#1A1A17) with no pure black areas
+      Chrome: Title, compass labels, frequency percentages, and legend all readable in light text (#F0EFE8); no dark-on-dark contrast failures
+      Data: Identical colors to light render - #31688e, #35b779, #fde724, #f8765d, #440154 (proves theme-independent data colors)
+      Grid: Reference circles and radial lines visible with low opacity
+      Legibility verdict: PASS - All text clearly visible against dark background; no dark-on-dark failures
+
+    Compliance Issue: Both renders use non-Okabe-Ito palette. Categorical speed ranges should use #009E73 (first, required brand green), #D55E00, #0072B2, #CC79A7, #E69F00.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 26
       max: 30
       items:
       - id: VQ-01
@@ -50,49 +54,47 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All text explicitly sized and readable in both themes
+        comment: All text readable in both themes; appropriate sizing for high-resolution
+          canvas
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Compass labels, percentages, legend all properly positioned with
-          no collisions
+        comment: Clean layout with no overlapping elements; good spatial arrangement
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Grid circles, radial lines, wedges all clearly visible with proper
-          layering
+        comment: All wedges, circles, labels distinguishable; no invisible elements
       - id: VQ-04
         name: Color Accessibility
-        score: 2
+        score: 0
         max: 2
-        passed: true
-        comment: Adequate contrast and reasonable CVD safety
+        passed: false
+        comment: Palette not Okabe-Ito compliant; CVD-safe rendering not documented
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Square format appropriate for polar plot; well-balanced proportions;
-          no cutoff
+        comment: Square format appropriate for polar chart; good proportions and whitespace
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title and 'Frequency (%)' label properly descriptive
+        comment: Title descriptive; Frequency (%) axis labeled; units present
       - id: VQ-07
         name: Palette Compliance
         score: 0
         max: 2
         passed: false
-        comment: 'VIOLATION: Custom colors instead of Okabe-Ito; first series must
-          be #009E73, not #31688e'
+        comment: 'Uses viridis colors instead of Okabe-Ito; first series #31688e not
+          #009E73'
     design_excellence:
-      score: 13
+      score: 11
       max: 20
       items:
       - id: DE-01
@@ -100,21 +102,19 @@ review:
         score: 3
         max: 8
         passed: false
-        comment: Palette violation undermines design intent; custom polygon approach
-          not fully realized
+        comment: Competent but generic; palette choice violates compliance rules
       - id: DE-02
         name: Visual Refinement
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Subtle grid, generous whitespace, clean layering, excellent theme
-          adaptation
+        comment: Subtle grid, generous whitespace, good use of theme tokens
       - id: DE-03
         name: Data Storytelling
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Wind patterns visually clear; westerly/southwesterly dominance obvious
+        comment: Wind patterns and speed distribution clear; visual hierarchy present
     spec_compliance:
       score: 15
       max: 15
@@ -124,26 +124,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct wind rose structure
+        comment: Correct wind rose with stacked bars
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All elements present: 8 directions, 5 speed bins, stacking, frequency
-          axis, legend'
+        comment: 8 directions, 5 speed ranges, frequencies, legend all present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Polar transformation correct; axes map data properly
+        comment: Polar coordinates correct; North at top; all data displayed
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Proper formatting with correct labels
+        comment: windrose-basic · altair · anyplot.ai format; legend shows speed ranges
     data_quality:
       score: 15
       max: 15
@@ -153,19 +152,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Realistic hourly data, Weibull distribution, directional bias
+        comment: Complete wind rose representation with 8 directions and 5 speed ranges
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Meteorologically plausible, neutral domain
+        comment: Weibull-distributed speeds; realistic prevailing westerly pattern
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Wind speeds, directions, frequencies all sensible
+        comment: Sensible m/s values and percentage frequencies for meteorological
+          data
     code_quality:
       score: 10
       max: 10
@@ -175,33 +175,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No functions/classes; linear with necessary polygon geometry
+        comment: Straightforward implementation; no unnecessary functions
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic seed np.random.seed(42)
+        comment: Uses np.random.seed(42) for deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, numpy, pandas, altair; all used
+        comment: Only necessary imports (os, altair, numpy, pandas)
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity for polar transformation
+        comment: Appropriate complexity; no fake interactivity
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves plot-{THEME}.png and plot-{THEME}.html correctly
+        comment: Saves as plot-{THEME}.png and plot-{THEME}.html
     library_mastery:
-      score: 6
+      score: 5
       max: 10
       items:
       - id: LM-01
@@ -209,26 +209,29 @@ review:
         score: 3
         max: 5
         passed: true
-        comment: Good layering, encodings, config_view/legend patterns
+        comment: Uses altair API competently; manual polygon construction is functional
+          but verbose
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
-        passed: true
-        comment: Custom polygon generation non-standard; interactive tooltips present
+        passed: false
+        comment: Limited use of altair-specific features; basic layer composition
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - layer-composition
-  - polar-projection
   - hover-tooltips
+  - manual-ticks
   - html-export
   patterns:
   - data-generation
   - groupby-aggregation
+  - matrix-construction
   dataprep:
   - binning
+  - cumulative-sum
   styling:
-  - publication-ready
-  - alpha-blending
+  - theme-adaptive-chrome
+  - custom-colormap

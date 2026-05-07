@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: bar-horizontal
 created: '2025-12-25T08:37:07Z'
-updated: '2026-05-07T07:24:12Z'
+updated: '2026-05-07T07:29:04Z'
 generated_by: claude-haiku
 workflow_run: 25481730673
 issue: 1946
@@ -12,31 +12,34 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/bar-horiz
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/bar-horizontal/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/bar-horizontal/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/bar-horizontal/python/plotly/plot-dark.html
-quality_score: 87
+quality_score: 91
 review:
   strengths:
-  - Perfect theme compliance with no dark-on-dark or light-on-light failures
-  - All specification requirements correctly implemented with proper sorting and labels
-  - Clean code quality with deterministic data generation and proper file naming
-  - Strong typography with appropriate font sizes for large canvas
-  - Realistic and neutral survey context
+  - Perfect visual quality with all text readable in both light and dark themes
+  - Flawless theme-adaptive chromatics with no dark-on-dark or light-on-light failures
+  - Excellent spec compliance with correct horizontal bar chart structure
+  - Clean, realistic data showing programming language survey results
+  - Proper use of Okabe-Ito brand color (#009E73) throughout
+  - Professional execution with clean, reproducible, idiomatic Plotly code
   weaknesses:
-  - Limited design sophistication beyond standard bar chart styling
-  - Basic library usage without advanced Plotly features (callbacks, custom tooltips)
+  - Design sophistication is modest, relying on single-color palette and default styling
+    with minimal customization
+  - Visual refinement is minimal; bars use only standard borders without more sophisticated
+    styling techniques
+  - Could benefit from visual hierarchy through subtle emphasis or accent techniques
+    to create stronger storytelling
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — perfect match to spec
-      Chrome: Title, axis labels (Programming Language / Number of Responses), tick labels all rendered in dark text (#1A1A17 / #4A4A44) and clearly readable against light background
-      Data: All 10 bars filled with brand green (#009E73) with subtle dark borders; value labels positioned outside bars in secondary text color
-      Grid: Subtle vertical grid lines; no horizontal grid (appropriate for bar chart)
-      Legibility verdict: PASS — all elements fully readable with no contrast issues
+      Background: Warm off-white #FAF8F1 (correct spec)
+      Chrome: Title "bar-horizontal · plotly · anyplot.ai" in dark text (28px), y-axis "Programming Language" (22px), x-axis "Number of Responses" (22px), tick labels in soft gray (18px) — all fully readable
+      Data: All 10 bars use Okabe-Ito brand green #009E73 with subtle dark borders, values 2847-298 displayed outside bars
+      Legibility verdict: PASS — all text clearly visible on light background, no legibility failures
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — perfect match to spec
-      Chrome: Title, axis labels, tick labels all rendered in light text (#F0EFE8 / #B8B7B0) and clearly visible against dark background; NO dark-on-dark failures
-      Data: Bars are identical brand green (#009E73) as light render — no color shift, confirming only chrome (not data) adapts to theme
-      Grid: Subtle vertical grid lines visible on dark surface
-      Legibility verdict: PASS — all text readable, brand green maintains visibility, zero theme-adaptation failures
+      Background: Warm near-black #1A1A17 (correct spec)
+      Chrome: Title, axis labels flip to light text (same sizes 28px/22px/18px), tick labels in light soft gray #B8B7B0 clearly distinct from background — no dark-on-dark failures
+      Data: All bars remain identical green #009E73 as light render, confirming only chrome adaptation
+      Legibility verdict: PASS — all text clearly readable on dark background, no dark-on-dark issues, colors identical to light render
   criteria_checklist:
     visual_quality:
       score: 30
@@ -47,65 +50,69 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All text clearly readable in both light and dark renders
+        comment: Title 28px, axis labels 22px, ticks 18px. Fully readable both themes.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Clean spacing throughout; no text or bar collisions
+        comment: Data labels outside bars, y-axis clear, no collisions.
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: All bars clearly visible with good density
+        comment: All 10 bars clearly distinguishable with good spacing.
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Single brand green with excellent contrast; CVD-safe
+        comment: 'Okabe-Ito #009E73. Colorblind-safe. Good contrast both surfaces.'
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions; generous margins; nothing cut off
+        comment: Good proportions, generous margins, nothing cut off.
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive and appropriate labels
+        comment: Title includes spec-id/library/domain. Axes descriptive.
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: Correct brand green; proper theme backgrounds; both renders theme-correct
+        comment: 'Brand color correct. Backgrounds #FAF8F1/#1A1A17 correct. Chrome
+          properly themed. No dark-on-dark.'
     design_excellence:
-      score: 12
+      score: 13
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: true
-        comment: Clean and professional; standard design without embellishment
+        comment: Professional brand-color use. Clean approach. Bar edges add definition.
+          Measured customization.
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: true
-        comment: Subtle borders and grid; basic styling
+        comment: No chartjunk. Subtle grid. Generous whitespace. Minimalist styling
+          could be refined.
       - id: DE-03
         name: Data Storytelling
-        score: 5
+        score: 4
         max: 6
         passed: true
-        comment: Descending sort creates clear ranking; contextually appropriate data
+        comment: Bars sorted by value. Data labels reveal counts. Clear focal point
+          on top (2847).
     spec_compliance:
       score: 15
       max: 15
@@ -115,25 +122,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizontal bar chart
+        comment: Correct horizontal bar chart.
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: bars, labels, sorting, spacing'
+        comment: Categories, values, horizontal orientation, value labels all present.
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X/Y axes correctly mapped with reversed y-axis
+        comment: Y-axis Language, X-axis Responses. All data visible 0-3000.
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title correct format; legend N/A for single series
+        comment: Proper title format. No legend needed (single series).
     data_quality:
       score: 15
       max: 15
@@ -143,19 +150,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows all aspects of horizontal bar chart
+        comment: All 10 languages shown with realistic counts.
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Survey data is realistic and neutral
+        comment: Programming language survey is realistic, neutral, plausible.
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values sensible for survey context
+        comment: Values 298-2847 sensible for survey. Range 0-3000 well-calibrated.
     code_quality:
       score: 10
       max: 10
@@ -165,47 +172,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No unnecessary functions; straightforward
+        comment: No functions/classes. Direct simple setup.
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Uses seed=42; deterministic
+        comment: np.random.seed(42). Deterministic.
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports
+        comment: 'Only used imports: os, sys, plotly.'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: No fake UI; proper API usage
+        comment: No fake interactivity. AR-08 compliant.
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correct file naming and current API
+        comment: Correct plot-{THEME}.png/html output.
     library_mastery:
-      score: 5
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
+        score: 5
+        max: 5
+        passed: true
+        comment: go.Figure()/go.Bar() idioms. Proper orientation. Theme tokens applied.
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: go.Figure and go.Bar used appropriately
-      - id: LM-02
-        name: Distinctive Features
-        score: 2
-        max: 5
-        passed: true
-        comment: Basic API without advanced features
+        comment: HTML export and hover interaction. Basic Plotly usage.
   verdict: APPROVED
 impl_tags:
   dependencies: []

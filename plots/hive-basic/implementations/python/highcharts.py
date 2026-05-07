@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 hive-basic: Basic Hive Plot
 Library: highcharts unknown | Python 3.13.13
 Quality: 15/100 | Updated: 2026-05-07
@@ -84,18 +84,26 @@ for node in nodes:
     node_coords[node["id"]] = (center_x + radius * math.cos(angle), center_y + radius * math.sin(angle))
 
 # Download Highcharts JS with fallback for restricted networks
-highcharts_url = "https://code.highcharts.com/highcharts.js"
+highcharts_urls = [
+    "https://cdn.jsdelivr.net/npm/highcharts@11.4.6/highcharts.js",
+    "https://code.highcharts.com/highcharts.js",
+]
 highcharts_js = None
 
-try:
-    with urllib.request.urlopen(highcharts_url, timeout=30) as response:
-        highcharts_js = response.read().decode("utf-8")
-except Exception:
+for url in highcharts_urls:
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            highcharts_js = response.read().decode("utf-8")
+        break
+    except Exception:
+        continue
+
+if not highcharts_js:
     fallback_path = Path("/tmp/highcharts.js")
     if fallback_path.exists():
         highcharts_js = fallback_path.read_text()
     else:
-        msg = f"Failed to download Highcharts from {highcharts_url} and no fallback available"
+        msg = "Failed to download Highcharts from any CDN and no fallback available"
         raise RuntimeError(msg) from None
 
 # Build Highcharts renderer commands for the hive plot
@@ -111,7 +119,7 @@ for axis_idx in range(num_axes):
     color = OKABE_ITO[axis_idx]
 
     renderer_commands.append(
-        f"chart.renderer.path(['M', {x1:.0f}, {y1:.0f}, 'L', {x2:.0f}, {y2:.0f}])"
+        f"chart.renderer.path(['M', {x1:.0f}, {y1:.0f}, 'L', {x2:.0f}, {y2:.0f}], null)"
         f".attr({{stroke: '{color}', 'stroke-width': 14, 'stroke-linecap': 'round', opacity: 0.8}}).add();"
     )
 
@@ -139,7 +147,7 @@ for edge in edges:
     stroke_width = 3 + weight * 2
 
     renderer_commands.append(
-        f"chart.renderer.path(['M', {x1:.0f}, {y1:.0f}, 'Q', {ctrl_x:.0f}, {ctrl_y:.0f}, {x2:.0f}, {y2:.0f}])"
+        f"chart.renderer.path(['M', {x1:.0f}, {y1:.0f}, 'Q', {ctrl_x:.0f}, {ctrl_y:.0f}, {x2:.0f}, {y2:.0f}], null)"
         f".attr({{stroke: '{edge_color}', 'stroke-width': {stroke_width}, fill: 'none', opacity: 0.5}}).add();"
     )
 
@@ -149,22 +157,19 @@ renderer_commands.append(
     f"chart.renderer.circle({center_x}, {center_y}, 55).attr({{fill: '{hub_color}', opacity: 0.5}}).add();"
 )
 
-# Draw nodes with tooltips and labels
+# Draw nodes as circles
 for node in nodes:
     x, y = node_coords[node["id"]]
     color = OKABE_ITO[node["axis"]]
-    node_id = node["id"]
-    node_label = node["label"]
-    axis_name = axis_labels[node["axis"]]
-
-    degree = sum(1 for e in edges if e["source"] == node_id or e["target"] == node_id)
 
     renderer_commands.append(
-        f"chart.renderer.circle({x:.0f}, {y:.0f}, 32).attr({{fill: '{color}', stroke: '{PAGE_BG}', 'stroke-width': 5, zIndex: 10}}).add()"
-        f".on('mouseover', function() {{ chart.renderer.label('<b>{node_label}</b><br/>Axis: {axis_name}<br/>Connections: {degree}', {x:.0f} + 40, {y:.0f} - 60)"
-        f".attr({{fill: '{ELEVATED_BG}', stroke: '{color}', 'stroke-width': 2, padding: 12, r: 8, zIndex: 100}}).css({{fontSize: '28px', color: '{INK}'}}).add(); }})"
-        f".on('mouseout', function() {{ Highcharts.each(chart.renderer.box.querySelectorAll('.highcharts-label'), function(el) {{ if(el) el.remove(); }}); }});"
+        f"chart.renderer.circle({x:.0f}, {y:.0f}, 32).attr({{fill: '{color}', stroke: '{PAGE_BG}', 'stroke-width': 5, zIndex: 10}}).add();"
     )
+
+# Draw node labels
+for node in nodes:
+    x, y = node_coords[node["id"]]
+    node_label = node["label"]
 
     label_offset = 65
     if node["axis"] == 0:
@@ -222,11 +227,16 @@ html_content = f"""<!DOCTYPE html>
         {legend_items}
     </div>
     <script>
-        var chart = Highcharts.chart('container', {{
+        Highcharts.chart('container', {{
             chart: {{
+                type: 'scatter',
                 width: 4800,
                 height: 2700,
                 backgroundColor: '{PAGE_BG}',
+                spacingTop: 100,
+                spacingRight: 50,
+                spacingBottom: 50,
+                spacingLeft: 50,
                 events: {{
                     load: function() {{
                         var chart = this;
@@ -239,11 +249,29 @@ html_content = f"""<!DOCTYPE html>
                 style: {{ fontSize: '48px', fontWeight: 'bold', color: '{INK}' }},
                 y: 80
             }},
-            credits: {{ enabled: false }},
+            xAxis: {{
+                min: 0,
+                max: 4800,
+                visible: false,
+                labels: {{ enabled: false }}
+            }},
+            yAxis: {{
+                min: 0,
+                max: 2700,
+                visible: false,
+                labels: {{ enabled: false }}
+            }},
             legend: {{ enabled: false }},
-            xAxis: {{ visible: false }},
-            yAxis: {{ visible: false }},
-            series: [{{ type: 'scatter', data: [] }}]
+            credits: {{ enabled: false }},
+            plotOptions: {{
+                scatter: {{
+                    enableMouseTracking: false
+                }}
+            }},
+            series: [{{
+                type: 'scatter',
+                data: []
+            }}]
         }});
     </script>
 </body>

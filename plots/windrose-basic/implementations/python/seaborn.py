@@ -1,70 +1,84 @@
-""" pyplots.ai
+"""anyplot.ai
 windrose-basic: Wind Rose Chart
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: seaborn | Python 3.13
+Quality: pending | Created: 2025-12-21
 """
+
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
 
-# Configure seaborn style
-sns.set_style("whitegrid")
-sns.set_context("talk", font_scale=1.2)
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
 
-# Generate realistic wind data (1 year of hourly measurements)
+# Okabe-Ito palette for speed ranges (cool to warm progression)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00"]
+
+# Configure seaborn
+sns.set_theme(
+    style="ticks",
+    rc={
+        "figure.facecolor": PAGE_BG,
+        "axes.facecolor": PAGE_BG,
+        "axes.labelcolor": INK,
+        "text.color": INK,
+        "xtick.color": INK_SOFT,
+        "ytick.color": INK_SOFT,
+        "grid.color": INK_SOFT,
+        "grid.alpha": 0.10,
+        "legend.facecolor": ELEVATED_BG,
+        "legend.edgecolor": INK_SOFT,
+    },
+)
+
+# Data
 np.random.seed(42)
-n_obs = 8760  # hourly for one year
+n_obs = 8760
 
-# Simulate prevailing winds from SW with secondary NE pattern
+# Simulate prevailing winds with realistic distribution
 direction_weights = np.zeros(360)
-# Primary: SW winds (200-240 degrees)
 direction_weights[200:240] = 3.0
-# Secondary: NE winds (30-60 degrees)
 direction_weights[30:60] = 1.5
-# Some westerly (260-290)
 direction_weights[260:290] = 1.0
-# Background noise
 direction_weights += 0.2
 direction_weights /= direction_weights.sum()
 
 directions = np.random.choice(360, size=n_obs, p=direction_weights)
-# Add some random jitter
 directions = (directions + np.random.uniform(-10, 10, n_obs)) % 360
 
-# Wind speeds: higher from prevailing directions
+# Wind speeds by direction
 speeds = np.zeros(n_obs)
 for i, d in enumerate(directions):
-    if 200 <= d <= 240:  # SW - stronger
+    if 200 <= d <= 240:
         speeds[i] = np.random.weibull(2.2) * 8 + 2
-    elif 30 <= d <= 60:  # NE - moderate
+    elif 30 <= d <= 60:
         speeds[i] = np.random.weibull(2.0) * 6 + 1
     else:
         speeds[i] = np.random.weibull(1.8) * 4 + 0.5
 speeds = np.clip(speeds, 0, 25)
 
-# Define bins
-n_dir_bins = 16
+# 8-direction bins (N, NE, E, SE, S, SW, W, NW)
+n_dir_bins = 8
 dir_bins = np.linspace(0, 360, n_dir_bins + 1)
 dir_centers = (dir_bins[:-1] + dir_bins[1:]) / 2
 dir_width = 2 * np.pi / n_dir_bins
 
-# Speed bins with labels
+# Speed bins
 speed_bins = [0, 3, 6, 10, 15, 25]
 speed_labels = ["0-3 m/s", "3-6 m/s", "6-10 m/s", "10-15 m/s", "15+ m/s"]
-
-# Get seaborn color palette (cool to warm progression)
-colors = sns.color_palette("YlOrRd", n_colors=len(speed_labels))
 
 # Calculate frequencies
 frequencies = np.zeros((n_dir_bins, len(speed_labels)))
 for i in range(n_dir_bins):
     dir_min, dir_max = dir_bins[i], dir_bins[i + 1]
-    if i == 0:
-        in_dir = (directions >= dir_min) & (directions < dir_max) | (directions >= 360 - dir_width / 2 * 180 / np.pi)
-    else:
-        in_dir = (directions >= dir_min) & (directions < dir_max)
+    in_dir = (directions >= dir_min) & (directions < dir_max)
 
     for j in range(len(speed_labels)):
         speed_min = speed_bins[j]
@@ -72,67 +86,59 @@ for i in range(n_dir_bins):
         in_speed = (speeds >= speed_min) & (speeds < speed_max)
         frequencies[i, j] = np.sum(in_dir & in_speed)
 
-# Convert to percentage
 frequencies = frequencies / n_obs * 100
 
-# Create polar plot
-fig = plt.figure(figsize=(12, 12))
+# Plot
+fig = plt.figure(figsize=(12, 12), facecolor=PAGE_BG)
 ax = fig.add_subplot(111, projection="polar")
 
-# Set North at top, clockwise direction
+ax.set_facecolor(PAGE_BG)
 ax.set_theta_zero_location("N")
 ax.set_theta_direction(-1)
 
-# Convert direction centers to radians
 theta = np.deg2rad(dir_centers)
 
-# Plot stacked bars
+# Plot stacked bars with Okabe-Ito palette
 bottoms = np.zeros(n_dir_bins)
-bars_collection = []
-for j, (label, color) in enumerate(zip(speed_labels, colors, strict=True)):
-    bars = ax.bar(
+for j, (label, color) in enumerate(zip(speed_labels, OKABE_ITO, strict=False)):
+    ax.bar(
         theta,
         frequencies[:, j],
         width=dir_width * 0.9,
         bottom=bottoms,
         color=color,
-        edgecolor="white",
+        edgecolor=PAGE_BG,
         linewidth=0.5,
         label=label,
-        alpha=0.9,
+        alpha=0.85,
     )
-    bars_collection.append(bars)
     bottoms += frequencies[:, j]
 
-# Customize appearance
-ax.set_title("windrose-basic · seaborn · pyplots.ai", fontsize=24, pad=20, fontweight="bold")
+# Style
+ax.set_title("windrose-basic · seaborn · anyplot.ai", fontsize=24, pad=20, fontweight="medium", color=INK)
 
-# Set radial labels (frequency %)
 max_freq = np.ceil(bottoms.max() / 5) * 5
 ax.set_ylim(0, max_freq)
 ax.set_yticks(np.arange(0, max_freq + 1, 5))
-ax.set_yticklabels([f"{int(y)}%" for y in np.arange(0, max_freq + 1, 5)], fontsize=14)
+ax.set_yticklabels([f"{int(y)}%" for y in np.arange(0, max_freq + 1, 5)], fontsize=14, color=INK_SOFT)
 
-# Set direction labels
 direction_labels = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 ax.set_xticks(np.deg2rad(np.arange(0, 360, 45)))
-ax.set_xticklabels(direction_labels, fontsize=18, fontweight="bold")
+ax.set_xticklabels(direction_labels, fontsize=18, fontweight="medium", color=INK)
 
-# Style the grid
-ax.grid(True, alpha=0.3, linestyle="-", linewidth=0.5)
-ax.spines["polar"].set_visible(True)
-ax.spines["polar"].set_linewidth(1.5)
+ax.grid(True, alpha=0.10, linestyle="-", linewidth=0.8, color=INK_SOFT)
+for spine in ax.spines.values():
+    spine.set_color(INK_SOFT)
+    spine.set_linewidth(1.0)
 
-# Add legend with seaborn styling
 legend = ax.legend(
-    title="Wind Speed",
-    loc="lower right",
-    bbox_to_anchor=(1.15, 0),
-    fontsize=14,
-    title_fontsize=16,
-    framealpha=0.95,
-    edgecolor="gray",
+    title="Wind Speed", loc="lower right", bbox_to_anchor=(1.15, 0), fontsize=14, title_fontsize=16, framealpha=0.95
 )
+legend.get_frame().set_facecolor(ELEVATED_BG)
+legend.get_frame().set_edgecolor(INK_SOFT)
+legend.get_title().set_color(INK)
+for text in legend.get_texts():
+    text.set_color(INK)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

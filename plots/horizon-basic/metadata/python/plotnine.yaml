@@ -2,7 +2,7 @@ library: plotnine
 language: python
 specification_id: horizon-basic
 created: '2025-12-25T07:10:03Z'
-updated: '2026-05-07T05:34:31Z'
+updated: '2026-05-07T05:40:12Z'
 generated_by: claude-haiku
 workflow_run: 25477737917
 issue: 1877
@@ -12,31 +12,35 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/horizon-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/plotnine/plot-dark.png
 preview_html_light: null
 preview_html_dark: null
-quality_score: 85
+quality_score: 86
 review:
   strengths:
-  - Theme adaptation flawless with correct dark/light chrome switching
-  - Excellent explicit font sizing across all text elements (title 24pt, labels 20pt,
-    ticks 16pt)
-  - Spec-correct horizon chart with proper magnitude banding and positive/negative
-    coloring
-  - Realistic weather data showing variation across multiple stations
-  - Both renders pass strict theme-readability checks with no dark-on-dark failures
+  - Excellent text legibility in both light and dark themes with explicit font sizing
+  - Clean, effective faceted layout for comparing 6 time series in compact space
+  - Perfect theme-adaptive implementation with data colors identical and chrome flipping
+    correctly
+  - Realistic data generation showing daily cycles, weekly patterns, noise, and extreme
+    events
+  - Proper use of plotnine's faceting for small multiples visualization
   weaknesses:
-  - 'Palette non-compliance: custom orange/blue colors instead of recommended BrBG
-    for diverging continuous data'
+  - 'Title contains wrong domain name: ''pyplots.ai'' instead of ''anyplot.ai'' (line
+    131)'
+  - 'Custom band colors violate Okabe-Ito hard rule: should use #009E73 as first categorical
+    series and follow canonical order (lines 112-119)'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white #FAF8F1 with no discoloration
-      Chrome: Title (24pt, dark text) clearly visible; axis labels (20pt, dark text) readable; tick labels (16pt, soft gray) readable; facet strip text (18pt, dark text) prominent; legend on right side with light background, all text readable
-      Data: Six facet panels showing time series for weather stations; orange bands for positive anomalies (1=light #ffe8cc, 2=medium #ffb366, 3=dark #d97706); blue bands for negative anomalies (1=light #cce5ff, 2=medium #66b3ff, 3=dark #0052cc); bands stack with alpha=0.9
-      Legibility verdict: PASS (all text readable, no overlaps, excellent contrast)
+      Background: Warm off-white #FAF8F1, correct for light theme
+      Chrome: Title "Temperature Anomalies by Station · horizon-basic · plotnine · pyplots.ai" in dark text (dark error noted); axis labels "Temperature Deviation from Baseline (°C)" and "Time (hours)" in dark text; tick labels in dark gray; all clearly readable
+      Data: Orange bands for positive anomalies, blue bands for negative; displayed as stacked areas with smooth transitions; 6 stations in 2×3 faceted grid; legend on right showing anomaly ranges
+      Legibility verdict: PASS (perfect contrast, all text readable, no dark-on-light failures)
 
     Dark render (plot-dark.png):
-      Background: Warm near-black #1A1A17 with no blue-shift
-      Chrome: Title (light text #F0EFE8) clearly readable; axis labels (light text) readable; tick labels (soft light gray #B8B7B0) readable; facet names readable; legend frame (#242420) properly elevated with light text
-      Data: Identical color bands to light render—orange and blue with same intensity levels (#ffe8cc, #ffb366, #d97706 for positive; #cce5ff, #66b3ff, #0052cc for negative); no color shift between renders confirms data/chrome separation
-      Legibility verdict: PASS (all text light on dark background with high contrast, no dark-on-dark failures, data colors identical to light render)
+      Background: Warm near-black #1A1A17, correct for dark theme
+      Chrome: Title in light text (domain name error same as light); axis labels in light text (#F0EFE8); tick labels in light gray (#B8B7B0); all clearly readable against dark surface
+      Data: Orange and blue bands identical to light render (data colors preserved across theme); same stacked area representation
+      Legibility verdict: PASS (perfect contrast, no dark-on-dark failures, all text readable in light gray/white against dark background, proper theme adaptation verified)
+
+    Both renders pass theme-readability checks.
   criteria_checklist:
     visual_quality:
       score: 29
@@ -47,69 +51,71 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: All font sizes explicitly set; title 24pt, labels 20pt, ticks 16pt;
-          perfectly readable in both themes
+        comment: All sizes explicitly set (title 24pt, labels 20pt, ticks 16pt, facets
+          18pt), readable in both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No text collisions; all elements fully readable
+        comment: Faceted grid layout, no overlapping elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Area bands optimally sized with alpha=0.9; data clearly distinguishable
+        comment: Bands optimally sized for data density
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Orange vs blue bands high-contrast and colorblind-safe
+        comment: Good contrast, distinguishable without hue alone
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 2×3 facet grid perfectly balanced; plot uses ~60% of canvas
+        comment: Perfect proportions, 60-70% canvas utilization
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive with units: Temperature Deviation from Baseline (°C)'
+        comment: Descriptive labels with units
       - id: VQ-07
         name: Palette Compliance
         score: 1
         max: 2
         passed: false
-        comment: Custom orange/blue colors not Okabe-Ito or recommended BrBG for diverging
-          data
+        comment: Custom colors used instead of Okabe-Ito (violation of hard rule for
+          categorical palette)
     design_excellence:
       score: 10
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: false
-        comment: Functional, well-configured defaults; not exceptional design thought
+        comment: Domain-appropriate warm/cool semantics, strong design choice but
+          not publication-level exceptional
       - id: DE-02
         name: Visual Refinement
-        score: 4
+        score: 3
         max: 6
         passed: false
-        comment: Subtle grid, minimal chrome, reasonable whitespace
+        comment: Subtle grid (alpha=0.10), minimal chrome, some refinement visible
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: Logical color encoding but no visual emphasis or focal point
+        comment: Data displayed per spec; visual hierarchy comes from plot type itself,
+          not added interpretation
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -117,25 +123,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizon chart with magnitude bands
+        comment: Correct horizon chart with folded bands
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: time series, bands, color-coded magnitude'
+        comment: 'All features present: bands, folding, multi-series, baseline'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Hour on x-axis, temperature deviation on y-axis, station as facet
+        comment: Hour→X, magnitude→Y, band→color, station→facet
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Correct format with spec-id, library, and source
+        passed: false
+        comment: 'Title format correct but domain name wrong: ''pyplots.ai'' instead
+          of ''anyplot.ai'''
     data_quality:
       score: 15
       max: 15
@@ -145,19 +152,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows positive/negative anomalies and magnitude bands
+        comment: Shows daily cycles, weekly patterns, noise, extreme events
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Temperature data from weather stations; neutral, comprehensible
+        comment: Real environmental monitoring scenario, neutral context
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Plausible values (±0–18°C); logical band intervals (2°C steps)
+        comment: Temperature ranges and anomalies factually correct
     code_quality:
       score: 10
       max: 10
@@ -167,48 +174,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → plot → save'
+        comment: Imports → Data → Plot → Save
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) ensures deterministic output
+        comment: np.random.seed(42) set
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only used imports
+        comment: No unused imports
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, no fake functionality
+        comment: Clean, no over-engineering
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png
+        comment: Correct plot-{THEME}.png naming
     library_mastery:
-      score: 6
+      score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 4
+        score: 5
         max: 5
         passed: true
-        comment: Solid ggplot API usage; geom_area, facet_wrap, theme customization
-          all appropriate
+        comment: ggplot + geom_area + facet_wrap pattern, proper plotnine idioms
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: Uses faceting and themes but standard plotnine patterns
+        comment: facet_wrap is plotnine-distinctive, but generic usage beyond that
   verdict: APPROVED
 impl_tags:
   dependencies: []
@@ -219,3 +225,4 @@ impl_tags:
   dataprep: []
   styling:
   - alpha-blending
+  - grid-styling

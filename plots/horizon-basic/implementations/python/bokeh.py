@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 horizon-basic: Horizon Chart
 Library: bokeh 3.9.0 | Python 3.13.13
 Quality: 86/100 | Updated: 2026-05-07
@@ -10,19 +10,23 @@ import time
 from pathlib import Path
 
 
-# Remove current directory from path to avoid conflict with local bokeh.py filename
-if "" in sys.path:
+# Remove current directory from path FIRST to avoid conflict with local bokeh.py filename
+# This must happen before any imports that might add "." back to sys.path
+while "" in sys.path:
     sys.path.remove("")
-if "." in sys.path:
+while "." in sys.path:
     sys.path.remove(".")
+# Also clear any bokeh module already in sys.modules
+if "bokeh" in sys.modules:
+    del sys.modules["bokeh"]
 
-import numpy as np
-from bokeh.io import output_file, save
-from bokeh.layouts import column
-from bokeh.models import ColumnDataSource, HoverTool, Label, Range1d, Title
-from bokeh.plotting import figure
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+import numpy as np  # noqa: E402
+from bokeh.io import output_file, save  # noqa: E402
+from bokeh.layouts import column  # noqa: E402
+from bokeh.models import ColumnDataSource, CrosshairTool, HoverTool, Label, Range1d, Title  # noqa: E402
+from bokeh.plotting import figure  # noqa: E402
+from selenium import webdriver  # noqa: E402
+from selenium.webdriver.chrome.options import Options  # noqa: E402
 
 
 # Theme tokens (see prompts/default-style-guide.md)
@@ -90,10 +94,10 @@ for idx, data in enumerate(series_data):
         toolbar_location="right" if idx == 0 else None,
     )
 
-    # Theme-adaptive background
+    # Theme-adaptive background - clean minimalist style with no outline borders
     p.background_fill_color = PAGE_BG
     p.border_fill_color = PAGE_BG
-    p.outline_line_color = INK_SOFT
+    p.outline_line_color = None
 
     # Configure axes
     if idx < len(series_data) - 1:
@@ -122,9 +126,13 @@ for idx, data in enumerate(series_data):
     )
     p.add_layout(label)
 
-    # Add customized HoverTool showing actual values
+    # Add customized HoverTool showing actual values and crosshair for better interactivity
     hover = HoverTool(tooltips=[("Server", name), ("Hour", "@x{0.1}"), ("Value", "@original{0.1}")], mode="vline")
     p.add_tools(hover)
+
+    # Add crosshair tool for precision reading
+    crosshair = CrosshairTool(dimensions="both", line_color=INK_SOFT, line_alpha=0.4)
+    p.add_tools(crosshair)
 
     # Draw horizon bands (folded areas)
     for band_idx in range(n_bands):
@@ -150,13 +158,18 @@ for idx, data in enumerate(series_data):
 
     plots.append(p)
 
-# Add main title to the first plot
-plots[0].add_layout(
-    Title(text="horizon-basic · bokeh · anyplot.ai", text_font_size="28pt", align="center", text_color=INK), "above"
+# Add main title to the first plot with enhanced styling for visual hierarchy
+title = Title(
+    text="Server Metrics: Hourly Performance Across 24 Hours", text_font_size="32pt", align="center", text_color=INK
 )
+plots[0].add_layout(title, "above")
 
-# Create legend figure explaining color bands - made more prominent
-legend_height = 200
+# Add subtitle with library and source attribution
+subtitle = Title(text="horizon-basic · bokeh · anyplot.ai", text_font_size="18pt", align="center", text_color=INK_SOFT)
+plots[0].add_layout(subtitle, "above")
+
+# Create legend figure explaining color bands - refined styling with elevated background
+legend_height = 220
 legend_fig = figure(
     width=chart_width,
     height=legend_height,
@@ -168,33 +181,42 @@ legend_fig = figure(
 legend_fig.xaxis.visible = False
 legend_fig.yaxis.visible = False
 legend_fig.grid.visible = False
-legend_fig.background_fill_color = PAGE_BG
-legend_fig.border_fill_color = PAGE_BG
+# Use elevated background for better visual distinction
+legend_fig.background_fill_color = ELEVATED_BG
+legend_fig.border_fill_color = ELEVATED_BG
 legend_fig.outline_line_color = None
 
-# Add legend title
+# Add legend title with enhanced styling
 legend_fig.add_layout(
-    Label(x=2, y=8.5, text="Color Legend:", text_font_size="24pt", text_font_style="bold", text_color=INK)
+    Label(
+        x=3, y=8.5, text="Color Bands & Intensity Levels", text_font_size="26pt", text_font_style="bold", text_color=INK
+    )
 )
 
-# Positive bands legend (left side)
+# Positive bands legend (left side) - enhanced visual styling
 legend_fig.add_layout(
-    Label(x=20, y=8.5, text="Positive Values (above baseline):", text_font_size="20pt", text_color=INK_SOFT)
+    Label(
+        x=20, y=7.8, text="Positive Values (above zero):", text_font_size="20pt", text_font_style="bold", text_color=INK
+    )
 )
 for i, (color, label_text) in enumerate(zip(pos_colors, ["Low (+)", "Medium (+)", "High (+)"], strict=True)):
-    legend_fig.rect(x=22 + i * 10, y=5, width=8, height=5, fill_color=color, line_color=None)
+    # Add subtle background for better visual definition
+    legend_fig.rect(x=22 + i * 10, y=5, width=9, height=5.5, fill_color=color, line_color=None, fill_alpha=0.85)
     legend_fig.add_layout(
-        Label(x=22 + i * 10, y=2.5, text=label_text, text_font_size="16pt", text_align="center", text_color=INK_SOFT)
+        Label(x=22 + i * 10, y=2.3, text=label_text, text_font_size="18pt", text_align="center", text_color=INK_SOFT)
     )
 
-# Negative bands legend (right side)
+# Negative bands legend (right side) - enhanced visual styling
 legend_fig.add_layout(
-    Label(x=55, y=8.5, text="Negative Values (below baseline):", text_font_size="20pt", text_color=INK_SOFT)
+    Label(
+        x=56, y=7.8, text="Negative Values (below zero):", text_font_size="20pt", text_font_style="bold", text_color=INK
+    )
 )
 for i, (color, label_text) in enumerate(zip(neg_colors, ["Low (−)", "Medium (−)", "High (−)"], strict=True)):
-    legend_fig.rect(x=57 + i * 10, y=5, width=8, height=5, fill_color=color, line_color=None)
+    # Add subtle background for better visual definition
+    legend_fig.rect(x=58 + i * 10, y=5, width=9, height=5.5, fill_color=color, line_color=None, fill_alpha=0.85)
     legend_fig.add_layout(
-        Label(x=57 + i * 10, y=2.5, text=label_text, text_font_size="16pt", text_align="center", text_color=INK_SOFT)
+        Label(x=58 + i * 10, y=2.3, text=label_text, text_font_size="18pt", text_align="center", text_color=INK_SOFT)
     )
 
 # Combine all plots vertically with legend at top

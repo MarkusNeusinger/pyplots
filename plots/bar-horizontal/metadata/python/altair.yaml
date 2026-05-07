@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: bar-horizontal
 created: '2025-12-25T08:36:06Z'
-updated: '2026-05-07T07:25:35Z'
+updated: '2026-05-07T07:36:17Z'
 generated_by: claude-haiku
 workflow_run: 25481899088
 issue: 1946
@@ -15,26 +15,30 @@ preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/bar-horiz
 quality_score: 88
 review:
   strengths:
-  - Perfect visual quality with excellent legibility in both themes
-  - Flawless spec compliance - correct chart type with all required features
-  - Clean theme adaptation with proper color tokens and chrome styling
-  - Excellent data quality with realistic, neutral context and appropriate scale
-  - Idiomatic Altair usage with proper encoding and configuration chaining
+  - Perfect visual quality and palette compliance in both light and dark renders
+  - Excellent code clarity with proper theme-adaptive color configuration
+  - Data is realistic, well-sorted for comparison, and appropriately scaled
+  - Strong legibility across all text elements in both themes
+  - All Altair best practices properly applied (encode, configure, save patterns)
   weaknesses:
-  - Design Excellence is moderate - styling is correct but relatively basic without
-    extensive customization
+  - 'Design Excellence relatively low: minimal visual customization beyond defaults'
+  - Could enhance aesthetic by exploring unique Altair patterns and interactions
+  - Could improve visual refinement by removing unnecessary spines for cleaner L-shaped
+    frame
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) as specified
-      Chrome: Title "bar-horizontal · altair · anyplot.ai" in dark text, y-axis label "Programming Language", x-axis label "Popularity (%)" — all clearly readable against light background
-      Data: All 10 bars rendered in Okabe-Ito position 1 green (#009E73) with consistent height/width proportions, sorted descending by value, with subtle grid lines
-      Legibility verdict: PASS — all text readable, no contrast issues, grid appropriately subtle
+      Background: Warm off-white (#FAF8F1) with no impurities
+      Chrome: Title clearly visible in dark text (#1A1A17); axis labels and tick labels all readable at 22px and 18px respectively
+      Data: All bars rendered in brand green (#009E73) with subtle rounded ends; sorted ascending (Kotlin to Python) for ranking clarity
+      Grid: Subtle vertical grid lines at 5% intervals; appropriate opacity (0.10) that guides without competing
+      Legibility verdict: PASS - All elements crisp and readable against light background
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) as specified
-      Chrome: Same title and axis labels now in light text (INK color #F0EFE8), clearly readable on dark background
-      Data: Bars maintain identical green (#009E73) to light render (only chrome flipped), all clearly distinguishable
-      Legibility verdict: PASS — no dark-on-dark failures, light text has sufficient contrast, data colors theme-independent
+      Background: Warm near-black (#1A1A17) matching design system
+      Chrome: Title and labels rendered in light text (#F0EFE8 primary, #B8B7B0 secondary); all readable with excellent contrast on dark surface
+      Data: Bars identical green (#009E73) to light render - no color drift between themes; spacing and sorting consistent
+      Grid: Subtle with appropriate opacity for dark context
+      Legibility verdict: PASS - No dark-on-dark failures; brand green remains visible; all text clearly distinguishable
   criteria_checklist:
     visual_quality:
       score: 30
@@ -45,45 +49,43 @@ review:
         score: 8
         max: 8
         passed: true
-        comment: Font sizes explicit (labelFontSize=18, titleFontSize=22), readable
-          at full size in both themes
+        comment: All text properly sized and colored for both themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Well-spaced bars with good padding, category labels don't overlap
+        comment: No overlapping elements, clean spacing throughout
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: 10 categories clearly visible, no bar occlusion, proper marker density
+        comment: All bars and grid clearly visible
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Okabe-Ito position 1 (#009E73) is CVD-safe with strong contrast
+        comment: Okabe-Ito safe with high contrast
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Good proportions (1600x900), nothing cut off, proper margins
+        comment: Proper landscape format, nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels with units, title follows convention
+        comment: Descriptive labels with units
       - id: VQ-07
         name: Palette Compliance
         score: 2
         max: 2
         passed: true
-        comment: 'First series #009E73, light bg #FAF8F1, dark bg #1A1A17, both renders
-          theme-correct'
+        comment: Correct colors and theme backgrounds; both renders theme-correct
     design_excellence:
       score: 10
       max: 20
@@ -93,22 +95,19 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Clean design with rounded corners (cornerRadiusEnd=4), but styling
-          is straightforward without extensive customization
+        comment: Rounded bar ends show intent but fairly generic
       - id: DE-02
         name: Visual Refinement
         score: 2
         max: 6
         passed: false
-        comment: Minimalist approach, subtle grid and spacing, but minimal beyond-requirements
-          refinement
+        comment: Minimal customization; could remove unnecessary spines
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
         passed: true
-        comment: Data sorted descending creates visual hierarchy, clear focal point
-          on top languages
+        comment: Ascending sort creates clear ranking narrative
     spec_compliance:
       score: 15
       max: 15
@@ -118,27 +117,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Horizontal bar chart with categories on Y-axis, values on X-axis
+        comment: Correct horizontal bar chart
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: All features present - labels, values, axes, title, single-color
-          bars
+        comment: All features implemented
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: X-axis shows popularity values, Y-axis shows category names, all
-          data rendered
+        comment: Correct axes and scaling
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct, no legend needed for single series
+        comment: Correct format
     data_quality:
       score: 15
       max: 15
@@ -148,20 +145,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Full spectrum of horizontal bar chart - orientation, sorting, multiple
-          categories
+        comment: Shows all aspects of horizontal bar charts
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Top 10 programming languages by popularity is realistic and neutral
+        comment: Realistic programming language data
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 1.6% to 28.5% range is sensible for popularity metrics
+        comment: Good value distribution
     code_quality:
       score: 10
       max: 10
@@ -171,33 +167,33 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No functions/classes, straightforward linear implementation
+        comment: Simple, direct implementation
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Hardcoded deterministic data, no randomness
+        comment: Deterministic hardcoded data
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (os, altair, pandas)
+        comment: Only used imports
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Appropriate complexity, no fake UI, idiomatic Altair
+        comment: Appropriate complexity, no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png and plot-{THEME}.html, current API
+        comment: Correct file outputs
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -205,21 +201,19 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Proper high-level declarative API, correct encoding syntax, configuration
-          chaining
+        comment: Excellent fluent API usage
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 2
         max: 5
         passed: false
-        comment: Uses sort="-x", cornerRadiusEnd=4, configure_* methods, but not exceptionally
-          distinctive
+        comment: Uses tooltips and config methods but no advanced features
   verdict: APPROVED
 impl_tags:
   dependencies: []
   techniques:
   - hover-tooltips
-  patterns:
-  - data-generation
+  - html-export
+  patterns: []
   dataprep: []
   styling: []

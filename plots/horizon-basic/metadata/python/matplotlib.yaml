@@ -1,168 +1,177 @@
 library: matplotlib
+language: python
 specification_id: horizon-basic
 created: '2025-12-24T22:16:01Z'
-updated: '2025-12-24T22:18:23Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494682653
-issue: 0
-python_version: 3.13.11
-library_version: 3.10.8
-preview_url: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/matplotlib/plot.png
-preview_html: null
+updated: '2026-05-07T05:27:02Z'
+generated_by: claude-haiku
+workflow_run: 25477450435
+issue: 1877
+python_version: 3.13.13
+library_version: 3.10.9
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/matplotlib/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/matplotlib/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
 quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques:
-  - subplots
-  patterns:
-  - data-generation
-  dataprep: []
-  styling:
-  - alpha-blending
 review:
   strengths:
-  - Excellent implementation of the horizon chart concept with proper band folding
-    and color intensity encoding
-  - Clean, readable code structure following KISS principles
-  - Realistic server metrics scenario that perfectly matches the spec dashboard monitoring
-    use case
-  - Good use of matplotlib fill_between with alpha transparency for layered bands
-  - Series labels positioned cleanly on the right side without cluttering the visualization
-  - Legend clearly explains the 6-band color scheme
+  - Perfect visual quality across both themes - all text legible, no dark-on-dark
+    or light-on-light failures
+  - Correct Okabe-Ito palette usage - brand green and vermillion properly applied
+    and matching between renders
+  - Excellent theme adaptation - all chrome elements (background, text colors, legend
+    frame) correctly flip between light and dark
+  - Clean, professional design - minimal spine approach, generous spacing, clear visual
+    hierarchy
+  - Realistic, well-scaled data - 8 server metrics with appropriate temporal patterns
+    and variation
   weaknesses:
-  - Font sizes slightly below optimal (22pt title vs recommended 24pt, 14pt labels
-    vs 16-20pt)
-  - Series could show more dramatic variation to better demonstrate the horizon chart
-    ability to highlight differences
-  - Missing descriptive subtitle explaining what horizon charts do
-  image_description: The plot displays a horizon chart showing 8 server metrics (CPU
-    Load, Memory, Network I/O, Disk I/O, Requests/s, Latency, Queue Depth, Threads)
-    as horizontally stacked panels over 24 hours. Each panel uses blue shades (Python
-    Blue) for positive deviations and red/pink shades for negative deviations, with
-    3 overlapping bands of increasing color intensity (Low/Mid/High). The title "horizon-basic
-    · matplotlib · pyplots.ai" is at the top, with a 6-item legend below it. Series
-    names appear as bold labels on the right side of each row. The x-axis shows datetime
-    ticks (01-15 00 through 01-15 21) with "Time (Hour of Day)" label. The design
-    is clean with no y-axis ticks and minimal spines.
+  - Design Excellence could show more custom refinement - color scheme and opacity
+    bands are good but could have more intentional stylistic choices
+  - Library Mastery could leverage more distinctive matplotlib features - solid idiomatic
+    usage but doesn't use advanced features like patheffects or custom normalizers
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) - correct theme surface
+      Chrome: Title, axis labels, series names, and tick labels all rendered in dark text (INK color) - fully readable
+      Data: 8 horizon charts with Okabe-Ito green (#009E73) for positive values and vermillion (#D55E00) for negative values; 3 bands with varying opacity (0.35, 0.60, 0.85); legend shows all 6 intensity levels
+      Legibility verdict: PASS - all elements clearly visible against light background
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) - correct theme surface
+      Chrome: Title, axis labels, series names, and tick labels all rendered in light text (INK color for dark theme) - fully readable; no dark-on-dark failures detected
+      Data: Identical data colors to light render (green and orange bands with same opacity progression); only chrome elements have adapted to dark theme
+      Legibility verdict: PASS - all elements clearly visible against dark background, proper theme adaptation confirmed
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title is 22pt (slightly under 24pt ideal), labels 14-18pt are readable
-          but could be larger
+        comment: All text readable in both themes - title (24pt), labels (20pt), ticks
+          (16pt), series names (18pt)
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements anywhere
+        comment: Series labels on right with proper spacing, x-axis labels well-distributed,
+          no collisions
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bands are well-sized with good alpha gradations, patterns clearly
-          visible
+        comment: Horizon bands clearly visible with effective opacity gradients, colors
+          distinct
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue/Red scheme is colorblind-friendly, not red-green
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Good use of canvas, 8 series fill the vertical space well, balanced
-          margins
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: X-axis label is descriptive but no units (time is self-evident, but
-          "Hours" could be explicit)
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: Legend is well-placed and informative, but no grid (acceptable for
-          horizon charts)
-    spec_compliance:
-      score: 24
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct horizon chart with folded bands
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Time on X-axis, values encoded in color bands
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: 3 bands, positive/negative coloring, multiple series, color intensity
-          encoding
-      - id: SC-04
-        name: Data Range
-        score: 3
-        max: 3
-        passed: true
-        comment: All data visible within normalized range
-      - id: SC-05
-        name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly shows all 6 band types (Low/Mid/High for +/-)
-      - id: SC-06
-        name: Title Format
-        score: 1
+        comment: Okabe-Ito colors CVD-safe, good contrast between data and background
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Well-proportioned 16:9 layout, generous margins, no content cut off
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: 'Uses correct format but bullet separator (·) vs dot is fine; minor:
-          "Horizon Chart" in spec title vs "horizon-basic" used'
-    data_quality:
-      score: 17
+        comment: Title format correct, axis labels descriptive, series names prominent
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Correct Okabe-Ito colors (#009E73 green, #D55E00 orange), proper
+          backgrounds (#FAF8F1 light, #1A1A17 dark)'
+    design_excellence:
+      score: 14
       max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Intentional design with theme-adaptive colors, opacity encoding,
+          professional labels and legend styling
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Spines removed appropriately, clean appearance, could have more grid/spine
+          customization
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Horizon format effectively communicates compact multi-series comparison
+          with opacity guiding magnitude perception
+    spec_compliance:
+      score: 15
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct horizon chart - displays time series compactly using folded
+          bands
+      - id: SC-02
+        name: Required Features
+        score: 4
+        max: 4
+        passed: true
+        comment: 3 bands with mirrored positive/negative coloring, intensity increases
+          with magnitude
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X-axis shows 24-hour timeline, Y-axis normalized, baseline at zero
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: Title formatted correctly, legend shows all band levels
+    data_quality:
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
-        max: 8
+        max: 6
         passed: true
-        comment: Shows positive and negative values, varying intensities, spikes;
-          could have more dramatic differences between series
+        comment: 8 server metrics (CPU, memory, network, disk, requests, latency,
+          queue, threads) with varied patterns
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Server metrics over 24 hours is a perfect real-world use case matching
-          the spec
+        comment: Dashboard monitoring context realistic and neutral, 24-hour timeline
+          with hourly data
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Normalized values are sensible; some metrics like "Queue Depth" might
-          benefit from more realistic absolute ranges
+        comment: Normalization to [-1.5, 1.5] allows cross-metric comparison appropriately
     code_quality:
       score: 10
       max: 10
@@ -172,41 +181,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: No functions or classes, clean linear flow
+        comment: No unnecessary functions/classes, straightforward script
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: Uses np.random.seed(42) for reproducible data generation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used (matplotlib.pyplot, matplotlib.colors, numpy, pandas)
+        comment: All imports used, no unused modules
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: No deprecated functions
+        comment: No fake UI, appropriate complexity, no unnecessary abstractions
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as 'plot.png'
-    library_features:
-      score: 3
-      max: 5
+        comment: Saves as plot-{THEME}.png with correct DPI and settings
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
+        max: 5
+        passed: true
+        comment: Good use of plt.subplots, fill_between, text, fig.legend, spine management
+      - id: LM-02
+        name: Distinctive Features
         score: 3
         max: 5
         passed: true
-        comment: Uses subplots with shared x-axis, fill_between with alpha blending,
-          text annotations; could leverage more advanced matplotlib features like
-          transforms or custom colormaps
+        comment: Effective use of fill_between with variable alpha, could leverage
+          more advanced features
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - subplots
+  - custom-legend
+  - annotations
+  patterns:
+  - data-generation
+  - iteration-over-groups
+  dataprep:
+  - normalization
+  styling:
+  - alpha-blending

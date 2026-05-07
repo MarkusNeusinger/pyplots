@@ -2,7 +2,7 @@ library: plotly
 language: python
 specification_id: windrose-basic
 created: '2025-12-24T22:16:28Z'
-updated: '2026-05-07T03:32:37Z'
+updated: '2026-05-07T03:38:50Z'
 generated_by: claude-haiku
 workflow_run: 25474345277
 issue: 1880
@@ -12,122 +12,106 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/windrose-
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/plotly/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/plotly/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/plotly/plot-dark.html
-quality_score: 85
+quality_score: 84
 review:
   strengths:
-  - Correct meteorological visualization with proper North-at-top orientation and
-    all spec requirements met
-  - 'Excellent realistic data: one-year hourly wind distribution with plausible Weibull
-    speeds and directional weighting'
-  - 'Perfect spec compliance: all features correctly implemented and mapped'
-  - Clean reproducible code with proper seeded randomness and no unnecessary complexity
-  - 'Proper theme-adaptive styling: backgrounds (#FAF8F1 light / #1A1A17 dark) and
-    text colors correctly applied in both renders'
-  - 'No legibility failures: all text readable in both themes with no dark-on-dark
-    or light-on-light issues'
+  - Excellent theme adaptation with all text readable in both light and dark renders
+  - Proper theme-adaptive chrome using correct tokens (INK, INK_SOFT, GRID, ELEVATED_BG)
+  - Clean, reproducible code with deterministic data generation and proper seed
+  - Accurate meteorological representation showing prevailing wind patterns
+  - Complete specification compliance with all required features (8 directions, 5
+    speed bins, legend)
+  - Good visual definition with white bar edges and proper stacking
+  - Correct title format and legend implementation
   weaknesses:
-  - 'Custom sequential color palette (#4A90E2, #0072B2, #FFD43B, #FF9F40, #FF5252)
-    violates style guide requirement for Okabe-Ito categorical or approved continuous
-    palettes (viridis/cividis/BrBG) - replace with viridis or cividis colormap for
-    compliance and colorblind safety'
-  - Limited design sophistication - follows library defaults without exceptional polish
-    or custom refinements
-  - Minimal visual emphasis - no annotations or highlighting to draw attention to
-    dominant SW/W wind pattern
-  - Basic library usage - doesn't leverage distinctive Plotly capabilities beyond
-    core barpolar function
+  - 'Palette Violation (Critical): Uses custom color hexes instead of standard sequential
+    colormap (viridis/cividis) for continuous wind speed data - violates style guide
+    requirement for continuous data colormaps'
+  - Generic design without visual refinement - no custom spine removal, grid customization,
+    or design sophistication
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) - correct
-      Chrome: Title "windrose-basic · plotly · anyplot.ai" (28px dark text), direction labels N/NE/E/SE/S/SW/W/NW (22px dark text), frequency percentage labels (18px dark text), legend with "Wind Speed" title and 5 speed ranges - all clearly readable against light background
-      Data: Five stacked bar colors per direction (blue #4A90E2 and #0072B2 for 0-6 m/s, yellow #FFD43B for 6-9 m/s, orange #FF9F40 for 9-12 m/s, red #FF5252 for >12 m/s), showing prevailing westerly/southwesterly winds with proper North-at-top meteorological convention
-      Legibility verdict: PASS - all text readable, no overlap, proper contrast
+      Background: Warm off-white (#FAF8F1) - correct warm tone, not pure white
+      Chrome: Title "windrose-basic · plotly · anyplot.ai" in dark text; compass directions (N, NE, E, SE, S, SW, W, NW) clearly visible; radial axis labeled "Frequency (%)" with tick labels at 5% intervals; legend titled "Wind Speed" on right side with 5 speed ranges
+      Data: Stacked bars in light blue (0-3 m/s), dark blue (3-6 m/s), yellow (6-9 m/s), orange (9-12 m/s), red (>12 m/s); white edges provide definition; SW and W sectors show dominant prevailing winds
+      Legibility verdict: PASS - All text is clearly readable against the light background with excellent contrast; grid lines subtle but visible
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) - correct
-      Chrome: Title and all labels now in light text (#F0EFE8), clearly visible against dark background, legend on dark elevated background (#242420) with light borders - all readable with no dark-on-dark failures
-      Data: Identical stacked bar colors to light render (#4A90E2, #0072B2, #FFD43B, #FF9F40, #FF5252), confirming proper theme-adaptive styling where only chrome flips between themes
-      Legibility verdict: PASS - all text readable, proper light-on-dark contrast, no theme-readability failures
+      Background: Warm near-black (#1A1A17) - correct warm tone, not pure black
+      Chrome: Title in light text; compass directions in light text, clearly readable; radial axis with light-colored tick labels; legend box uses dark background with light borders
+      Data: Data colors are identical to light render (same blues, yellows, oranges, reds) - only chrome has adapted to dark theme
+      Legibility verdict: PASS - All text is properly visible against the dark background; no dark-on-dark failures; grid lines visible and subtle; brand colors (yellow, orange) stand out well against dark surface
   criteria_checklist:
     visual_quality:
-      score: 26
+      score: 27
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: Font sizes explicitly set (28/22/18px), all readable in both themes,
-          ticks slightly small for 4800×2700 canvas
+        comment: All text readable in both themes with proper sizing
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: All direction labels, frequency ticks, legend well-spaced with no
-          collisions
+        comment: Clean spacing, no label collisions
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Stacked bars clearly visible and well-differentiated, optimal for
-          polar plot structure
+        comment: Stacked bars clearly visible with white edges
       - id: VQ-04
         name: Color Accessibility
         score: 1
         max: 2
         passed: false
-        comment: Custom colors have reasonable contrast but not from approved palettes,
-          limiting CVD-safety
+        comment: Custom color progression is distinguishable but not verified against
+          CVD standards
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Plot fills ~60% with generous balanced margins, legend positioned
-          clearly
+        comment: Good proportions, generous margins, nothing cut off
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Frequency (%) with units, complete direction labels, perfect title
-          format
+        comment: Descriptive labels with units, correct title format
       - id: VQ-07
         name: Palette Compliance
         score: 0
         max: 2
         passed: false
-        comment: 'Custom sequential palette violates style guide: must use Okabe-Ito
-          categorical or viridis/cividis/BrBG continuous. Theme chrome (backgrounds/text)
-          is correct in both renders.'
+        comment: Uses custom hex colors instead of viridis/cividis/BrBG for continuous
+          data - violates style guide
     design_excellence:
-      score: 11
+      score: 10
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 3
         max: 8
         passed: false
-        comment: Well-configured defaults with intentional color progression, professional
-          but not exceptional
+        comment: Generic styling with default layout, no custom refinements
       - id: DE-02
         name: Visual Refinement
         score: 3
         max: 6
         passed: false
-        comment: Subtle grid, clean polar axes, generous whitespace, but mostly library
-          defaults
+        comment: Minimal customization beyond white bar edges and opacity
       - id: DE-03
         name: Data Storytelling
         score: 4
         max: 6
-        passed: false
-        comment: Good visual hierarchy with dominant SW/W sectors, realistic data,
-          but no annotations or emphasis
+        passed: true
+        comment: Clear visual hierarchy showing prevailing winds effectively
     spec_compliance:
       score: 15
       max: 15
@@ -137,27 +121,25 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct wind rose with 8-directional stacked polar bars
+        comment: Correct wind rose with polar stacking
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features: stacked speed bins, directional sectors, frequency
-          axis, legend, north at top, cool-to-warm progression'
+        comment: All required features present
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Direction to angular position, speed to stacked radial, percentages
-          accurate
+        comment: Direction and frequency correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format perfect, legend labels correct with units
+        comment: Proper format and clear labels
     data_quality:
       score: 15
       max: 15
@@ -167,22 +149,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: Shows all 8 directions and 5 speed ranges with realistic prevailing
-          westerly pattern
+        comment: Full representation of all directions, speeds, frequencies
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: 'Authentic meteorological scenario: one-year hourly data, realistic
-          Weibull speeds, plausible direction bias'
+        comment: 8760 hourly measurements with plausible wind patterns
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: 8760 observations correct for annual hourly data, speeds realistically
-          scaled, proportions factually sound
+        comment: Sensible units and ranges for meteorological data
     code_quality:
       score: 10
       max: 10
@@ -192,50 +171,47 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → tokens → generation → binning → plot → save,
-          no functions/classes'
+        comment: No unnecessary abstractions
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) ensures deterministic output
+        comment: Deterministic with seed
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'Only necessary imports: os, numpy, plotly'
+        comment: Only necessary imports
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic, no over-engineering or fake functionality
+        comment: Clear logic, no fake UI
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png and plot-{THEME}.html correctly
+        comment: Correct filenames and current Plotly API
     library_mastery:
-      score: 8
+      score: 7
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Expert use of go.Barpolar for polar stacking, fig.update_layout with
-          theme tokens, barmode="stack"
+        comment: Good use of go.Figure() and go.Barpolar(), proper theme tokens
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: false
-        comment: Uses go.Barpolar (distinctive), but doesn't leverage more advanced
-          Plotly features beyond core usage
+        comment: Could leverage more plotly-specific features
   verdict: APPROVED
 impl_tags:
   dependencies: []
@@ -243,7 +219,7 @@ impl_tags:
   - polar-projection
   patterns:
   - data-generation
+  - matrix-construction
   dataprep:
   - binning
-  styling:
-  - edge-highlighting
+  styling: []

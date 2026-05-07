@@ -1,10 +1,11 @@
-""" pyplots.ai
+"""anyplot.ai
 windrose-basic: Wind Rose Chart
-Library: plotnine 0.15.2 | Python 3.13.11
+Library: plotnine | Python 3.13
 Quality: 90/100 | Created: 2025-12-24
 """
 
 import math
+import os
 
 import numpy as np
 import pandas as pd
@@ -26,9 +27,17 @@ from plotnine import (
 )
 
 
-# Data - Simulated wind measurements from a coastal weather station
+# Theme tokens (see prompts/default-style-guide.md "Background" + "Theme-adaptive Chrome")
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Data - Simulated wind measurements from an airport runway environment
 # 8 direction bins: N, NE, E, SE, S, SW, W, NW
 # 5 speed bins: 0-5, 5-10, 10-15, 15-20, 20+ m/s
+# Airport wind patterns show influence from local terrain and seasonal variations
 np.random.seed(42)
 
 directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
@@ -38,25 +47,26 @@ n_dirs = len(directions)
 speed_bins = ["0-5", "5-10", "10-15", "15-20", "20+"]
 
 # Frequencies (%) for each direction and speed bin
-# Coastal station with prevailing SW winds
+# Airport with variable wind patterns: N/S dominance, minimal calm winds
 frequencies = {
-    "N": [2.5, 1.5, 0.8, 0.3, 0.1],
-    "NE": [3.0, 2.0, 1.0, 0.4, 0.1],
-    "E": [2.8, 1.8, 0.9, 0.3, 0.1],
-    "SE": [3.5, 2.5, 1.2, 0.5, 0.2],
-    "S": [4.0, 3.0, 1.8, 0.8, 0.3],
-    "SW": [5.5, 4.5, 3.0, 1.5, 0.6],  # Prevailing wind direction
-    "W": [4.8, 3.8, 2.2, 1.0, 0.4],
-    "NW": [3.2, 2.2, 1.2, 0.5, 0.2],
+    "N": [2.0, 2.5, 1.8, 0.8, 0.3],
+    "NE": [1.8, 1.5, 0.8, 0.3, 0.1],
+    "E": [1.5, 1.2, 0.6, 0.2, 0.0],
+    "SE": [1.8, 1.5, 0.9, 0.4, 0.1],
+    "S": [2.2, 2.8, 1.9, 0.9, 0.4],  # Secondary wind direction
+    "SW": [2.0, 1.8, 1.0, 0.5, 0.2],
+    "W": [1.5, 1.2, 0.6, 0.2, 0.0],
+    "NW": [1.8, 1.5, 0.8, 0.3, 0.1],
 }
 
-# Colors for wind speed bins (cool to warm progression)
+# Colors for wind speed bins: cool (calm) to warm (strong) progression
+# Using perceptually-uniform colors appropriate for wind speed ranges
 speed_colors = {
-    "0-5": "#306998",  # Python Blue (calm)
-    "5-10": "#4A90C2",  # Light blue
-    "10-15": "#7FB069",  # Green
-    "15-20": "#FFD43B",  # Python Yellow
-    "20+": "#E85D04",  # Orange (strong)
+    "0-5": "#0072B2",  # Okabe-Ito blue (calm)
+    "5-10": "#56B4E9",  # Okabe-Ito sky blue
+    "10-15": "#009E73",  # Okabe-Ito green
+    "15-20": "#E69F00",  # Okabe-Ito orange
+    "20+": "#D55E00",  # Okabe-Ito red-orange (strong)
 }
 
 # Calculate direction angles (N=top, clockwise)
@@ -157,58 +167,59 @@ label_df = pd.DataFrame(label_rows)
 # Create frequency labels on gridlines (positioned at top of circles for better visibility)
 freq_label_rows = []
 for radius in grid_radii:
-    # Position labels at top of each circle (90 degrees) with slight offset
-    angle = math.pi / 2 + 0.15  # Slightly offset from North spoke
-    freq_label_rows.append({"label": f"{radius}%", "x": radius * math.cos(angle) + 1.8, "y": radius * math.sin(angle)})
+    # Position labels at top of each circle (90 degrees) with offset
+    angle = math.pi / 2 + 0.20
+    freq_label_rows.append(
+        {"label": f"{radius}%", "x": radius * math.cos(angle) + 1.5, "y": radius * math.sin(angle) + 0.5}
+    )
 
 freq_label_df = pd.DataFrame(freq_label_rows)
 
 # Create "Frequency (%)" label to explain what gridlines represent
-freq_axis_label_df = pd.DataFrame([{"label": "Frequency (%)", "x": -3, "y": 22}])
+freq_axis_label_df = pd.DataFrame([{"label": "Frequency (%)", "x": -2.5, "y": 21.5}])
 
 # Plot
 plot = (
     ggplot()
     # Gridlines (circles)
-    + geom_line(
-        aes(x="x", y="y", group="radius"), data=grid_df, color="#AAAAAA", size=0.5, alpha=0.7, linetype="dashed"
-    )
+    + geom_line(aes(x="x", y="y", group="radius"), data=grid_df, color=INK_SOFT, size=0.5, alpha=0.3, linetype="dashed")
     # Spoke lines
-    + geom_line(aes(x="x", y="y", group="spoke_id"), data=spoke_df, color="#CCCCCC", size=0.4, alpha=0.6)
+    + geom_line(aes(x="x", y="y", group="spoke_id"), data=spoke_df, color=INK_SOFT, size=0.4, alpha=0.4)
     # Wind rose wedges (stacked)
-    + geom_polygon(aes(x="x", y="y", fill="speed", group="wedge_id"), data=df, color="#FFFFFF", size=0.2, alpha=0.9)
+    + geom_polygon(aes(x="x", y="y", fill="speed", group="wedge_id"), data=df, color=PAGE_BG, size=0.3, alpha=0.95)
     # Direction labels
-    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=16, fontweight="bold", color="#333333")
+    + geom_text(aes(x="x", y="y", label="label"), data=label_df, size=18, fontweight="bold", color=INK)
     # Frequency labels
-    + geom_text(aes(x="x", y="y", label="label"), data=freq_label_df, size=18, color="#333333", fontweight="bold")
+    + geom_text(aes(x="x", y="y", label="label"), data=freq_label_df, size=16, color=INK_SOFT, fontweight="bold")
     # Frequency axis label
-    + geom_text(aes(x="x", y="y", label="label"), data=freq_axis_label_df, size=16, color="#333333", fontstyle="italic")
+    + geom_text(aes(x="x", y="y", label="label"), data=freq_axis_label_df, size=14, color=INK_SOFT, fontstyle="italic")
     # Colors with native legend
     + scale_fill_manual(values=speed_colors, name="Wind Speed (m/s)", guide=guide_legend(reverse=False))
     # Axis scaling
     + scale_x_continuous(limits=(-24, 24))
     + scale_y_continuous(limits=(-26, 24))
     # Title
-    + labs(title="windrose-basic · plotnine · pyplots.ai")
+    + labs(title="windrose-basic · plotnine · anyplot.ai")
     # Theme for clean wind rose appearance
     + theme(
         figure_size=(12, 12),
-        plot_title=element_text(size=24, ha="center", color="#333333"),
+        plot_background=element_rect(fill=PAGE_BG, color=PAGE_BG),
+        panel_background=element_rect(fill=PAGE_BG, color=None),
+        plot_title=element_text(size=28, ha="center", color=INK, face="bold"),
         axis_title=element_blank(),
         axis_text=element_blank(),
         axis_ticks=element_blank(),
         axis_line=element_blank(),
         panel_grid_major=element_blank(),
         panel_grid_minor=element_blank(),
-        panel_background=element_rect(fill="#FFFFFF"),
-        plot_background=element_rect(fill="#FFFFFF"),
         legend_position="right",
-        legend_title=element_text(size=14, fontweight="bold"),
-        legend_text=element_text(size=12),
-        legend_background=element_rect(fill="#FFFFFF", color="#CCCCCC", size=0.5),
-        legend_key_size=20,
+        legend_title=element_text(size=16, fontweight="bold", color=INK),
+        legend_text=element_text(size=14, color=INK_SOFT),
+        legend_background=element_rect(fill=ELEVATED_BG, color=INK_SOFT, size=0.5),
+        legend_key=element_rect(fill=ELEVATED_BG, color=None),
+        legend_key_size=24,
     )
 )
 
 # Save
-plot.save("plot.png", dpi=300)
+plot.save(f"plot-{THEME}.png", dpi=300)

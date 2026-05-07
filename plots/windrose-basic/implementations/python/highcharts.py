@@ -1,7 +1,7 @@
 """ anyplot.ai
 windrose-basic: Wind Rose Chart
 Library: highcharts unknown | Python 3.13.13
-Quality: 76/100 | Updated: 2026-05-07
+Quality: 87/100 | Updated: 2026-05-07
 """
 
 import json

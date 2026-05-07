@@ -28,7 +28,9 @@ For each, decide if the spec needs work:
 1. **Wording** — descriptions concise and unambiguous? applications realistic? data fields include types/sizes? notes actionable?
 2. **Missing sections** — every section from `specification.md` template present?
 3. **Tag completeness** — all 4 dimensions (`plot_type`, `data_type`, `domain`, `features`) have ≥1 value?
-4. **Tag quality** — naming conventions enforced (lowercase, hyphens, no underscores)? values from `spec-tags-generator.md` vocabulary?
+4. **Tag quality** — naming conventions enforced (lowercase, hyphens, no underscores)? Vocabulary policy:
+   - **`plot_type` is canonical**: the table in `spec-tags-generator.md` is the allowed set. Tags outside the table must either be moved to the correct dimension (e.g. `regression` → `features`, `timeseries` → `data_type`) or dropped if they're not really plot types.
+   - **`data_type` / `domain` / `features` are advisory**: their tables list common values, but any well-formed, recognized data-viz term is allowed. **Do NOT remove** an unfamiliar but valid tag from these three dimensions just because it isn't in the table — a niche but accurate domain (`bioinformatics`, `signal-processing`), a real feature (`confidence-interval`, `clustering`, `multi-series`), or a domain-specific data shape (`ohlc`, `compositional`) is fine to keep. Only canonicalize obvious synonyms (e.g. `sequential` → `stepwise`, `labeled` → `color-mapped` when describing color encoding) or fix naming-convention violations.
 5. **Tag accuracy** — do tags actually match the spec's content?
 
 ## Step 3: Decide

@@ -1,166 +1,188 @@
 library: pygal
+language: python
 specification_id: scatter-regression-linear
 created: '2025-12-24T21:30:33Z'
-updated: '2025-12-24T21:48:05Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494139207
-issue: 0
-python_version: 3.13.11
+updated: '2026-05-06T22:50:32Z'
+generated_by: claude-haiku
+workflow_run: 25465055552
+issue: 1821
+python_version: 3.13.13
 library_version: 3.1.0
-preview_url: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/pygal/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/pygal/plot.html
-quality_score: 90
-impl_tags:
-  dependencies:
-  - scipy
-  techniques:
-  - annotations
-  - html-export
-  patterns:
-  - data-generation
-  dataprep:
-  - regression
-  styling:
-  - alpha-blending
-  - grid-styling
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/pygal/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/pygal/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/pygal/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/pygal/plot-dark.html
+quality_score: 82
 review:
   strengths:
-  - Excellent implementation of the confidence interval band using polygon fill technique
-  - Clean, professional appearance with good color scheme (blue points, salmon CI
-    band, green regression line)
-  - R² value prominently displayed in the legend with the full regression equation
-  - Appropriate data scenario (study hours vs exam scores) that effectively demonstrates
-    linear regression
-  - Good use of pygal's custom Style for font sizing at 4800x2700 resolution
+  - Perfect text legibility with explicit font sizing and readable in both light and
+    dark themes
+  - 'Perfect palette compliance: Okabe-Ito colors correctly applied with proper theme-adaptive
+    chrome'
+  - 'Excellent theme adaptation: data colors identical between light/dark renders,
+    only chrome changes appropriately'
+  - 'Strong data quality: realistic study hours vs exam scores scenario with clear
+    linear relationship and appropriate noise'
+  - 'All scatter-regression plot elements present and functional: scatter points,
+    regression line, 95% CI band'
+  - Clean code structure with proper reproducibility (seed set) and no over-engineering
   weaknesses:
-  - Axis labels lack units (e.g., "Study Hours (hrs)" and "Exam Score (points)")
-  - Regression line could be more visually prominent against the CI band
-  - The regression equation could be placed as a separate annotation rather than in
-    the legend for better visibility
-  image_description: 'The plot displays a scatter plot with 80 blue data points showing
-    the relationship between Study Hours (x-axis, range 1-10) and Exam Score (y-axis,
-    range ~37-110). A green/olive linear regression line runs through the data with
-    a semi-transparent salmon/red 95% confidence interval band surrounding it. The
-    legend in the top-left corner shows three entries: "Data Points" (blue), "95%
-    CI Band" (red), and "Regression: y = 5.40x + 42.8 (R² = 0.791)" (green). The title
-    "scatter-regression-linear · pygal · pyplots.ai" appears at the top. The plot
-    has a clean white background with subtle grid lines.'
+  - R² value calculated but not displayed on plot - spec explicitly requires 'Display
+    R² or correlation coefficient prominently on the plot'
+  - Regression equation variable computed but never rendered to chart - code has unused
+    `equation` variable (line 100)
+  - Design is well-configured defaults without custom sophistication - no special
+    aesthetic polish or visual emphasis
+  - No quantitative storytelling element - plot lacks the R² annotation which contextualizes
+    model fit strength
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) - correct and appropriate
+      Chrome: Title "scatter-regression-linear · pygal · anyplot.ai" in dark text, clearly visible. Axis labels "Study Hours (hrs)" and "Exam Score (points)" are descriptive with units and readable. Tick labels and grid lines are subtle but visible.
+      Data: Green scatter points (#009E73) showing 80 data points from 1-10 study hours and 40-120 exam scores. Orange regression line (#D55E00) with width 5 is prominent and visually distinct. Orange semi-transparent CI band shows 95% confidence interval around the regression line. Legend lists all three series.
+      Legibility verdict: PASS - All text is readable and well-separated. No overlap. Strong contrast.
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) - correct and appropriate
+      Chrome: Title and all labels in light text on dark background - all readable and properly contrasted. No "dark on dark" failures. Grid lines are subtle but visible.
+      Data: Green scatter points (#009E73) are identical to light render. Orange regression line and CI band are the same colors as light render, confirming proper color consistency across themes. Data colors identical to light render (only chrome flipped).
+      Legibility verdict: PASS - All text is readable. Good contrast. Brand green is clearly visible on dark surface.
+
+    Both renders demonstrate proper theme adaptation with identical data colors between light and dark themes, with only chrome (background, text, grid) changing appropriately.
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 9
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title and axis labels are readable; font sizes are appropriate for
-          the canvas
+        comment: 'All font sizes explicitly set: title 28px, labels 22px, ticks 18px
+          - perfectly readable in both themes'
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text or elements
+        comment: No overlapping text elements - title, axis labels, legend all properly
+          spaced
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Data points are well-sized, regression line visible; slight deduction
-          as the regression line could be thicker for better visibility against the
-          CI band
+        comment: 80 scatter points with size 16 - optimal for data density. Regression
+          line (width 5) and CI band clearly visible
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue, red/salmon, and green colors are distinguishable and colorblind-friendly
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills canvas well with balanced margins
-      - id: VQ-06
-        name: Axis Labels
-        score: 1
-        max: 2
-        passed: true
-        comment: Descriptive labels ("Study Hours", "Exam Score") but missing units
-      - id: VQ-07
-        name: Grid & Legend
-        score: 1
-        max: 2
-        passed: true
-        comment: Grid is subtle; legend placement in corner is functional but the
-          equation in legend is unconventional
-    spec_compliance:
-      score: 24
-      max: 25
-      items:
-      - id: SC-01
-        name: Plot Type
-        score: 8
-        max: 8
-        passed: true
-        comment: Correct XY scatter plot with linear regression
-      - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly assigned (Study Hours vs Exam Score)
-      - id: SC-03
-        name: Required Features
-        score: 5
-        max: 5
-        passed: true
-        comment: Has regression line, R² value, confidence interval band, all spec
-          requirements met
-      - id: SC-04
-        name: Data Range
-        score: 3
-        max: 3
-        passed: true
-        comment: Axes show all data points correctly
-      - id: SC-05
-        name: Legend Accuracy
         score: 2
         max: 2
         passed: true
-        comment: Legend correctly identifies all elements
-      - id: SC-06
-        name: Title Format
-        score: 1
+        comment: Okabe-Ito palette is colorblind-safe. Good contrast between all elements
+          and backgrounds
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: 'Perfect layout: plot fills 50-70% of 4800×2700 canvas with balanced
+          margins'
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Uses correct format but regression equation shown in legend instead
-          of as separate annotation
-    data_quality:
-      score: 18
+        comment: 'Descriptive with units: ''Study Hours (hrs)'' and ''Exam Score (points)'''
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Perfect: #009E73 for data points, #D55E00 for CI, backgrounds #FAF8F1/#1A1A17,
+          text colors theme-correct'
+    design_excellence:
+      score: 9
       max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
+        passed: false
+        comment: Well-configured library defaults with professional Style object -
+          looks like polished defaults rather than custom design
+      - id: DE-02
+        name: Visual Refinement
+        score: 2
+        max: 6
+        passed: false
+        comment: Library defaults with minimal customization - grid shown, spines
+          default, adequate whitespace
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: false
+        comment: Good visual hierarchy with regression line as focal point, but missing
+          R² annotation which is a spec requirement for quantitative context
+    spec_compliance:
+      score: 13
+      max: 15
+      items:
+      - id: SC-01
+        name: Plot Type
+        score: 5
+        max: 5
+        passed: true
+        comment: Correct XY scatter chart with regression line and CI band
+      - id: SC-02
+        name: Required Features
+        score: 2
+        max: 4
+        passed: false
+        comment: 'Scatter points, regression line, and CI band all present. Missing:
+          R² value prominently displayed (spec requirement)'
+      - id: SC-03
+        name: Data Mapping
+        score: 3
+        max: 3
+        passed: true
+        comment: X and Y axes correctly assigned - 80 points from 1-10 hrs on X, 40-120
+          points on Y
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
+        passed: true
+        comment: 'Title format correct: ''scatter-regression-linear · pygal · anyplot.ai''.
+          Legend properly labels all series'
+    data_quality:
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
         score: 6
-        max: 8
+        max: 6
         passed: true
-        comment: Shows linear relationship with scatter and noise; could show more
-          varied residual patterns
+        comment: 'Shows all aspects: scatter points with noise, linear regression
+          trend, uncertainty quantification via CI band'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
-        passed: true
-        comment: Study hours vs exam scores is a realistic educational scenario
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Values are sensible (1-10 study hours, ~40-110 exam scores)
+        comment: 'Real-world scenario: study hours vs exam scores. Plausible data
+          with sensible relationship strength'
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: Study hours (1-10) and exam scores (40-120 points) are factually
+          appropriate with realistic correlation
     code_quality:
       score: 9
       max: 10
@@ -170,40 +192,58 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Simple script structure without functions/classes
+        comment: 'Clean linear structure: imports → theme tokens → data generation
+          → regression calculation → style configuration → chart creation → render'
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: Uses np.random.seed(42)
+        comment: np.random.seed(42) set for deterministic data generation
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used (numpy, pygal, Style, scipy.stats)
+        comment: 'All imports used: os, numpy, pygal, Style, scipy.stats'
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 1
+        max: 2
+        passed: false
+        comment: Generally clean code but has unused `equation` variable (line 100)
+          that's calculated but never rendered to plot
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves as plot.png but also generates plot.html (minor issue)
-    library_features:
-      score: 3
-      max: 5
+        comment: Correctly saves to plot-{THEME}.png and plot-{THEME}.html
+    library_mastery:
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
+      - id: LM-01
+        name: Idiomatic Usage
         score: 3
         max: 5
-        passed: true
-        comment: Uses XY chart, custom Style, fill for CI band; could better leverage
-          pygal's interactivity
+        passed: false
+        comment: 'Correct usage: pygal.XY() chart, Style object for theming, chart.add()
+          for data. Doesn''t leverage advanced patterns'
+      - id: LM-02
+        name: Distinctive Features
+        score: 3
+        max: 5
+        passed: false
+        comment: Uses custom Style object for theme adaptation and stroke_style for
+          CI band - somewhat distinctive but generic overall
   verdict: APPROVED
+impl_tags:
+  dependencies:
+  - scipy
+  techniques: []
+  patterns:
+  - data-generation
+  dataprep:
+  - regression
+  styling: []

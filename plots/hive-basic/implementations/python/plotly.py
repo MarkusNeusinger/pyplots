@@ -1,12 +1,25 @@
-""" pyplots.ai
+"""anyplot.ai
 hive-basic: Basic Hive Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 88/100 | Created: 2025-12-24
+Library: plotly | Python 3.13
+Quality: 88/100 | Updated: 2025-05-07
 """
+
+import os
 
 import numpy as np
 import plotly.graph_objects as go
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
+
+# Okabe-Ito palette - first three for the three axes
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2"]
 
 # Data: Software module dependency network
 np.random.seed(42)
@@ -65,8 +78,8 @@ edges = [
 
 # Axis configuration
 categories = ["core", "utility", "interface"]
-axis_angles = [90, 210, 330]  # degrees, evenly spaced
-axis_colors = {"core": "#306998", "utility": "#FFD43B", "interface": "#4ECDC4"}
+axis_angles = [90, 210, 330]
+axis_colors = {cat: OKABE_ITO[i] for i, cat in enumerate(categories)}
 
 # Create node lookup
 node_lookup = {n["id"]: n for n in nodes}
@@ -79,11 +92,11 @@ for node in nodes:
 for cat in categories:
     nodes_by_category[cat].sort(key=lambda x: x["degree"], reverse=True)
 
-# Hive plot parameters - scale up for better canvas utilization
+# Hive plot parameters
 inner_radius = 0.25
 outer_radius = 0.95
 
-# Calculate all node positions inline (KISS - no functions)
+# Calculate all node positions
 node_positions = {}
 for node in nodes:
     cat_idx = categories.index(node["category"])
@@ -120,7 +133,7 @@ for i, cat in enumerate(categories):
         )
     )
 
-# Draw edges as curved paths (inline bezier calculation)
+# Draw edges as curved paths
 for source, target in edges:
     if source not in node_positions or target not in node_positions:
         continue
@@ -128,7 +141,7 @@ for source, target in edges:
     x0, y0 = node_positions[source][0], node_positions[source][1]
     x1, y1 = node_positions[target][0], node_positions[target][1]
 
-    # Inline quadratic bezier curve calculation
+    # Quadratic bezier curve
     cx = (x0 + x1) / 2 * 0.25
     cy = (y0 + y1) / 2 * 0.25
     t = np.linspace(0, 1, 40)
@@ -150,14 +163,14 @@ for source, target in edges:
         )
     )
 
-# Draw nodes with adjusted label positions to avoid overlap
+# Draw nodes
 label_offset_map = {"core": "top right", "utility": "bottom left", "interface": "bottom right"}
 
 for cat in categories:
     cat_nodes = nodes_by_category[cat]
     xs = [node_positions[n["id"]][0] for n in cat_nodes]
     ys = [node_positions[n["id"]][1] for n in cat_nodes]
-    sizes = [n["degree"] * 5 + 18 for n in cat_nodes]  # Larger markers
+    sizes = [n["degree"] * 5 + 18 for n in cat_nodes]
     labels = [n["id"] for n in cat_nodes]
     degrees = [n["degree"] for n in cat_nodes]
 
@@ -166,21 +179,19 @@ for cat in categories:
             x=xs,
             y=ys,
             mode="markers+text",
-            marker={"size": sizes, "color": axis_colors[cat], "line": {"color": "white", "width": 2.5}},
+            marker={"size": sizes, "color": axis_colors[cat], "line": {"color": PAGE_BG, "width": 2.5}},
             text=labels,
             textposition=label_offset_map[cat],
-            textfont={"size": 18, "color": "#333333"},
+            textfont={"size": 18, "color": INK},
             name=cat.capitalize(),
             hovertemplate="<b>%{text}</b><br>Degree: %{customdata}<extra></extra>",
             customdata=degrees,
         )
     )
 
-# Add axis labels beyond the endpoints to avoid overlap with node labels
-# Include sorting context (by degree) as per spec requirement
+# Add axis labels
 for i, cat in enumerate(categories):
     angle_rad = np.radians(axis_angles[i])
-    # Position labels further out (1.35x) to clear node labels at endpoints
     label_x = outer_radius * 1.35 * np.cos(angle_rad)
     label_y = outer_radius * 1.35 * np.sin(angle_rad)
     fig.add_annotation(
@@ -191,22 +202,22 @@ for i, cat in enumerate(categories):
         font={"size": 22, "color": axis_colors[cat]},
     )
 
-# Layout - maximized canvas utilization
+# Layout
 fig.update_layout(
     title={
-        "text": "hive-basic · plotly · pyplots.ai<br><sup>Software Dependency Network: nodes by module type, positioned by degree</sup>",
-        "font": {"size": 32, "color": "#333333"},
+        "text": "hive-basic · plotly · anyplot.ai<br><sup>Software Dependency Network: nodes by module type, positioned by degree</sup>",
+        "font": {"size": 32, "color": INK},
         "x": 0.5,
         "xanchor": "center",
     },
     showlegend=True,
     legend={
-        "title": {"text": "Module Type", "font": {"size": 20}},
-        "font": {"size": 18},
+        "title": {"text": "Module Type", "font": {"size": 20, "color": INK}},
+        "font": {"size": 18, "color": INK_SOFT},
         "x": 0.01,
         "y": 0.99,
-        "bgcolor": "rgba(255,255,255,0.9)",
-        "bordercolor": "#cccccc",
+        "bgcolor": ELEVATED_BG,
+        "bordercolor": INK_SOFT,
         "borderwidth": 1,
     },
     xaxis={"showgrid": False, "zeroline": False, "showticklabels": False, "range": [-1.5, 1.5]},
@@ -218,11 +229,11 @@ fig.update_layout(
         "scaleanchor": "x",
         "scaleratio": 1,
     },
-    plot_bgcolor="white",
-    paper_bgcolor="white",
+    plot_bgcolor=PAGE_BG,
+    paper_bgcolor=PAGE_BG,
     margin={"l": 40, "r": 40, "t": 120, "b": 40},
 )
 
 # Save outputs
-fig.write_image("plot.png", width=1200, height=1200, scale=3)
-fig.write_html("plot.html", include_plotlyjs="cdn")
+fig.write_image(f"plot-{THEME}.png", width=1200, height=1200, scale=3)
+fig.write_html(f"plot-{THEME}.html", include_plotlyjs="cdn")

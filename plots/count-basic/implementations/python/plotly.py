@@ -1,7 +1,7 @@
-"""anyplot.ai
+""" anyplot.ai
 count-basic: Basic Count Plot
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: pending | Updated: 2026-05-07
+Library: plotly 6.7.0 | Python 3.13.13
+Quality: 87/100 | Updated: 2026-05-07
 """
 
 import os

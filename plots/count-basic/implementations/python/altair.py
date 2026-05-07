@@ -1,7 +1,7 @@
 """ anyplot.ai
 count-basic: Basic Count Plot
 Library: altair 6.1.0 | Python 3.13.13
-Quality: 79/100 | Updated: 2026-05-07
+Quality: 87/100 | Updated: 2026-05-07
 """
 
 import os

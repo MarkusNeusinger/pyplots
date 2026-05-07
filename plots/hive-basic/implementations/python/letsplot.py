@@ -166,8 +166,8 @@ plot = (
     ggplot()
     # Axis lines (theme-adaptive gray)
     + geom_path(aes(x="x", y="y", group="axis"), data=axis_lines_df, color=INK_SOFT, size=1.5, alpha=0.4)
-    # Edges with curves (increased alpha from 0.6 to 0.7 for better visibility)
-    + geom_path(aes(x="x", y="y", group="edge_id", color="edge_type"), data=edges_df, size=1.0, alpha=0.7)
+    # Edges with curves (reduced alpha for better center visibility)
+    + geom_path(aes(x="x", y="y", group="edge_id", color="edge_type"), data=edges_df, size=1.0, alpha=0.5)
     # Nodes
     + geom_point(
         aes(x="x", y="y", fill="axis", size="degree"), data=nodes_df, color=INK_SOFT, stroke=1.0, shape=21, alpha=0.9
@@ -196,8 +196,8 @@ plot = (
     + ggsize(1600, 900)
 )
 
-# Save as PNG (4800 × 2700 px)
-ggsave(plot, f"plot-{THEME}.png", path=".", w=4800, h=2700, unit="px")
+# Save as PNG (4800 × 2700 px with scale factor)
+ggsave(plot, f"plot-{THEME}.png", scale=3)
 
 # Save as HTML for interactive version
-ggsave(plot, f"plot-{THEME}.html", path=".")
+ggsave(plot, f"plot-{THEME}.html")

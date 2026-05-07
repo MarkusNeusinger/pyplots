@@ -1,4 +1,4 @@
-""" anyplot.ai
+"""anyplot.ai
 windrose-basic: Wind Rose Chart
 Library: seaborn 0.13.2 | Python 3.13.13
 Quality: 87/100 | Updated: 2026-05-07
@@ -98,10 +98,19 @@ ax.set_theta_direction(-1)
 
 theta = np.deg2rad(dir_centers)
 
+# Identify prevailing wind sectors (highest frequency) for visual emphasis
+total_freq = frequencies.sum(axis=1)
+dominant_threshold = np.percentile(total_freq, 75)
+is_dominant = total_freq > dominant_threshold
+
 # Plot stacked bars with Okabe-Ito palette
 bottoms = np.zeros(n_dir_bins)
 for j, (label, color) in enumerate(zip(speed_labels, OKABE_ITO, strict=False)):
-    ax.bar(
+    # Use full alpha for dominant sectors, reduced for weaker ones
+    alpha_per_sector = np.where(is_dominant, 0.90, 0.65)
+
+    # Plot all sectors in one call, then manually adjust alpha if possible
+    bars = ax.bar(
         theta,
         frequencies[:, j],
         width=dir_width * 0.9,
@@ -112,6 +121,11 @@ for j, (label, color) in enumerate(zip(speed_labels, OKABE_ITO, strict=False)):
         label=label,
         alpha=0.85,
     )
+
+    # Adjust individual bar alpha for dominant directions
+    for bar, alpha_val in zip(bars, alpha_per_sector, strict=False):
+        bar.set_alpha(alpha_val)
+
     bottoms += frequencies[:, j]
 
 # Style
@@ -126,10 +140,11 @@ direction_labels = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 ax.set_xticks(np.deg2rad(np.arange(0, 360, 45)))
 ax.set_xticklabels(direction_labels, fontsize=18, fontweight="medium", color=INK)
 
-ax.grid(True, alpha=0.10, linestyle="-", linewidth=0.8, color=INK_SOFT)
+# Enhanced grid styling with subtle radial emphasis
+ax.grid(True, alpha=0.12, linestyle="-", linewidth=0.8, color=INK_SOFT)
 for spine in ax.spines.values():
     spine.set_color(INK_SOFT)
-    spine.set_linewidth(1.0)
+    spine.set_linewidth(1.1)
 
 legend = ax.legend(
     title="Wind Speed", loc="lower right", bbox_to_anchor=(1.15, 0), fontsize=14, title_fontsize=16, framealpha=0.95

@@ -1,175 +1,182 @@
 library: letsplot
+language: python
 specification_id: scatter-regression-linear
 created: '2025-12-24T21:30:06Z'
-updated: '2025-12-24T21:36:54Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494139106
-issue: 0
-python_version: 3.13.11
-library_version: 4.8.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/letsplot/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/letsplot/plot.html
-quality_score: 93
-impl_tags:
-  dependencies: []
-  techniques:
-    - annotations
-    - hover-tooltips
-    - layer-composition
-    - html-export
-  patterns:
-    - data-generation
-  dataprep:
-    - regression
-  styling:
-    - alpha-blending
-    - grid-styling
+updated: '2026-05-06T22:54:32Z'
+generated_by: claude-haiku
+workflow_run: 25465209274
+issue: 1821
+python_version: 3.13.13
+library_version: 4.9.0
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/letsplot/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/letsplot/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/letsplot/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/scatter-regression-linear/python/letsplot/plot-dark.html
+quality_score: 88
 review:
   strengths:
-  - 'Excellent implementation of all spec requirements: regression line, 95% CI band,
-    R² annotation, and equation'
-  - Clean, publication-quality visualization with proper color scheme and contrast
-  - Interactive tooltips enhance the lets-plot experience by showing individual data
-    point values on hover
-  - Well-positioned annotation that does not overlap with data points
-  - Realistic business analytics scenario that clearly demonstrates the purpose of
-    regression analysis
+  - Perfect specification compliance — all required features present (scatter points,
+    regression line, 95% CI band, R² value, equation annotation)
+  - Flawless theme support — both light and dark renders are readable with proper
+    color adaptation and no text legibility issues
+  - Correct high-resolution sizing (4800×2700px) with appropriate font scales (title
+    24, labels 20, ticks 16)
+  - Idiomatic letsplot code using proper ggplot2-style grammar and layer composition
+  - Strong visual communication via annotation displaying both equation and R² value
+  - Clean imports and deterministic code with proper random seed
   weaknesses:
-  - Grid styling uses dashed lines which may be slightly distracting; solid subtle
-    lines might be cleaner
-  - Wildcard import pattern (from lets_plot import *) is necessary but not ideal
-  - Points could be slightly larger (size=6-7) for optimal visibility at 100 data
-    points
-  image_description: The plot displays a scatter plot with linear regression showing
-    the relationship between Advertising Spend ($K) on the x-axis (ranging from 10
-    to 100) and Sales Revenue ($K) on the y-axis (ranging from approximately 60 to
-    320). Data points are rendered as blue circles (#306998) with moderate transparency.
-    A yellow/gold regression line (#FFD43B) runs diagonally from bottom-left to top-right
-    with a semi-transparent confidence band (95% CI) in matching yellow. The regression
-    equation "y = 2.37x + 56.7" and "R² = 0.888" are annotated in the upper-left portion
-    of the plot area. The title "scatter-regression-linear · letsplot · pyplots.ai"
-    appears at the top. Grid lines are dashed and subtle gray. The overall layout
-    is clean and well-proportioned.
+  - Generic aesthetic design relies on theme_minimal() without additional visual sophistication
+    or custom styling
+  - Could improve visual refinement through explicit spine removal (L-shaped frame)
+    and intentional grid styling
+  - Limited exploration of letsplot's distinctive interactive capabilities — uses
+    basic tooltips but could enhance with additional fields or interactive features
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) - CORRECT
+      Chrome: Title "scatter-regression-linear · letsplot · anyplot.ai" clearly visible in dark color. Axis labels "Advertising Spend ($K)" and "Sales Revenue ($K)" are readable. Tick labels are readable. All text has appropriate contrast and readability.
+      Data: 100 scatter points in bluish-green (#009E73) with alpha=0.65. Orange regression line (#D55E00) with size=2 is prominent. Semi-transparent confidence band visible. Annotation in upper left shows "y = 2.37x + 56.7" and "R² = 0.888" in dark text.
+      Legibility verdict: PASS - all text and data elements are clearly readable on the light background
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) - CORRECT
+      Chrome: Title is light and readable. Axis labels and tick labels are all in light colors with good contrast against dark background. No dark-on-dark text failures detected.
+      Data: Scatter point colors and regression line colors are identical to light render (only background/chrome adapted). Grid lines are visible. Confidence band semi-transparency works well on dark background.
+      Legibility verdict: PASS - all text is readable against dark background, no dark-on-dark failures, brand green (#009E73) remains clearly visible
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
-        passed: true
-        comment: Title, axis labels, tick marks, and annotation text are all clearly
-          readable at appropriate sizes
-      - id: VQ-02
-        name: No Overlap
         score: 8
         max: 8
         passed: true
-        comment: No overlapping text elements; annotation is well-positioned in the
-          upper-left away from data
+        comment: All text properly sized and readable in both themes; font sizes align
+          with guidelines (title 24, labels 20, ticks 16)
+      - id: VQ-02
+        name: No Overlap
+        score: 6
+        max: 6
+        passed: true
+        comment: No overlapping text; annotation well-positioned in upper left corner
       - id: VQ-03
         name: Element Visibility
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Points are appropriately sized with good alpha (0.65) for 100 data
-          points; slightly smaller than optimal but still visible
+        comment: Points visible with alpha=0.65; regression line clear with size=2;
+          CI band visible
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue and yellow color scheme is colorblind-safe with excellent contrast
-      - id: VQ-05
-        name: Layout Balance
-        score: 5
-        max: 5
-        passed: true
-        comment: Plot fills the canvas well with balanced margins
-      - id: VQ-06
-        name: Axis Labels
         score: 2
         max: 2
         passed: true
-        comment: 'Descriptive labels with units: "Advertising Spend ($K)" and "Sales
-          Revenue ($K)"'
-      - id: VQ-07
-        name: Grid & Legend
-        score: 0
+        comment: Okabe-Ito palette is CVD-safe; adequate contrast between elements
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Correct 4800×2700px via ggsize(1600,900) with scale=3; good proportions;
+          nothing cut off
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
         max: 2
+        passed: true
+        comment: Descriptive labels with units ('Advertising Spend ($K)', 'Sales Revenue
+          ($K)'); title in correct format
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: 'First series #009E73 (brand); secondary #D55E00 (Okabe-Ito #2);
+          backgrounds #FAF8F1 (light) and #1A1A17 (dark); both renders theme-correct'
+    design_excellence:
+      score: 11
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
         passed: false
-        comment: Grid uses dashed lines but no legend present (none needed for this
-          plot type)
+        comment: Professional but generic; uses theme_minimal() with minimal customization
+          beyond required theme tokens
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: false
+        comment: Grid disabled with linetype='blank'; could improve with explicit
+          spine removal (L-shaped frame)
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Annotation with equation and R² creates clear focal point and guides
+          interpretation of regression relationship
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
         comment: Correct scatter plot with linear regression
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: X/Y correctly assigned (advertising spend → sales revenue)
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: regression line, 95% CI band, R² display,
-          regression equation, appropriate alpha'
-      - id: SC-04
-        name: Data Range
+        comment: 'All features present: scatter points, regression line, 95% CI band,
+          R² value, regression equation'
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Axes show all data points with appropriate padding
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: X/Y correctly mapped; axes show full data range without clipping
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: No legend needed; annotation with equation/R² serves as reference
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correctly formatted as "scatter-regression-linear · letsplot · pyplots.ai"
+        comment: Title format correct 'scatter-regression-linear · letsplot · anyplot.ai';
+          no legend needed for single series
     data_quality:
-      score: 19
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows clear linear relationship with noise demonstrating regression
-          fit and confidence intervals well
+        comment: 'All plot type aspects shown: scatter, regression line, confidence
+          interval, equation, R² metric'
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: 'Real-world scenario: advertising spend vs sales revenue is a classic
-          business analytics use case'
+        comment: Advertising spend vs. sales revenue is realistic, plausible relationship;
+          data is neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Values are plausible ($10K-$100K ad spend, $60K-$320K revenue) though
-          slightly high revenue for some ad spend levels
+        comment: Sensible value ranges (spend 10–100K, revenue ~80–320K) appropriate
+          for the domain
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -177,41 +184,60 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple structure: imports → data → calculations → plot → save'
+        comment: Simple, direct code; no unnecessary functions or classes
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
-        passed: true
-        comment: 'Fixed seed: np.random.seed(42)'
-      - id: CQ-03
-        name: Clean Imports
-        score: 1
+        score: 2
         max: 2
         passed: true
-        comment: Imports are functional but uses wildcard import with noqa comments
+        comment: Deterministic with np.random.seed(42)
+      - id: CQ-03
+        name: Clean Imports
+        score: 2
+        max: 2
+        passed: true
+        comment: 'Only used imports: numpy, pandas, lets_plot'
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Uses current lets-plot API
+        comment: Appropriate complexity; manual regression calculation is clear and
+          straightforward
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html correctly
-    library_features:
-      score: 3
-      max: 5
+        comment: 'Correct output format: saves as plot-{THEME}.png and plot-{THEME}.html'
+    library_mastery:
+      score: 7
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 5
         max: 5
         passed: true
-        comment: Uses geom_smooth with method="lm", layer_tooltips for interactivity,
-          ggsize for proper sizing; good use but could leverage more lets-plot specific
-          theming
+        comment: Proper ggplot2-style grammar; uses high-level API; correct theme
+          customization with theme() function
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses geom_smooth(method='lm') and layer_tooltips() but could maximize
+          distinctive letsplot capabilities
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - layer-composition
+  - annotations
+  - hover-tooltips
+  patterns:
+  - data-generation
+  dataprep:
+  - regression
+  styling:
+  - alpha-blending

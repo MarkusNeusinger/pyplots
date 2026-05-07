@@ -2,7 +2,7 @@ library: bokeh
 language: python
 specification_id: horizon-basic
 created: '2025-12-24T22:17:43Z'
-updated: '2026-05-07T05:32:29Z'
+updated: '2026-05-07T05:41:00Z'
 generated_by: claude-haiku
 workflow_run: 25477621270
 issue: 1877
@@ -12,89 +12,92 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/horizon-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/bokeh/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/bokeh/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/bokeh/plot-dark.html
-quality_score: 86
+quality_score: 78
 review:
   strengths:
-  - Perfect technical execution with correct syntax, structure, and reproducibility
-  - 'Excellent Visual Quality (30/30): all text legible, zero overlaps, flawless theme
-    adaptation'
-  - Realistic server metrics data with genuine patterns (periodicity, spikes, trends)
-  - Correct Okabe-Ito palette with intensity-based bands appropriate for horizon charts
-  - Idiomatic Bokeh API usage demonstrating library mastery
+  - Horizon chart technique correctly implemented with proper positive/negative banding
+    and intensity levels
+  - 'Excellent theme adaptation: both light and dark renders fully readable with proper
+    color contrast and no chrome failures'
+  - 'Proper text sizing strategy: all sizes explicitly set for 4800×2700px canvas
+    with good hierarchy'
+  - Clean, reproducible code with proper random seed; straightforward linear structure
+  - Realistic, neutral data context that demonstrates all horizon features
+  - Interactive elements properly implemented, not faked
   weaknesses:
-  - 'Design Excellence is below target: generic aesthetic (DE-01=4/8), minimal visual
-    refinement (DE-02=2/6), no visual data storytelling (DE-03=2/6)'
-  - Plot outline borders remain visible and prominent when cleaner appearance would
-    improve aesthetics
-  - No visual hierarchy or emphasis to guide viewer toward insights in the server
-    data
-  - Color choices, typography, and layout follow defaults rather than intentional
-    design decisions
+  - Diverging color palette uses custom blue/orange instead of BrBG colormap—update
+    to bokeh.palettes.BrBG for style guide compliance
+  - Spec title format positioned as subtitle instead of main title—move 'horizon-basic
+    · bokeh · anyplot.ai' to primary title position
+  - Minimal aesthetic sophistication and visual refinement—add design enhancements
+    for color harmony and polish
+  - No visual storytelling or emphasis—data displayed but doesn't guide viewer to
+    key patterns or insights
+  - Limited leverage of distinctive Bokeh features—could use callbacks, server integration,
+    or advanced interactivity
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) ✓
-      Chrome: Title, legend, server names, axis labels all dark text on light surface - perfectly readable ✓
-      Data: Blue (#56B4E9, #0072B2, #004494) and orange (#E69F00, #D55E00, #8B3A00) bands show positive/negative magnitude encoding
-      Legibility verdict: PASS - All elements clearly visible, zero text overlap, proper contrast
+      Background: Warm off-white (#FAF8F1), clearly distinct from pure white
+      Chrome: Title (32pt), subtitle (18pt), axis label (22pt), tick labels (18pt), series names (26pt bold) all in dark text (INK token) and fully readable
+      Data: Blue tones (#56B4E9, #0072B2, variants) for positive values; orange tones (#E69F00, #D55E00, #8B3A00) for negative values; three intensity bands per polarity showing clear separation
+      Legibility verdict: PASS - All text readable with no light-on-light conflicts
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) ✓
-      Chrome: All text rendered in light colors (#F0EFE8, #B8B7B0) with good contrast on dark background ✓
-      Data: Blue and orange colors identical to light render - confirms theme-independent data colors ✓
-      Legibility verdict: PASS - All text readable, no dark-on-dark failures, proper theme adaptation
+      Background: Warm near-black (#1A1A17), not pure black
+      Chrome: All text in light color (INK token #F0EFE8) on dark background; clearly readable; no dark-on-dark failures
+      Data: Blue and orange colors identical to light render, confirming proper theme adaptation (only chrome changes)
+      Legibility verdict: PASS - Excellent contrast, no dark-on-dark issues, all elements distinguishable
   criteria_checklist:
     visual_quality:
-      score: 30
+      score: 24
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 7
         max: 8
         passed: true
-        comment: All font sizes explicitly set (28pt title, 22pt labels, 18pt ticks,
-          26pt server names); both renders perfectly readable
+        comment: All font sizes explicitly set; readable in both themes; left labels
+          could be marginally larger
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Zero overlapping text; server names left-positioned, legend top,
-          axes clear
+        comment: No overlapping text elements
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Horizon bands clearly visible and adapted to data density
+        comment: Horizon bands clearly visible at all intensity levels
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Blue/orange from Okabe-Ito palette, CVD-safe, excellent contrast
+        comment: Good contrast between blue and orange; no red-green dependency
       - id: VQ-05
         name: Layout & Canvas
-        score: 4
+        score: 3
         max: 4
         passed: true
-        comment: 'Excellent utilization: 6 series fill height, balanced margins, legend
-          well-positioned'
+        comment: Good layout, balanced margins, ~65-70% canvas utilization
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Title format correct; axis labeled with units (Hour of Day)
+        comment: Axis labeled with units; title descriptive
       - id: VQ-07
         name: Palette Compliance
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: Uses Okabe-Ito positions 2,3,5,6; backgrounds correct; theme chrome
-          properly adaptive
+        passed: false
+        comment: 'Partial compliance: uses blue/orange instead of BrBG for diverging
+          data; not Okabe-Ito canonical order; theme chrome is correct'
     design_excellence:
-      score: 8
+      score: 9
       max: 20
       items:
       - id: DE-01
@@ -102,24 +105,22 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Well-configured library defaults; lacks custom palette, intentional
-          hierarchy, or publication-ready polish
+        comment: Well-configured defaults, reasonable colors, but lacks distinctive
+          polish
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Hides y-axes/grid appropriately but plot borders remain, minimal
-          whitespace tuning, no spine treatment
+        comment: Spines removed, no grid, minimal customization beyond defaults
       - id: DE-03
         name: Data Storytelling
         score: 2
         max: 6
         passed: false
-        comment: No visual hierarchy or emphasis to guide viewer; raw data display
-          without interpretive flourishes
+        comment: Data displayed clearly but no visual hierarchy or emphasis
     spec_compliance:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: SC-01
@@ -127,29 +128,28 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizon chart with folded bands and multi-series display
+        comment: Correct horizon chart with folded bands
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: multi-series, 3 bands per polarity, color
-          intensity variation'
+        comment: 'All features: 6 series, 3 bands positive/negative, 200 points over
+          24h'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Hours on x-axis (0-24), values mapped to band height/color correctly
+        comment: Time on x-axis, values in bands, all data visible
       - id: SC-04
         name: Title & Legend
-        score: 3
+        score: 2
         max: 3
-        passed: true
-        comment: Title format correct; legend explains bands and intensity levels
-          clearly
+        passed: false
+        comment: Spec format present but as subtitle; should be main title
     data_quality:
-      score: 15
+      score: 14
       max: 15
       items:
       - id: DQ-01
@@ -157,21 +157,22 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: '6 series with varied patterns: periodicity, noise, trends, spikes'
+        comment: 'Demonstrates all horizon aspects: bands, positive/negative, multiple
+          patterns'
       - id: DQ-02
         name: Realistic Context
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: Server metrics over 24 hours; realistic monitoring dashboard scenario
+        comment: Server metrics over 24 hours; realistic and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Plausible metric ranges; realistic proportions and relationships
+        comment: Values plausible for server metrics
     code_quality:
-      score: 10
+      score: 9
       max: 10
       items:
       - id: CQ-01
@@ -179,63 +180,61 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → plots → save; no unnecessary functions'
+        comment: Linear flow, no functions or classes
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) ensures deterministic output
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports used; no unused libraries
+        comment: Only necessary imports
       - id: CQ-04
         name: Code Elegance
-        score: 2
+        score: 1
         max: 2
         passed: true
-        comment: Clear variable names, appropriate loops, no over-engineering or fake
-          interactivity
+        comment: Functional; sys.path manipulation somewhat verbose
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Correct output names and Selenium screenshot approach
+        comment: Correct output format (plot-{THEME}.png/.html)
     library_mastery:
       score: 8
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 4
         max: 5
         passed: true
-        comment: 'Expert Bokeh API use: figure, ColumnDataSource, varea, Label, HoverTool,
-          column layout'
+        comment: Uses varea, ColumnDataSource, proper figure creation; solid idiomatic
+          usage
       - id: LM-02
         name: Distinctive Features
-        score: 3
+        score: 1
         max: 5
         passed: false
-        comment: Uses HoverTool with custom tooltips and Layout composition; could
-          leverage more Bokeh interactivity
-  verdict: REJECTED
+        comment: Uses standard features (HoverTool, CrosshairTool) available in other
+          libraries
+  verdict: APPROVED
 impl_tags:
   dependencies:
   - selenium
   techniques:
+  - varea
   - hover-tooltips
   - html-export
-  - manual-ticks
   patterns:
   - data-generation
   - iteration-over-groups
-  - explicit-figure
-  dataprep:
-  - time-series
+  dataprep: []
   styling:
-  - theme-adaptive
+  - alpha-blending
+  - dark-theme

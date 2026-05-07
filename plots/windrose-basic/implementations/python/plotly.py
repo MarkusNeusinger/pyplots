@@ -1,12 +1,22 @@
-""" pyplots.ai
+"""anyplot.ai
 windrose-basic: Wind Rose Chart
-Library: plotly 6.5.0 | Python 3.13.11
-Quality: 92/100 | Created: 2025-12-24
+Library: plotly | Python 3.13
+Quality: pending | Updated: 2026-05-07
 """
+
+import os
 
 import numpy as np
 import plotly.graph_objects as go
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+GRID = "rgba(26,26,23,0.10)" if THEME == "light" else "rgba(240,239,232,0.10)"
 
 # Data - Simulated hourly wind measurements for one year
 np.random.seed(42)
@@ -29,7 +39,7 @@ dir_labels = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 # Define speed bins (m/s)
 speed_bins = [0, 3, 6, 9, 12, np.inf]
 speed_labels = ["0-3 m/s", "3-6 m/s", "6-9 m/s", "9-12 m/s", ">12 m/s"]
-speed_colors = ["#306998", "#4A90D9", "#FFD43B", "#FF9F40", "#FF5252"]
+speed_colors = ["#4A90E2", "#0072B2", "#FFD43B", "#FF9F40", "#FF5252"]
 
 # Bin the data
 dir_indices = np.digitize(directions, dir_bins[:-1]) - 1
@@ -68,39 +78,46 @@ for s in range(5):
 # Update layout for proper stacking and styling
 fig.update_layout(
     title=dict(
-        text="windrose-basic · plotly · pyplots.ai",
-        font=dict(size=32, color="#333333"),
-        x=0.5,
-        xanchor="center",
-        y=0.95,
+        text="windrose-basic · plotly · anyplot.ai", font=dict(size=28, color=INK), x=0.5, xanchor="center", y=0.95
     ),
+    paper_bgcolor=PAGE_BG,
+    plot_bgcolor=PAGE_BG,
+    font=dict(color=INK),
     polar=dict(
-        radialaxis=dict(visible=True, showticklabels=True, tickfont=dict(size=18), ticksuffix="%", angle=45, dtick=5),
+        radialaxis=dict(
+            visible=True,
+            showticklabels=True,
+            tickfont=dict(size=18, color=INK_SOFT),
+            ticksuffix="%",
+            angle=45,
+            dtick=5,
+            title=dict(text="Frequency (%)", font=dict(size=20, color=INK)),
+            gridcolor=GRID,
+        ),
         angularaxis=dict(
-            tickfont=dict(size=22, color="#333333"),
+            tickfont=dict(size=22, color=INK),
             direction="clockwise",
-            rotation=90,  # North at top
+            rotation=90,
             categoryorder="array",
             categoryarray=["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
         ),
-        bgcolor="rgba(255,255,255,0.9)",
+        bgcolor=PAGE_BG,
     ),
     legend=dict(
-        title=dict(text="Wind Speed", font=dict(size=20)),
-        font=dict(size=18),
+        title=dict(text="Wind Speed", font=dict(size=20, color=INK)),
+        font=dict(size=18, color=INK_SOFT),
         x=1.05,
         y=0.5,
         xanchor="left",
         yanchor="middle",
-        bgcolor="rgba(255,255,255,0.8)",
-        bordercolor="#cccccc",
+        bgcolor=ELEVATED_BG,
+        bordercolor=INK_SOFT,
         borderwidth=1,
     ),
     barmode="stack",
-    template="plotly_white",
     margin=dict(l=80, r=180, t=120, b=80),
 )
 
 # Save as PNG and HTML
-fig.write_image("plot.png", width=1600, height=900, scale=3)
-fig.write_html("plot.html", include_plotlyjs="cdn")
+fig.write_image(f"plot-{THEME}.png", width=1600, height=900, scale=3)
+fig.write_html(f"plot-{THEME}.html", include_plotlyjs="cdn")

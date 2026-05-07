@@ -46,8 +46,8 @@ The polish workflow enforces this asymmetry:
 
 **Rules:**
 - Use established names from matplotlib/seaborn/plotly documentation
-- Multiple tags allowed when plot combines multiple types
-- Example: Sankey is also a `flow` plot
+- Multiple tags allowed when plot combines multiple types — but every value must come from this canonical table
+- `flow`, `temporal`, `multi`, etc. are NOT plot types. They go in `features` (where they describe a property of the visualization). A Sankey diagram is `plot_type: sankey` plus `features: flow`.
 - If a spec needs a plot type not on this list, add the tag to this table first (in the same PR or earlier) — that's the only place where vocabulary expansion is intentionally gated
 
 ---
@@ -65,11 +65,13 @@ The polish workflow enforces this asymmetry:
 | Numbers | `numeric`, `continuous`, `discrete`, `binary`, `probability` |
 | Variates | `univariate`, `bivariate`, `multivariate` |
 | Categories | `categorical`, `ordinal`, `compositional` |
-| Time | `timeseries`, `datetime`, `temporal` |
-| Structure | `hierarchical`, `network`, `relational`, `paired` |
-| Space | `geospatial`, `spatial`, `angular`, `directional` |
+| Time | `timeseries`, `datetime` |
+| Structure | `hierarchical`, `network`, `relational`, `paired`, `directional` |
+| Space | `geospatial`, `spatial`, `angular` |
 | Text | `text`, `frequency` |
 | Matrix | `matrix`, `correlation` |
+
+Tags here describe what the **input data** looks like. Closely related visual properties (`temporal` axis, `flow` arrangement, etc.) belong in `features` instead.
 
 **Rules:**
 - Focus on logical data structure, not technical format
@@ -115,13 +117,21 @@ The polish workflow enforces this asymmetry:
 | Category | Tags |
 |----------|------|
 | Complexity | `basic`, `advanced` |
-| Layout | `grouped`, `stacked`, `horizontal`, `multi`, `multi-series`, `faceted`, `overlay`, `composite`, `combined` |
+| Layout | `grouped`, `stacked`, `horizontal`, `multi`, `faceted`, `overlay`, `composite`, `combined` |
 | Dimensions | `2d`, `3d` |
 | Interaction | `interactive`, `animated`, `static` |
 | Function | `comparison`, `distribution`, `correlation`, `ranking`, `regression`, `clustering`, `classification`, `model-evaluation`, `diagnostic` |
 | Display | `annotated`, `color-mapped`, `proportional`, `normalized`, `printable` |
 | Statistical | `confidence-interval`, `uncertainty`, `density`, `quartiles`, `threshold`, `trend` |
-| Special | `flow`, `flow-visualization`, `temporal`, `cumulative`, `stepwise`, `circular`, `radial`, `directional`, `multivariate`, `hierarchical`, `drilldown`, `technical-analysis` |
+| Special | `flow`, `temporal`, `cumulative`, `stepwise`, `circular`, `radial`, `drilldown`, `technical-analysis` |
+
+Canonical preferences (polish will rewrite legacy synonyms to these):
+- `multi` (not `multi-series`) for "more than one series in the same chart"
+- `flow` (not `flow-visualization`) for diagrams whose primary message is movement between states
+- `stepwise` (not `sequential`) for staircase-style transitions
+- `color-mapped` (not `labeled`) when the distinction is colour encoding
+
+Tags describing data shape (`multivariate`, `hierarchical`, `directional`) belong in `data_type`, not here.
 
 **Rules:**
 - Describe what makes the plot SPECIAL

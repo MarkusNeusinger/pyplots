@@ -1,8 +1,10 @@
-""" pyplots.ai
+"""anyplot.ai
 hive-basic: Basic Hive Plot
-Library: seaborn 0.13.2 | Python 3.13.11
-Quality: 91/100 | Created: 2025-12-24
+Library: seaborn | Python 3.13
+Quality: pending | Created: 2026-05-07
 """
+
+import os
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
@@ -11,8 +13,35 @@ import pandas as pd
 import seaborn as sns
 
 
-# Set seaborn theme for consistent styling
-sns.set_theme(style="white", context="talk", font_scale=1.2)
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+
+# Okabe-Ito palette (canonical order)
+OKABE_ITO = ["#009E73", "#D55E00", "#0072B2", "#CC79A7", "#E69F00", "#56B4E9", "#F0E442"]
+
+# Apply seaborn theme with theme-adaptive colors
+sns.set_theme(
+    style="white",
+    context="talk",
+    font_scale=1.2,
+    rc={
+        "figure.facecolor": PAGE_BG,
+        "axes.facecolor": PAGE_BG,
+        "axes.edgecolor": INK_SOFT,
+        "axes.labelcolor": INK,
+        "text.color": INK,
+        "xtick.color": INK_SOFT,
+        "ytick.color": INK_SOFT,
+        "grid.color": INK,
+        "grid.alpha": 0.10,
+        "legend.facecolor": ELEVATED_BG,
+        "legend.edgecolor": INK_SOFT,
+    },
+)
 
 # Data: Software module dependency network
 np.random.seed(42)
@@ -64,7 +93,13 @@ edges = [
 
 # Hive plot configuration: 3 axes at 120 degrees apart
 axis_angles = {"core": np.pi / 2, "utility": np.pi / 2 + 2 * np.pi / 3, "interface": np.pi / 2 + 4 * np.pi / 3}
-axis_colors = {"core": "#306998", "utility": "#FFD43B", "interface": "#4ECDC4"}
+
+# Use Okabe-Ito palette for axis colors
+axis_colors = {
+    "core": OKABE_ITO[0],  # #009E73 (brand green)
+    "utility": OKABE_ITO[1],  # #D55E00 (vermillion)
+    "interface": OKABE_ITO[2],  # #0072B2 (blue)
+}
 
 # Calculate node positions on radial axes (normalized by degree within each type)
 nodes_df["angle"] = nodes_df["type"].map(axis_angles)
@@ -82,11 +117,12 @@ nodes_df["x"] = nodes_df["radius"] * np.cos(nodes_df["angle"])
 nodes_df["y"] = nodes_df["radius"] * np.sin(nodes_df["angle"])
 
 # Create figure
-fig, ax = plt.subplots(figsize=(12, 12))
+fig, ax = plt.subplots(figsize=(12, 12), facecolor=PAGE_BG)
+ax.set_facecolor(PAGE_BG)
 
 # Draw axis lines (radial spokes)
 for axis_name, angle in axis_angles.items():
-    ax.plot([0, 1.1 * np.cos(angle)], [0, 1.1 * np.sin(angle)], color="#666666", linewidth=2, alpha=0.5, zorder=1)
+    ax.plot([0, 1.1 * np.cos(angle)], [0, 1.1 * np.sin(angle)], color=INK_SOFT, linewidth=2, alpha=0.3, zorder=1)
     ax.text(
         1.2 * np.cos(angle),
         1.2 * np.sin(angle),
@@ -112,14 +148,14 @@ for edge_id, (source, target) in enumerate(edges):
         edge_curves.append({"edge_id": edge_id, "x": curve_x[i], "y": curve_y[i]})
 edges_df = pd.DataFrame(edge_curves)
 
-# Draw edges using seaborn lineplot with lower alpha for better bundling
+# Draw edges using seaborn lineplot with theme-adaptive color
 sns.lineplot(
     data=edges_df,
     x="x",
     y="y",
     hue="edge_id",
-    palette=["#888888"] * len(edges),
-    alpha=0.25,
+    palette=[INK_SOFT] * len(edges),
+    alpha=0.2,
     linewidth=1.5,
     legend=False,
     units="edge_id",
@@ -134,10 +170,10 @@ sns.scatterplot(
     x="x",
     y="y",
     hue="type",
-    palette=axis_colors,
+    palette=[axis_colors[t] for t in ["core", "utility", "interface"]],
     s=400,
     alpha=0.9,
-    edgecolor="white",
+    edgecolor=PAGE_BG,
     linewidth=2,
     ax=ax,
     legend=False,
@@ -150,14 +186,16 @@ legend_handles = [
     mpatches.Patch(color=axis_colors["utility"], label="Utility Modules"),
     mpatches.Patch(color=axis_colors["interface"], label="Interface Modules"),
 ]
-ax.legend(handles=legend_handles, loc="upper right", fontsize=16, framealpha=0.9)
+ax.legend(
+    handles=legend_handles, loc="upper right", fontsize=16, framealpha=0.95, facecolor=ELEVATED_BG, edgecolor=INK_SOFT
+)
 
 # Styling
 ax.set_xlim(-1.5, 1.5)
 ax.set_ylim(-1.5, 1.5)
 ax.set_aspect("equal")
 ax.axis("off")
-ax.set_title("hive-basic · seaborn · pyplots.ai", fontsize=24, fontweight="bold", pad=20)
+ax.set_title("hive-basic · seaborn · anyplot.ai", fontsize=24, fontweight="bold", pad=20, color=INK)
 
 plt.tight_layout()
-plt.savefig("plot.png", dpi=300, bbox_inches="tight", facecolor="white")
+plt.savefig(f"plot-{THEME}.png", dpi=300, bbox_inches="tight", facecolor=PAGE_BG)

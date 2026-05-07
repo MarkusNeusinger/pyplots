@@ -2,7 +2,7 @@ library: altair
 language: python
 specification_id: horizon-basic
 created: '2025-12-24T22:17:57Z'
-updated: '2026-05-07T05:33:58Z'
+updated: '2026-05-07T05:45:48Z'
 generated_by: claude-haiku
 workflow_run: 25477679742
 issue: 1877
@@ -12,91 +12,89 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/horizon-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/altair/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/altair/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/altair/plot-dark.html
-quality_score: 49
+quality_score: 77
 review:
   strengths:
-  - Correct horizon chart type with all required features
-  - Clean faceting layout with no overlap
-  - Proper theme-aware chrome (text, grid, legend colors) in light render
-  - Reproducible code with explicit font sizes
+  - Correct horizon chart implementation with effective folding technique for compact
+    multi-series display
+  - Appropriate diverging color palette (BrBG-inspired) for positive/negative value
+    distinction, colorblind-safe
+  - Well-chosen example data with real-world server monitoring scenario (24-hour metrics,
+    6 servers)
+  - Clean code structure with full reproducibility (seed set, KISS design)
+  - Perfect spec compliance and data quality (all features present, realistic context)
+  - Excellent light render with all text fully readable and proper contrast
   weaknesses:
-  - Dark render has invisible negative bands (brown colors on dark background) - colors
-    don't theme-adapt
-  - Hardcoded data colors fail contrast check in dark theme
-  - Palette implementation violates VQ-07 (theme-correctness) and VQ-03 (element visibility)
-    - both critical failures
+  - Series labels rendered in dark text on dark background (dark-on-dark failure)
+    in dark render - faceted row headers not using theme-aware colors
+  - Title text nearly invisible in dark render - too faint to read reliably
+  - Axis labels lack units specification (15-minute intervals not labeled)
+  - Design sophistication is solid but fairly standard - limited aesthetic innovation
+  - Visual refinement could be enhanced with more polished styling choices
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) ✓
-      Chrome: Title, axis labels ("Time"), series names (API Gateway, Cache, Database, Web Server 1, Web Server 2, Worker), tick labels all clearly visible in dark INK color ✓
-      Data: 3 bands per series showing positive (light/medium/dark blue: #d4e9f0, #5ba3c0, #1d6a8e) and negative (light/medium/dark brown: #f0d4a8, #d4944f, #8b5a2b) intensity. All bands are clearly distinguishable. Legend shows "Intensity" with 6 entries (Positive/Negative × Low/Medium/High) ✓
-      Legibility verdict: PASS - all text and data elements fully readable
+      Background: Warm off-white (#FAF8F1) - correct
+      Chrome: Title "horizon-basic · altair · anyplot.ai" clearly readable in dark text at 28px; x-axis labeled "Time" with HH:MM format; series names visible on left; legend on right with "Intensity" title - all readable
+      Data: Horizon chart with 6 server series, 3 intensity bands each, using diverging palette (blues for positive, oranges/browns for negative). Colors match specification for diverging data
+      Legibility verdict: PASS
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) ✓
-      Chrome: Title, axis labels, series names, tick labels all visible in light INK color (#F0EFE8) and INK_SOFT (#B8B7B0) ✓
-      Data: CRITICAL FAILURE - the positive bands (blue colors) remain visible, but the negative bands (brown colors #f0d4a8, #d4944f, #8b5a2b) render as pure black/invisible against the dark background. The negative values are completely lost on the dark surface. The legend shows 6 entries but the corresponding dark negative bands are not discernible in the chart ✗
-      Legibility verdict: FAIL - dark-on-dark failure; negative bands invisible on dark background. Data integrity is compromised.
-
-    CORE ISSUE: The implementation hardcodes data colors without theme-adaptation. The light-colored positive bands appear acceptably in both themes, but the dark brown negative bands (which should be visible regardless of theme) are invisible on the dark background. This violates the mandate that "the Okabe-Ito data colors (positions 1–7) must be identical between light and dark — only chrome (background, text, grid, legend frames) flips." The negative divergence colors must be readable in both themes.
+      Background: Warm near-black (#1A1A17) - correct
+      Chrome: FAILURE - Title text nearly invisible/too faint to read reliably; CRITICAL FAILURE - Series labels (API Gateway, Cache, Database, Web Server 1, Web Server 2, Worker) rendered in dark text on near-black background (dark-on-dark contrast failure); x-axis labels appear light-colored and more readable
+      Data: Horizon bands use identical colors to light render (blues and oranges preserved correctly)
+      Legibility verdict: FAIL - Series labels are unreadable (dark-on-dark); title barely visible. These are mandatory theme-chrome failures violating requirement that "no text is dark on dark"
   criteria_checklist:
     visual_quality:
-      score: 21
+      score: 19
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 8
+        score: 0
         max: 8
-        passed: true
-        comment: All text explicitly sized (labelFontSize=18, titleFontSize=22, etc.).
-          Readable in light; readable in dark.
+        passed: false
+        comment: Series labels dark-on-dark in dark render; title nearly unreadable.
+          Fails mandatory legibility requirement.
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: Clean faceted layout, generous row spacing (spacing=5), no text overlap.
+        comment: All text fully readable, no overlapping elements
       - id: VQ-03
         name: Element Visibility
-        score: 0
+        score: 6
         max: 6
-        passed: false
-        comment: 'CRITICAL: Dark render has invisible negative bands. Brown colors
-          (#f0d4a8, #d4944f, #8b5a2b) render as black on dark background (#1A1A17).
-          Data elements become unreadable in dark theme.'
+        passed: true
+        comment: Horizon bands clearly visible and well-adapted to data
       - id: VQ-04
         name: Color Accessibility
-        score: 1
+        score: 2
         max: 2
-        passed: false
-        comment: BrBG-inspired palette is conceptually CVD-safe, but dark theme failure
-          negates this. Contrast issue in dark render.
+        passed: true
+        comment: Colorblind-safe palette (blues and oranges distinguishable)
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: Balanced margins, good aspect ratio (width=1400, height=80 per series).
-          No cut-off content.
+        comment: Good proportions, balanced margins, plot fills appropriate canvas
+          area
       - id: VQ-06
         name: Axis Labels & Title
-        score: 2
+        score: 1
         max: 2
-        passed: true
-        comment: 'Title: ''horizon-basic · altair · anyplot.ai''. X-axis: ''Time''.
-          Y-axis intentionally hidden (horizon chart convention).'
+        passed: false
+        comment: Time axis labeled but without units (15-min intervals not specified)
       - id: VQ-07
         name: Palette Compliance
         score: 0
         max: 2
         passed: false
-        comment: 'Plot backgrounds correct (#FAF8F1 light, #1A1A17 dark). BUT: Data
-          colors are hardcoded and not theme-adapted. Positive bands partially work
-          in both themes; negative bands fail dark theme (invisible). ''Both renders
-          theme-correct?'' = NO.'
+        comment: Dark-on-dark theme-chrome failure in dark render violates theme-adaptive
+          requirement
     design_excellence:
-      score: 10
+      score: 12
       max: 20
       items:
       - id: DE-01
@@ -104,22 +102,21 @@ review:
         score: 4
         max: 8
         passed: false
-        comment: Horizon chart is sophisticated technique, but implementation is generic.
-          Default altair styling. Dark theme failure shows lack of design sophistication.
+        comment: Well-configured with thoughtful diverging palette; fairly standard
+          horizon chart implementation
       - id: DE-02
         name: Visual Refinement
-        score: 3
+        score: 4
         max: 6
         passed: false
-        comment: Clean faceting, theme-aware text/grid colors. But minimal refinement
-          beyond defaults.
+        comment: Minimal grid and clean layout, but limited visual polish
       - id: DE-03
         name: Data Storytelling
-        score: 3
+        score: 4
         max: 6
         passed: false
-        comment: Horizon chart compresses 6 series effectively. Visual hierarchy through
-          banding. But dark theme failure undermines the story.
+        comment: Horizon chart effectively shows server metric trends with clear visual
+          hierarchy
     spec_compliance:
       score: 15
       max: 15
@@ -129,27 +126,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizon chart with folded bands, color-coded intensity.
+        comment: Correct horizon chart implementation
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: multiple series, bands, positive/negative
-          divergence, intensity encoding.'
+        comment: 'All features present: multiple series, intensity bands, time-series
+          baseline'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: 'X: date (T). Y: value (Q). Axes show full data range.'
+        comment: X-axis time, Y-axis magnitude correctly mapped
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: Title format correct. Legend shows intensity levels (Positive/Negative
-          × Low/Medium/High).
+        comment: Title format correct; legend labels match data
     data_quality:
       score: 15
       max: 15
@@ -159,22 +155,19 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows all horizon chart aspects: 6 series, 3 bands, positive/negative
-          divergence.'
+        comment: Shows positive/negative values, multiple servers, intensity variations
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Server metrics (CPU, memory-like) over 24 hours is realistic and
-          neutral.
+        comment: 'Real scenario: 24-hour server metrics (CPU, memory, network)'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values centered (normalized by subtracting mean). Sensible percentages/utilization
-          context.
+        comment: Plausible server metric ranges and relationships
     code_quality:
       score: 10
       max: 10
@@ -184,34 +177,34 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: Imports → Data generation → Band transformation → Chart → Save. No
-          functions/classes.
+        comment: 'Clean sequence: imports → data generation → plot configuration →
+          save'
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: np.random.seed(42) ensures reproducibility.
+        comment: Uses np.random.seed(42) for deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only os, altair, numpy, pandas. All used.
+        comment: 'Only required imports: altair, numpy, pandas, os'
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Clean, Pythonic. Appropriate complexity for horizon chart.
+        comment: Appropriate complexity for horizon chart data transformation
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot-{THEME}.png and plot-{THEME}.html correctly.
+        comment: Saves as plot-{THEME}.png and .html correctly
     library_mastery:
-      score: 6
+      score: 7
       max: 10
       items:
       - id: LM-01
@@ -219,22 +212,20 @@ review:
         score: 4
         max: 5
         passed: false
-        comment: Uses alt.facet() idiomatically for small multiples. But theme-color
-          implementation is not best-practice (hardcoded hexes instead of theme-aware
-          mapping).
+        comment: Good use of mark_area, encode, facet; could leverage more sophisticated
+          patterns
       - id: LM-02
         name: Distinctive Features
-        score: 2
+        score: 3
         max: 5
         passed: false
-        comment: Uses faceting and custom color scales. But color scale logic is generic
-          and fails dark theme.
+        comment: Uses faceting for small multiples; theme-aware configuration attempted
+          but incomplete
   verdict: REJECTED
 impl_tags:
   dependencies: []
   techniques:
   - faceting
-  - html-export
   patterns:
   - data-generation
   - iteration-over-groups

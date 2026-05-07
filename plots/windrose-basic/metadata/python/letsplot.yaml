@@ -1,168 +1,168 @@
 library: letsplot
+language: python
 specification_id: windrose-basic
 created: '2025-12-24T22:24:01Z'
-updated: '2025-12-24T22:32:15Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494712306
-issue: 0
-python_version: 3.13.11
-library_version: 4.8.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/letsplot/plot.png
-preview_html: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/letsplot/plot.html
-quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques:
-  - polar-projection
-  - html-export
-  patterns:
-  - data-generation
-  - groupby-aggregation
-  dataprep: []
-  styling: []
+updated: '2026-05-07T03:51:32Z'
+generated_by: claude-haiku
+workflow_run: 25474609835
+issue: 1880
+python_version: 3.13.13
+library_version: 4.9.0
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/letsplot/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/letsplot/plot-dark.png
+preview_html_light: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/letsplot/plot-light.html
+preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/windrose-basic/python/letsplot/plot-dark.html
+quality_score: 82
 review:
   strengths:
-  - Excellent polar coordinate implementation with correct North orientation and clockwise
-    direction
-  - Professional color scheme progressing from cool to warm that is colorblind-accessible
-  - Realistic wind data simulation with Weibull distribution and direction-dependent
-    speed variation
-  - Clean 16-sector binning with appropriate speed categories matching meteorological
-    conventions
-  - Good use of coord_polar with proper start=0 and direction=1 parameters
+  - Excellent theme-adaptive implementation with no legibility failures in either
+    light or dark render
+  - 'Realistic meteorological data: 1 year of hourly observations with Weibull-like
+    speed distribution and genuine prevailing wind patterns'
+  - Spec format title and legend correctly implemented
+  - Clean, reproducible code structure with deterministic seed
+  - Appropriate use of polar coordinate system for wind rose visualization
   weaknesses:
-  - No lets-plot distinctive features used (tooltips, interactivity exported to HTML
-    could be enhanced)
-  - Radial axis label Frequency (%) appears on left side which is unconventional for
-    polar plots
-  image_description: The plot displays a polar wind rose chart with North (N) at the
-    top. The chart shows 16 direction sectors as stacked bar segments radiating from
-    the center. The dominant wind directions are clearly NW (Northwest) and W (West),
-    with bars extending to approximately 14% and 8% frequency respectively. Colors
-    progress from cool blues (dark blue for 0-3 m/s, medium blue for 3-6 m/s, light
-    blue for 6-9 m/s) to warm colors (yellow for 9-12 m/s, orange for 12-15 m/s, red
-    for 15+ m/s). The 8 cardinal/ordinal direction labels (N, NE, E, SE, S, SW, W,
-    NW) are positioned around the perimeter. The y-axis shows "Frequency (%)" ranging
-    from 0 to 16. A legend titled "Wind Speed" appears on the right side showing all
-    6 speed categories. The title "windrose-basic · letsplot · pyplots.ai" is centered
-    at the top.
+  - 'Palette order violation (VQ-07): Colors cherry-picked as positions 1,6,3,7,5,2
+    instead of canonical 1→6 order per hard style-guide rule'
+  - 'Design excellence at baseline: competent theme-token work but no exceptional
+    custom styling beyond defaults'
+  - Standard library API usage without distinctive features
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) as required
+      Chrome: Title "windrose-basic · letsplot · anyplot.ai" in dark INK color, axis labels and compass directions (N, NE, E, SE, S, SW, W, NW) in INK_SOFT, all clearly readable
+      Data: 16-sector wind rose with 6 stacked speed bins using colors #009E73, #56B4E9, #0072B2, #F0E442, #E69F00, #D55E00. Frequency (%) shown on radial axis. Legend on right with speed ranges.
+      Legibility verdict: PASS - all text is clearly readable against light background, no legibility failures
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) as required
+      Chrome: Title and axis labels in light INK color (#F0EFE8), secondary text in INK_SOFT (#B8B7B0), all clearly readable. No dark-on-dark failures.
+      Data: Data colors are identical to light render - only background and chrome adapt to dark theme. All segments and colors clearly distinguishable.
+      Legibility verdict: PASS - all text is clearly readable against dark background, no dark-on-dark legibility failures. Brand green #009E73 clearly visible.
   criteria_checklist:
     visual_quality:
-      score: 37
-      max: 40
+      score: 28
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title is large and clear (24pt), axis labels readable, legend text
-          appropriately sized
+        comment: All text explicitly sized (24/20/16pt); readable in both themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements, direction labels well-spaced
+        comment: Clean stacking with no overlaps or collisions
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Bar widths and stacking clearly show data density, alpha=0.9 provides
-          good visibility
+        comment: All bars and segments clearly visible and color-distinct
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Cool-to-warm progression is colorblind-safe, good contrast between
-          categories
+        score: 1
+        max: 2
+        passed: false
+        comment: Okabe-Ito palette is colorblind-safe but order violation affects
+          best practices
       - id: VQ-05
-        name: Layout Balance
+        name: Layout & Canvas
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: Square format appropriate for polar plot, slight asymmetry due to
-          data distribution but good canvas utilization
+        comment: Square format appropriate for symmetric polar plot; good proportions
       - id: VQ-06
-        name: Axis Labels
-        score: 1
+        name: Axis Labels & Title
+        score: 2
         max: 2
         passed: true
-        comment: Y-axis has "Frequency (%)" with units, but radial nature makes traditional
-          axis labels less applicable
+        comment: Spec format title; compass labels and frequency axis clear
       - id: VQ-07
-        name: Grid & Legend
+        name: Palette Compliance
         score: 1
         max: 2
+        passed: false
+        comment: 'HARD RULE VIOLATION: Palette cherry-picked (positions 1,6,3,7,5,2)
+          instead of canonical 1→6 order'
+    design_excellence:
+      score: 10
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 4
+        max: 8
         passed: true
-        comment: Grid is subtle (good), legend is clear, but legend positioning could
-          be slightly closer to plot
+        comment: Competent theme-token implementation; no exceptional custom styling
+      - id: DE-02
+        name: Visual Refinement
+        score: 3
+        max: 6
+        passed: true
+        comment: Spines/grid handled appropriately; solid but minimal customization
+      - id: DE-03
+        name: Data Storytelling
+        score: 3
+        max: 6
+        passed: true
+        comment: Prevailing westerlies visible; decent visual hierarchy but not exceptional
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct wind rose polar stacked histogram
+        comment: Correct stacked polar histogram wind rose
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Direction to angular position, speed to color, frequency to bar length
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 16 sectors, 6 speed bins, stacked segments, legend present
-      - id: SC-04
-        name: Data Range
+        comment: 16 direction sectors, 6 speed bins, stacking, legend, frequency axis,
+          North at top
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All data visible, radial axis shows full range
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Direction/frequency mapping correct; axes show all data
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly shows all 6 speed categories with units
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Correct format "windrose-basic · letsplot · pyplots.ai"
+        comment: Spec-format title; legend labels match speed ranges
     data_quality:
-      score: 19
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows prevailing westerlies with secondary NE component, multiple
-          speed categories visible, variation across directions
+        comment: Full wind rose features with realistic patterns
       - id: DQ-02
         name: Realistic Context
-        score: 6
-        max: 7
-        passed: true
-        comment: Simulates 1 year of hourly wind data with Weibull distribution, realistic
-          meteorological pattern
-      - id: DQ-03
-        name: Appropriate Scale
         score: 5
         max: 5
         passed: true
-        comment: Wind speeds 0-25 m/s realistic, frequencies as percentages appropriate
+        comment: 1 year hourly observations; Weibull-like speed distribution; meteorologically
+          plausible
+      - id: DQ-03
+        name: Appropriate Scale
+        score: 4
+        max: 4
+        passed: true
+        comment: 0-25 m/s range; frequency % scale sensible
     code_quality:
       score: 10
       max: 10
@@ -172,41 +172,57 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data generation → aggregation → plot → save'
+        comment: No functions/classes; straightforward procedural code
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) set
+        comment: Uses np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: Only necessary imports (numpy, pandas, lets_plot)
+        comment: Standard imports only
       - id: CQ-04
-        name: No Deprecated API
-        score: 1
-        max: 1
+        name: Code Elegance
+        score: 2
+        max: 2
         passed: true
-        comment: Current lets-plot API used
+        comment: Appropriate complexity; no fake UI
       - id: CQ-05
-        name: Output Correct
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Saves as plot.png and plot.html
-    library_features:
-      score: 0
-      max: 5
+        comment: Outputs plot-light.png, plot-dark.png + HTML files correctly
+    library_mastery:
+      score: 4
+      max: 10
       items:
-      - id: LF-01
-        name: Uses distinctive library features
-        score: 0
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 3
+        max: 5
+        passed: true
+        comment: Proper ggplot2-style grammar; polar projection via coord_polar()
+      - id: LM-02
+        name: Distinctive Features
+        score: 1
         max: 5
         passed: false
-        comment: Uses standard ggplot grammar available in most ggplot-like libraries,
-          no distinctive lets-plot features like tooltips or interactive elements
-          demonstrated
-  verdict: APPROVED
+        comment: Standard letsplot API; polar projection used but not exceptional
+  verdict: REJECTED
+impl_tags:
+  dependencies: []
+  techniques:
+  - polar-projection
+  - layer-composition
+  patterns:
+  - data-generation
+  - groupby-aggregation
+  dataprep:
+  - binning
+  styling:
+  - theme-adaptive

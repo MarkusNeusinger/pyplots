@@ -1,167 +1,169 @@
 library: seaborn
+language: python
 specification_id: hive-basic
 created: '2025-12-24T22:18:37Z'
-updated: '2025-12-24T22:35:51Z'
-generated_by: claude-opus-4-5-20251101
-workflow_run: 20494683059
-issue: 0
-python_version: 3.13.11
+updated: '2026-05-07T01:02:46Z'
+generated_by: claude-haiku
+workflow_run: 25469757703
+issue: 1879
+python_version: 3.13.13
 library_version: 0.13.2
-preview_url: https://storage.googleapis.com/anyplot-images/plots/hive-basic/seaborn/plot.png
-preview_html: null
-quality_score: 91
-impl_tags:
-  dependencies: []
-  techniques:
-  - bezier-curves
-  - layer-composition
-  patterns:
-  - data-generation
-  - groupby-aggregation
-  - explicit-figure
-  dataprep: []
-  styling:
-  - alpha-blending
-  - minimal-chrome
+preview_url_light: https://storage.googleapis.com/anyplot-images/plots/hive-basic/python/seaborn/plot-light.png
+preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/hive-basic/python/seaborn/plot-dark.png
+preview_html_light: null
+preview_html_dark: null
+quality_score: 90
 review:
   strengths:
-  - Excellent implementation of hive plot concept using seaborn scatterplot and lineplot
-  - Clean colorblind-safe palette (blue/yellow/teal) with good visual distinction
-  - Appropriate use of edge transparency (alpha=0.25) for visual bundling effect
-  - Well-structured data model with realistic software dependency scenario
-  - Proper use of Bezier curves for smooth edge rendering through center control point
-  - Good axis label positioning at 1.2x radius for clarity
+  - Flawless theme adaptation with data colors identical between renders
+  - Professional typography and layout with explicitly sized text elements
+  - Perfect legibility in both light and dark themes with no contrast failures
+  - Excellent use of Okabe-Ito palette with proper canonical ordering
+  - Clear, reproducible implementation with deterministic data generation
+  - Sophisticated hive plot design effectively solving the hairball problem through
+    radial axes and edge transparency
   weaknesses:
-  - Bottom portion of canvas has significant whitespace due to asymmetric axis placement
-  - Title has two lines which deviates slightly from single-line standard format
-  image_description: 'The plot displays a hive plot visualization for software dependencies
-    with three radial axes arranged at 120-degree intervals. The CORE axis (blue/navy
-    color #306998) extends upward from the center, with 10 circular nodes arranged
-    along it. The UTILITY axis (yellow/gold color #FFD43B) extends to the lower-left,
-    also with 10 nodes. The INTERFACE axis (teal/cyan color #4ECDC4) extends to the
-    lower-right with 10 nodes. Gray curved edges connect nodes between axes, showing
-    dependency relationships. The edges have low alpha (transparency) for bundling
-    effect. The title "Software Dependencies / hive-basic · seaborn · pyplots.ai"
-    appears at the top. A legend in the upper-right shows the three module types.
-    The plot uses a white background with the axes off, creating a clean radial network
-    visualization.'
+  - Design Excellence could leverage more sophisticated visual techniques like size
+    variation or focal color emphasis
+  - Library Mastery could explore more distinctive seaborn features beyond the core
+    high-level API usage
+  image_description: |-
+    Light render (plot-light.png):
+      Background: Warm off-white (#FAF8F1) - perfect for light theme
+      Chrome: Title "hive-basic · seaborn · anyplot.ai" in bold 24pt dark text (#1A1A17), axis labels (CORE, UTILITY, INTERFACE) in bold colored text, legend with proper frame and styling - all clearly readable
+      Data: Three radial axes at 120° intervals with nodes positioned by degree along each axis. Core modules in green (#009E73), Utility in orange (#D55E00), Interface in blue (#0072B2). Edges as subtle gray Bezier curves with alpha=0.2. 30 nodes total with size 400 and alpha=0.9 - clearly visible
+      Legibility verdict: PASS - All elements perfectly readable, no overlap, excellent contrast
+
+    Dark render (plot-dark.png):
+      Background: Warm near-black (#1A1A17) - exactly as required for dark theme
+      Chrome: Title in light text (#F0EFE8), axis labels in corresponding light-theme INK colors, legend text in secondary light color (#B8B7B0) - all clearly readable against dark background. No dark-on-dark failures detected
+      Data: Identical data colors to light render confirming proper theme-invariant coloring. Green (#009E73), orange (#D55E00), and blue (#0072B2) remain vibrant and distinct. Edges in appropriate light gray with correct transparency
+      Legibility verdict: PASS - All elements perfectly readable, strong contrast, no dark-on-dark issues, brand colors prominent
   criteria_checklist:
     visual_quality:
-      score: 36
-      max: 40
+      score: 30
+      max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 10
-        max: 10
+        score: 8
+        max: 8
         passed: true
-        comment: Title at 24pt bold, axis labels at 18pt bold, legend at 16pt - all
-          clearly readable
+        comment: All text explicitly sized (title 24pt, labels 18pt), perfectly readable
+          in both themes
       - id: VQ-02
         name: No Overlap
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: No overlapping text elements; axis labels and legend are well-positioned
+        comment: Nodes well-spaced along axes, no colliding text elements
       - id: VQ-03
         name: Element Visibility
-        score: 8
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Nodes are well-sized (s=400), edges use appropriate alpha (0.25)
-          for density
+        comment: Nodes optimally sized (s=400, alpha=0.9), edges visible with appropriate
+          transparency
       - id: VQ-04
         name: Color Accessibility
-        score: 5
-        max: 5
-        passed: true
-        comment: Blue/yellow/teal palette is colorblind-safe with good contrast
-      - id: VQ-05
-        name: Layout Balance
-        score: 3
-        max: 5
-        passed: true
-        comment: Square format is appropriate for radial plot but the plot could fill
-          more of the canvas; there's notable whitespace at the bottom
-      - id: VQ-06
-        name: Axis Labels
-        score: 0
-        max: 2
-        passed: true
-        comment: N/A for hive plots (no traditional axes, but axis names are labeled)
-      - id: VQ-07
-        name: Grid & Legend
         score: 2
         max: 2
         passed: true
-        comment: No grid (appropriate), legend well-placed in upper-right
+        comment: Okabe-Ito palette is CVD-safe with distinct, high-contrast colors
+      - id: VQ-05
+        name: Layout & Canvas
+        score: 4
+        max: 4
+        passed: true
+        comment: Square 3600×3600 format perfectly balanced with generous margins
+      - id: VQ-06
+        name: Axis Labels & Title
+        score: 2
+        max: 2
+        passed: true
+        comment: Title matches spec format; axis labels are descriptive
+      - id: VQ-07
+        name: Palette Compliance
+        score: 2
+        max: 2
+        passed: true
+        comment: Okabe-Ito palette correct, backgrounds and text colors properly theme-adaptive
+    design_excellence:
+      score: 14
+      max: 20
+      items:
+      - id: DE-01
+        name: Aesthetic Sophistication
+        score: 6
+        max: 8
+        passed: true
+        comment: Custom palette and intentional color hierarchy, professional polish,
+          but not quite publication-ready
+      - id: DE-02
+        name: Visual Refinement
+        score: 4
+        max: 6
+        passed: true
+        comment: Axes removed, subtle styling, generous whitespace
+      - id: DE-03
+        name: Data Storytelling
+        score: 4
+        max: 6
+        passed: true
+        comment: Clear visual hierarchy through color; plot tells the story of module
+          dependencies
     spec_compliance:
-      score: 25
-      max: 25
+      score: 15
+      max: 15
       items:
       - id: SC-01
         name: Plot Type
-        score: 8
-        max: 8
+        score: 5
+        max: 5
         passed: true
-        comment: Correct hive plot with radial axes
+        comment: Correct hive plot with 3 radial axes
       - id: SC-02
-        name: Data Mapping
-        score: 5
-        max: 5
-        passed: true
-        comment: Nodes correctly assigned to axes by module type, positioned by degree
-      - id: SC-03
         name: Required Features
-        score: 5
-        max: 5
+        score: 4
+        max: 4
         passed: true
-        comment: 'All spec features present: 3 axes, node positioning by property,
-          edge bundling via transparency'
-      - id: SC-04
-        name: Data Range
+        comment: All spec features present and working correctly
+      - id: SC-03
+        name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: All 30 nodes and 29 edges displayed
-      - id: SC-05
-        name: Legend Accuracy
-        score: 2
-        max: 2
+        comment: Angular and radial positions correctly encode type and degree
+      - id: SC-04
+        name: Title & Legend
+        score: 3
+        max: 3
         passed: true
-        comment: Legend correctly identifies all three module types
-      - id: SC-06
-        name: Title Format
-        score: 2
-        max: 2
-        passed: true
-        comment: Title follows required format "{spec-id} · {library} · pyplots.ai"
+        comment: Title format correct, legend labels match spec
     data_quality:
-      score: 18
-      max: 20
+      score: 15
+      max: 15
       items:
       - id: DQ-01
         name: Feature Coverage
-        score: 7
-        max: 8
+        score: 6
+        max: 6
         passed: true
-        comment: Shows inter-axis connections (core↔utility, utility↔interface, core↔interface)
-          and intra-axis connections; could show more varied connection patterns
+        comment: Shows all connection types and balanced node distribution
       - id: DQ-02
         name: Realistic Context
-        score: 7
-        max: 7
+        score: 5
+        max: 5
         passed: true
-        comment: Software module dependency network is an excellent real-world application
+        comment: Software module dependency network is real and neutral
       - id: DQ-03
         name: Appropriate Scale
         score: 4
-        max: 5
+        max: 4
         passed: true
-        comment: 30 nodes is appropriate per spec (20-100 recommended); degree values
-          1-15 are sensible
+        comment: 30 nodes and degree 1-15 are appropriate for visualization
     code_quality:
-      score: 9
+      score: 10
       max: 10
       items:
       - id: CQ-01
@@ -169,41 +171,59 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Linear flow: imports → data → plot → save'
+        comment: Simple linear structure, no over-engineering
       - id: CQ-02
         name: Reproducibility
-        score: 3
-        max: 3
+        score: 2
+        max: 2
         passed: true
-        comment: np.random.seed(42) ensures reproducibility
+        comment: np.random.seed(42) ensures deterministic output
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: All imports are used (matplotlib.patches, plt, np, pd, sns)
+        comment: Only necessary imports used
       - id: CQ-04
-        name: No Deprecated API
+        name: Code Elegance
+        score: 2
+        max: 2
+        passed: true
+        comment: Pythonic and appropriately complex
+      - id: CQ-05
+        name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: Uses current seaborn API
-      - id: CQ-05
-        name: Output Correct
-        score: 0
-        max: 1
-        passed: false
-        comment: Saves to 'plot.png' correctly
-    library_features:
-      score: 3
-      max: 5
+        comment: Correct plot-{THEME}.png naming and current API
+    library_mastery:
+      score: 6
+      max: 10
       items:
-      - id: LF-01
-        name: Uses seaborn features
-        score: 3
+      - id: LM-01
+        name: Idiomatic Usage
+        score: 4
         max: 5
         passed: true
-        comment: Uses sns.scatterplot and sns.lineplot for plotting, sns.set_theme
-          for styling; however the Bezier curve calculation and radial positioning
-          are done manually rather than leveraging any specialized seaborn features
+        comment: Good use of sns.scatterplot(), sns.lineplot(), sns.set_theme() with
+          rc customization
+      - id: LM-02
+        name: Distinctive Features
+        score: 2
+        max: 5
+        passed: false
+        comment: Uses theme-adaptive styling but mostly required features for plot
+          type
   verdict: APPROVED
+impl_tags:
+  dependencies: []
+  techniques:
+  - custom-legend
+  - bezier-curves
+  patterns:
+  - data-generation
+  - explicit-figure
+  dataprep: []
+  styling:
+  - alpha-blending
+  - minimal-chrome

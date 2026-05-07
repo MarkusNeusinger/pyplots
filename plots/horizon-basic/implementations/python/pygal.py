@@ -1,7 +1,7 @@
 """ anyplot.ai
 horizon-basic: Horizon Chart
 Library: pygal 3.1.0 | Python 3.13.13
-Quality: 84/100 | Updated: 2026-05-07
+Quality: 86/100 | Updated: 2026-05-07
 """
 
 import os

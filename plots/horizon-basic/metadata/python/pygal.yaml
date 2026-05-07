@@ -2,7 +2,7 @@ library: pygal
 language: python
 specification_id: horizon-basic
 created: '2025-12-24T22:17:02Z'
-updated: '2026-05-07T05:38:21Z'
+updated: '2026-05-07T05:43:57Z'
 generated_by: claude-haiku
 workflow_run: 25477795528
 issue: 1877
@@ -12,127 +12,113 @@ preview_url_light: https://storage.googleapis.com/anyplot-images/plots/horizon-b
 preview_url_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/pygal/plot-dark.png
 preview_html_light: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/pygal/plot-light.html
 preview_html_dark: https://storage.googleapis.com/anyplot-images/plots/horizon-basic/python/pygal/plot-dark.html
-quality_score: 84
+quality_score: 86
 review:
   strengths:
-  - Clean, professional horizon chart implementation with realistic server metrics
-    data
-  - Excellent specification compliance — all features present (color-coded bands,
-    positive/negative divergence, time axis, legend)
-  - Strong data quality with meaningful patterns — CPU spikes, memory trends, network
-    bursts, backup windows, and error anomalies are all visible
-  - Correct theme-adaptive implementation with proper light (#FAF8F1) and dark (#1A1A17)
-    backgrounds and text colors
-  - Well-sized elements for 4800×2700 canvas with explicit font sizes; no text overlap;
-    good use of space with balanced margins
-  - Deterministic data generation with seed(42) ensures reproducibility; data patterns
-    are realistic and contextually plausible
+  - Perfect theme adaptation with both renders fully readable; data colors identical
+    while chrome adapts correctly
+  - True horizon chart implementation with proper positive/negative folding and multi-series
+    compact layout
+  - 'Realistic server metrics data with plausible patterns: spikes, maintenance windows,
+    and business-hour trends'
+  - Clean code structure with well-designed custom pygal Graph extension, reproducible
+    seed, no extraneous dependencies
+  - 'High visual quality across all dimensions: text legible in both themes, no overlaps,
+    proper spacing and proportions'
   weaknesses:
-  - 'Palette choice: Uses blue-orange diverging scheme instead of recommended BrBG
-    from ColorBrewer; while appropriate for positive/negative distinction and colorblind-safe,
-    does not follow style guide recommendation for diverging data'
-  - 'Design sophistication: Colors are functional but generic (standard blues and
-    oranges) without custom palette refinement or visual polish'
-  - 'Visual hierarchy: Displays data effectively but provides no emphasis or focal
-    points to guide viewer interpretation of patterns; treats all 6 metrics with equal
-    weight'
-  - 'Visual refinement: Row backgrounds are simple rectangles with minimal styling;
-    legend is functional but basic; no custom whitespace treatment or subtle refinements
-    beyond margins'
+  - 'VQ-07 Minor: Uses ColorBrewer Blues-Oranges diverging palette instead of BrBG
+    recommended in style guide (acceptable colorblind-safe alternative but non-canonical)'
+  - 'DE-01 to DE-03 Low: Legend is minimal (just colored squares); typography hierarchy
+    could be more refined; overall aesthetic is functional but lacks visual premium
+    polish'
+  - 'LM-02 Low: Extending pygal.Graph is unconventional for horizon charts; could
+    showcase more advanced pygal features or distinctive library usage'
   image_description: |-
     Light render (plot-light.png):
-      Background: Warm off-white (#FAF8F1) — correct theme surface
-      Chrome: Title "horizon-basic · pygal · anyplot.ai" in bold dark text; series labels (CPU Usage, Memory, etc.) in dark bold text on left; time axis labels (00:00, 02:00, ..., 22:00) and "Time" x-axis label in muted gray, all clearly readable
-      Data: Horizon bands in light-to-dark blues (positive) and light-to-dark oranges (negative) stacked in 3 levels; legend shows positive/negative color schemes with borders in muted gray; subtle vertical dashed grid lines at time intervals
-      Layout: Row backgrounds in warm off-white with muted gray borders; generous left margin for series labels; compact spacing suitable for 6 metrics
-      Legibility verdict: PASS — all text elements clearly distinguishable from light background
+      Background: Warm off-white (#FAF8F1) — correct, not pure white
+      Chrome: Title "horizon-basic · pygal · anyplot.ai" in bold dark text (#1A1A17); series labels (CPU Usage, Memory, Network I/O, Disk I/O, Response Time, Error Rate) in dark text; x-axis labels "00:00" through "22:00" in muted tone (#6B6A63); "Time" axis title in dark text. All readable with excellent contrast.
+      Data: ColorBrewer diverging palette — light-to-dark blues for positive values (magnitude shown by intensity), light-to-dark oranges for negative values. Six metrics shown with three-band stacks. Subtle dashed vertical grid lines aid time readability.
+      Legend: Top-right legend shows "Positive" (blue band colors) and "Negative" (orange band colors) with labeled text
+      Legibility verdict: PASS — All text and data elements clearly readable against light background; no light-on-light failures
 
     Dark render (plot-dark.png):
-      Background: Warm near-black (#1A1A17) — correct dark theme surface
-      Chrome: Title in light text (off-white), clearly visible; series labels in light off-white text on left, clearly readable; time axis labels in light muted gray, readable; vertical dashed grid lines subtle and visible
-      Data: Horizon bands in identical blue and orange colors to light render (data colors theme-invariant ✓); legend rectangles present with borders appearing light-colored (INK_MUTED applied)
-      Layout: Row backgrounds and borders maintain same structure as light render; light text ensures readability on dark background
-      Minor observation: Row border lines appear slightly more visible than intended due to opacity rendering, but this does not impact data readability or element distinction
-      Legibility verdict: PASS — all text readable, no "dark-on-dark" failures, data colors identical to light render, theme-adaptive chrome applied correctly
-
-    Both renders successfully demonstrate theme-invariant data visualization with theme-adaptive chrome elements.
+      Background: Warm near-black (#1A1A17) — correct, not pure black
+      Chrome: Title, series labels, x-axis labels, and "Time" title all adapted to light colors (#F0EFE8 for primary text, #A8A79F for secondary). All readable with excellent contrast against dark background.
+      Data: Blue and orange colors are IDENTICAL to light render — correctly demonstrates theme-independent data colors. Magnitude progression through bands is clear. Grid lines remain visible.
+      Legend: Identical to light render with adjusted text colors
+      Legibility verdict: PASS — All text and data elements clearly readable against dark background; no dark-on-dark failures such as black text on near-black background. Data color consistency confirmed.
   criteria_checklist:
     visual_quality:
-      score: 28
+      score: 29
       max: 30
       items:
       - id: VQ-01
         name: Text Legibility
-        score: 7
+        score: 8
         max: 8
         passed: true
-        comment: All text explicitly sized and readable in both themes; minor border
-          visibility in dark theme
+        comment: All text clearly readable in both light and dark themes
       - id: VQ-02
         name: No Overlap
         score: 6
         max: 6
         passed: true
-        comment: No overlapping elements; series labels, time labels, and data all
-          have clear separation
+        comment: Clean spacing; no text collisions or band overlaps
       - id: VQ-03
         name: Element Visibility
         score: 6
         max: 6
         passed: true
-        comment: Horizon bands perfectly sized for density; color bands distinct and
-          visible
+        comment: All bands and markers clearly distinguishable
       - id: VQ-04
         name: Color Accessibility
         score: 2
         max: 2
         passed: true
-        comment: Blue-orange scheme is colorblind-safe; good luminance contrast
+        comment: ColorBrewer Blues-Oranges palette is colorblind-safe
       - id: VQ-05
         name: Layout & Canvas
         score: 4
         max: 4
         passed: true
-        comment: 'Perfect layout: plot fills ~70% of canvas with balanced margins'
+        comment: Excellent proportions on 4800x2700; well-balanced
       - id: VQ-06
         name: Axis Labels & Title
         score: 2
         max: 2
         passed: true
-        comment: Descriptive labels; horizon chart doesn't require traditional y-axis
-          labeling
+        comment: Title and axis labels descriptive and clear
       - id: VQ-07
         name: Palette Compliance
         score: 1
         max: 2
         passed: false
-        comment: Uses custom blue-orange diverging palette instead of recommended
-          BrBG; backgrounds are correct theme colors
+        comment: Uses ColorBrewer Blues-Oranges instead of BrBG per style guide; acceptable
+          but non-canonical. Backgrounds correct.
     design_excellence:
-      score: 8
+      score: 11
       max: 20
       items:
       - id: DE-01
         name: Aesthetic Sophistication
-        score: 4
+        score: 5
         max: 8
         passed: false
-        comment: Functional but generic colors; well-configured library defaults without
-          custom palette refinement
+        comment: Custom palette shows design intent; overall aesthetic functional
+          but not premium
       - id: DE-02
         name: Visual Refinement
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Library defaults with minimal customization; functional layout but
-          no special design polish
+        comment: Subtle grid and adequate whitespace; refinement is competent but
+          minimal customization
       - id: DE-03
         name: Data Storytelling
-        score: 2
+        score: 3
         max: 6
         passed: false
-        comment: Displays all metrics with equal weight; no visual hierarchy or emphasis
-          to highlight patterns
+        comment: Color effectively encodes polarity; visual hierarchy could be stronger
     spec_compliance:
       score: 15
       max: 15
@@ -142,27 +128,26 @@ review:
         score: 5
         max: 5
         passed: true
-        comment: Correct horizon chart implementation with folded bands
+        comment: True horizon chart with proper folded bands
       - id: SC-02
         name: Required Features
         score: 4
         max: 4
         passed: true
-        comment: 'All features present: multiple series, color-coded bands, positive/negative
-          divergence, time axis, legend'
+        comment: 'All features present: positive/negative encoding, band folding,
+          multi-series, compact layout'
       - id: SC-03
         name: Data Mapping
         score: 3
         max: 3
         passed: true
-        comment: Time correctly on x-axis; series stacked correctly; all data visible
+        comment: X=time (24h), Y=6 metrics; axes properly cover all data
       - id: SC-04
         name: Title & Legend
         score: 3
         max: 3
         passed: true
-        comment: 'Title format correct: ''horizon-basic · pygal · anyplot.ai''; legend
-          labels clearly identify positive/negative'
+        comment: Format correct; legend identifies Positive/Negative
     data_quality:
       score: 15
       max: 15
@@ -172,22 +157,20 @@ review:
         score: 6
         max: 6
         passed: true
-        comment: 'Shows full range of horizon chart features: spikes (CPU, error rate),
-          trends (memory), bursts (network), sustained changes (disk backup)'
+        comment: Six metrics shown with realistic positive/negative variations
       - id: DQ-02
         name: Realistic Context
         score: 5
         max: 5
         passed: true
-        comment: Real server monitoring scenario with 24-hour timeline; neutral, comprehensible
-          business context
+        comment: 'Plausible server metrics: CPU peaks, memory trends, disk backups,
+          errors'
       - id: DQ-03
         name: Appropriate Scale
         score: 4
         max: 4
         passed: true
-        comment: Values realistic for server metrics; proportions and patterns are
-          plausible
+        comment: Band division (max/3) scales well for data range
     code_quality:
       score: 10
       max: 10
@@ -197,63 +180,58 @@ review:
         score: 3
         max: 3
         passed: true
-        comment: 'Simple script structure: imports → data generation → custom class
-          → plot → save'
+        comment: Clean custom class; no unnecessary complexity
       - id: CQ-02
         name: Reproducibility
         score: 2
         max: 2
         passed: true
-        comment: Deterministic with np.random.seed(42)
+        comment: Deterministic via np.random.seed(42)
       - id: CQ-03
         name: Clean Imports
         score: 2
         max: 2
         passed: true
-        comment: 'Only necessary imports: os, sys, numpy'
+        comment: Only necessary imports (os, sys, numpy, pygal)
       - id: CQ-04
         name: Code Elegance
         score: 2
         max: 2
         passed: true
-        comment: Custom HorizonChart class is appropriate and justified; no over-engineering
-          or fake functionality
+        comment: No fake UI; SVG manipulation appropriate for custom chart
       - id: CQ-05
         name: Output & API
         score: 1
         max: 1
         passed: true
-        comment: 'Correct output: plot-{THEME}.png and plot-{THEME}.html'
+        comment: Saves as plot-{THEME}.png and .html correctly
     library_mastery:
-      score: 8
+      score: 6
       max: 10
       items:
       - id: LM-01
         name: Idiomatic Usage
-        score: 5
+        score: 3
         max: 5
-        passed: true
-        comment: Expertly subclasses pygal.Graph; correctly implements _plot() and
-          _compute(); SVG manipulation is appropriate for custom chart
+        passed: false
+        comment: Extends Graph class correctly; svg.node() usage proper. Unconventional
+          approach for horizon charts.
       - id: LM-02
         name: Distinctive Features
         score: 3
         max: 5
         passed: false
-        comment: Horizon chart is distinctive to this library, but implementation
-          doesn't showcase other pygal features
-    score_caps:
-      applied: false
-      notes: No score caps triggered; no critical failures in VQ-02, VQ-03, SC-01,
-        DQ-02, or CQ-04
+        comment: Custom chart showcases pygal extensibility; band-folding logic non-trivial
+          but could use more advanced features
   verdict: APPROVED
 impl_tags:
   dependencies: []
-  techniques: []
+  techniques:
+  - manual-ticks
+  - custom-legend
   patterns:
   - data-generation
-  - matrix-construction
   - iteration-over-groups
-  dataprep:
-  - cumulative-sum
-  styling: []
+  dataprep: []
+  styling:
+  - grid-styling

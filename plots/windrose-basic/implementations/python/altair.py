@@ -1,13 +1,23 @@
-""" pyplots.ai
+""" anyplot.ai
 windrose-basic: Wind Rose Chart
-Library: altair 6.0.0 | Python 3.13.11
-Quality: 90/100 | Created: 2025-12-24
+Library: altair 6.1.0 | Python 3.13.13
+Quality: 82/100 | Updated: 2026-05-07
 """
+
+import os
 
 import altair as alt
 import numpy as np
 import pandas as pd
 
+
+# Theme tokens
+THEME = os.getenv("ANYPLOT_THEME", "light")
+PAGE_BG = "#FAF8F1" if THEME == "light" else "#1A1A17"
+ELEVATED_BG = "#FFFDF6" if THEME == "light" else "#242420"
+INK = "#1A1A17" if THEME == "light" else "#F0EFE8"
+INK_SOFT = "#4A4A44" if THEME == "light" else "#B8B7B0"
+INK_MUTED = "#6B6A63" if THEME == "light" else "#A8A79F"
 
 # Data - Simulated hourly wind measurements for one year
 np.random.seed(42)
@@ -114,8 +124,10 @@ for _, row in freq_df.iterrows():
 
 wedge_df = pd.DataFrame(wedge_data)
 
-# Color scale - cool to warm for wind speeds (Python Blue to warm)
-colors = ["#306998", "#5B9BD5", "#FFD43B", "#F4A100", "#D84315"]
+# Color scale - viridis mapped to speed ranges (cool to warm progression)
+colors = ["#440154", "#31688e", "#35b779", "#fde724", "#440154"][::-1]  # Reversed for cool to warm
+colors = ["#440154", "#31688e", "#35b779", "#fde724", "#440154"]
+colors = ["#31688e", "#35b779", "#fde724", "#f8765d", "#440154"]  # Better progression
 
 max_freq = freq_df["cumulative"].max()
 max_radius = max_freq * 1.15
@@ -124,7 +136,7 @@ axis_range = [-max_radius - 5, max_radius + 5]
 # Create the wind rose chart - wedges
 wedges = (
     alt.Chart(wedge_df)
-    .mark_line(strokeWidth=1, stroke="white", filled=True)
+    .mark_line(strokeWidth=1, stroke=PAGE_BG, filled=True)
     .encode(
         x=alt.X("x:Q").scale(domain=axis_range).axis(None),
         y=alt.Y("y:Q").scale(domain=axis_range).axis(None),
@@ -156,7 +168,7 @@ label_data = pd.DataFrame(
 
 labels = (
     alt.Chart(label_data)
-    .mark_text(fontSize=28, fontWeight="bold", color="#333333")
+    .mark_text(fontSize=28, fontWeight="bold", color=INK)
     .encode(
         x=alt.X("x:Q").scale(domain=axis_range).axis(None),
         y=alt.Y("y:Q").scale(domain=axis_range).axis(None),
@@ -178,7 +190,7 @@ circle_df = pd.DataFrame(circle_points)
 
 circles = (
     alt.Chart(circle_df)
-    .mark_line(strokeWidth=1, color="#CCCCCC")
+    .mark_line(strokeWidth=1, color=INK_SOFT, opacity=0.3)
     .encode(
         x=alt.X("x:Q").scale(domain=axis_range).axis(None),
         y=alt.Y("y:Q").scale(domain=axis_range).axis(None),
@@ -204,7 +216,7 @@ radial_df = pd.DataFrame(radial_data)
 
 radial_lines = (
     alt.Chart(radial_df)
-    .mark_rule(strokeWidth=1, color="#CCCCCC")
+    .mark_rule(strokeWidth=1, color=INK_SOFT, opacity=0.3)
     .encode(
         x=alt.X("x:Q").scale(domain=axis_range).axis(None),
         y=alt.Y("y:Q").scale(domain=axis_range).axis(None),
@@ -234,7 +246,7 @@ axis_title_data = pd.DataFrame(
 
 pct_labels = (
     alt.Chart(pct_label_data)
-    .mark_text(fontSize=18, align="left", color="#666666", fontWeight="bold")
+    .mark_text(fontSize=20, align="left", color=INK_SOFT, fontWeight="bold")
     .encode(
         x=alt.X("x:Q").scale(domain=axis_range).axis(None),
         y=alt.Y("y:Q").scale(domain=axis_range).axis(None),
@@ -244,7 +256,7 @@ pct_labels = (
 
 axis_title = (
     alt.Chart(axis_title_data)
-    .mark_text(fontSize=22, align="center", color="#333333", fontWeight="bold", angle=335)
+    .mark_text(fontSize=22, align="center", color=INK, fontWeight="bold", angle=335)
     .encode(
         x=alt.X("x:Q").scale(domain=axis_range).axis(None),
         y=alt.Y("y:Q").scale(domain=axis_range).axis(None),
@@ -256,11 +268,15 @@ axis_title = (
 chart = (
     (circles + radial_lines + wedges + labels + pct_labels + axis_title)
     .properties(
-        width=900, height=900, title=alt.Title("windrose-basic · altair · pyplots.ai", fontSize=32, anchor="middle")
+        width=900,
+        height=900,
+        background=PAGE_BG,
+        title=alt.Title("windrose-basic · altair · anyplot.ai", fontSize=32, anchor="middle", color=INK),
     )
-    .configure_view(strokeWidth=0)
+    .configure_view(strokeWidth=0, fill=PAGE_BG)
+    .configure_legend(fillColor=ELEVATED_BG, strokeColor=INK_SOFT, labelColor=INK_SOFT, titleColor=INK)
 )
 
 # Save
-chart.save("plot.png", scale_factor=3.0)
-chart.save("plot.html")
+chart.save(f"plot-{THEME}.png", scale_factor=3.0)
+chart.save(f"plot-{THEME}.html")
